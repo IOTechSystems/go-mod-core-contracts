@@ -40,6 +40,9 @@ func TestRegistrationValidation(t *testing.T) {
 	invalidEncryption := testRegistration
 	invalidEncryption.Encryption.Algo = "blah"
 
+	invalidProcessFrequency := testRegistration
+	invalidProcessFrequency.ProcessFrequency = "blah"
+
 	tests := []struct {
 		name        string
 		r           Registration
@@ -51,6 +54,7 @@ func TestRegistrationValidation(t *testing.T) {
 		{"invalid registration format", invalidFormat, true},
 		{"invalid registration destination", invalidDestination, true},
 		{"invalid registration encryption", invalidEncryption, true},
+		{"invalid registration processFrequency", invalidProcessFrequency, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
