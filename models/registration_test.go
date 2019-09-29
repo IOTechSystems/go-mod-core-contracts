@@ -40,6 +40,24 @@ func TestRegistrationValidation(t *testing.T) {
 	invalidEncryption := testRegistration
 	invalidEncryption.Encryption.Algo = "blah"
 
+	invalidProcessFrequency := testRegistration
+	invalidProcessFrequency.ProcessFrequency = "blah"
+
+	invalidProcessFrequency1ms := testRegistration
+	invalidProcessFrequency1ms.ProcessFrequency = "1ms"
+
+	validProcessFrequency1s := testRegistration
+	validProcessFrequency1s.ProcessFrequency = "1s"
+
+	validProcessFrequency1m := testRegistration
+	validProcessFrequency1m.ProcessFrequency = "1m"
+
+	validProcessFrequency1h := testRegistration
+	validProcessFrequency1h.ProcessFrequency = "1h"
+
+	validProcessFrequency1h1m1s := testRegistration
+	validProcessFrequency1h1m1s.ProcessFrequency = "1h1m1s"
+
 	tests := []struct {
 		name        string
 		r           Registration
@@ -51,6 +69,12 @@ func TestRegistrationValidation(t *testing.T) {
 		{"invalid registration format", invalidFormat, true},
 		{"invalid registration destination", invalidDestination, true},
 		{"invalid registration encryption", invalidEncryption, true},
+		{"invalid registration processFrequency format", invalidProcessFrequency, true},
+		{"invalid registration processFrequency 1ms", invalidProcessFrequency1ms, true},
+		{"valid registration processFrequency 1s", validProcessFrequency1s, false},
+		{"valid registration processFrequency 1m", validProcessFrequency1m, false},
+		{"valid registration processFrequency 1h", validProcessFrequency1h, false},
+		{"valid registration processFrequency 1h1m1s", validProcessFrequency1h1m1s, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
