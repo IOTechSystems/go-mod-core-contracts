@@ -73,6 +73,35 @@ func GetRequest(url string, ctx context.Context) ([]byte, error) {
 	return bodyBytes, nil
 }
 
+// Helper method to make the get request with a body
+func GetRequestWithBody(url string, body []byte, ctx context.Context) ([]byte, error) {
+	req, err := http.NewRequest(http.MethodGet, url, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+
+	c := NewCorrelatedRequest(req, ctx)
+	resp, err := makeRequest(c.Request)
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, types.ErrResponseNil{}
+	}
+	defer resp.Body.Close()
+
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusAccepted) {
+		return nil, types.NewErrServiceClient(resp.StatusCode, bodyBytes)
+	}
+
+	return bodyBytes, nil
+}
+
 // Helper method to make the count request
 func CountRequest(url string, ctx context.Context) (int, error) {
 	data, err := GetRequest(url, ctx)
