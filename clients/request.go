@@ -86,6 +86,35 @@ func GetRequestWithURL(ctx context.Context, url string) ([]byte, error) {
 	return bodyBytes, nil
 }
 
+// Helper method to make the get request with a body
+func GetRequestWithBody(url string, body []byte, ctx context.Context) ([]byte, error) {
+	req, err := http.NewRequest(http.MethodGet, url, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+
+	c := NewCorrelatedRequest(req, ctx)
+	resp, err := makeRequest(c.Request)
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, types.ErrResponseNil{}
+	}
+	defer resp.Body.Close()
+
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusAccepted) {
+		return nil, types.NewErrServiceClient(resp.StatusCode, bodyBytes)
+	}
+
+	return bodyBytes, nil
+}
+
 // Helper method to make the count request
 func CountRequest(ctx context.Context, urlSuffix string, urlClient interfaces.URLClient) (int, error) {
 	// do not get URLPrefix here since GetRequest does it
