@@ -24,17 +24,19 @@ import (
 // Addressable holds information indicating how to contact a specific endpoint
 type Addressable struct {
 	Timestamps
-	Id          string `json:"id"`          // ID is a unique identifier for the Addressable, such as a UUID
-	Name        string `json:"name"`        // Name is a unique name given to the Addressable
-	Protocol    string `json:"protocol"`    // Protocol for the address (HTTP/TCP)
-	HTTPMethod  string `json:"method"`      // Method for connecting (i.e. POST)
-	Address     string `json:"address"`     // Address of the addressable
-	Port        int    `json:"port,Number"` // Port for the address
-	Path        string `json:"path"`        // Path for callbacks
-	Publisher   string `json:"publisher"`   // For message bus protocols
-	User        string `json:"user"`        // User id for authentication
-	Password    string `json:"password"`    // Password of the user for authentication for the addressable
-	Topic       string `json:"topic"`       // Topic for message bus addressables
+	Id          string `json:"id"`             // ID is a unique identifier for the Addressable, such as a UUID
+	Name        string `json:"name"`           // Name is a unique name given to the Addressable
+	Protocol    string `json:"protocol"`       // Protocol for the address (HTTP/TCP)
+	HTTPMethod  string `json:"method"`         // Method for connecting (i.e. POST)
+	Address     string `json:"address"`        // Address of the addressable
+	Port        int    `json:"port,Number"`    // Port for the address
+	Path        string `json:"path"`           // Path for callbacks
+	Publisher   string `json:"publisher"`      // For message bus protocols
+	User        string `json:"user"`           // User id for authentication
+	Password    string `json:"password"`       // Password of the user for authentication for the addressable
+	Topic       string `json:"topic"`          // Topic for message bus addressables
+	Cert        string `json:"cert,omitempty"` // Path to the Certificate file for authentication
+	Key         string `json:"key,omitempty"`  // Path to The Private key file for authentication
 	isValidated bool   // internal member used for validation check
 }
 
@@ -55,6 +57,8 @@ func (a Addressable) MarshalJSON() ([]byte, error) {
 		User       *string `json:"user,omitempty"`        // User id for authentication
 		Password   *string `json:"password,omitempty"`    // Password of the user for authentication for the addressable
 		Topic      *string `json:"topic,omitempty"`       // Topic for message bus addressables
+		Cert       *string `json:"cert,omitempty"`        // Path to the Certificate file for authentication
+		Key        *string `json:"key,omitempty"`         // Path to The Private key file for authentication
 		BaseURL    *string `json:"baseURL,omitempty"`
 		URL        *string `json:"url,omitempty"`
 	}{
@@ -93,6 +97,12 @@ func (a Addressable) MarshalJSON() ([]byte, error) {
 	}
 	if a.Topic != "" {
 		aux.Topic = &a.Topic
+	}
+	if a.Cert != "" {
+		aux.Cert = &a.Cert
+	}
+	if a.Key != "" {
+		aux.Key = &a.Key
 	}
 
 	// Get the base URL
@@ -157,6 +167,8 @@ func (a *Addressable) UnmarshalJSON(data []byte) error {
 		User       string `json:"user"`
 		Password   string `json:"password"`
 		Topic      string `json:"topic"`
+		Cert       string `json:"cert"`
+		Key        string `json:"key"`
 	}
 	alias := Alias{}
 	// Error with unmarshaling
@@ -176,6 +188,8 @@ func (a *Addressable) UnmarshalJSON(data []byte) error {
 	a.User = alias.User
 	a.Password = alias.Password
 	a.Topic = alias.Topic
+	a.Cert = alias.Cert
+	a.Key = alias.Key
 	a.isValidated, err = a.Validate()
 
 	return err
