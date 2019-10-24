@@ -32,9 +32,11 @@ const (
 	testUser      = "edgexer"
 	testPassword  = "password"
 	testTopic     = "device_topic"
+	testCert = "/export/keys/mycert.pem.crt"
+	testKey = "/export/keys/myprivatekey.pem.key"
 )
 
-var TestAddressable = Addressable{Timestamps: testTimestamps, Name: testAddrName, Protocol: testProtocol, HTTPMethod: testMethod, Address: testAddress, Port: testPort, Path: clients.ApiDeviceRoute, Publisher: testPublisher, User: testUser, Password: testPassword, Topic: testTopic}
+var TestAddressable = Addressable{Timestamps: testTimestamps, Name: testAddrName, Protocol: testProtocol, HTTPMethod: testMethod, Address: testAddress, Port: testPort, Path: clients.ApiDeviceRoute, Publisher: testPublisher, User: testUser, Password: testPassword, Topic: testTopic, Cert: testCert, Key: testKey}
 var EmptyAddressable = Addressable{}
 
 func TestAddressable_MarshalJSON(t *testing.T) {
@@ -79,6 +81,8 @@ func TestAddressable_String(t *testing.T) {
 			"\",\"user\":\"" + TestAddressable.User +
 			"\",\"password\":\"" + TestAddressable.Password +
 			"\",\"topic\":\"" + TestAddressable.Topic +
+			"\",\"cert\":\"" + TestAddressable.Cert +
+			"\",\"key\":\"" + TestAddressable.Key +
 			"\",\"baseURL\":\"" + TestAddressable.Protocol + "://" + TestAddressable.Address + ":" + strconv.Itoa(TestAddressable.Port) +
 			"\",\"url\":\"" + TestAddressable.Protocol + "://" + TestAddressable.Address + ":" + strconv.Itoa(TestAddressable.Port) + TestAddressable.Path + "\"}"},
 		{"empty", EmptyAddressable, testEmptyJSON},
