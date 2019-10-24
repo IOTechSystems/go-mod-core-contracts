@@ -35,6 +35,8 @@ import (
 type EventClient interface {
 	// Events gets a list of all events
 	Events(ctx context.Context) ([]models.Event, error)
+	// Events gets a list of events by given event ids
+	EventsByIds(ids []string, ctx context.Context) ([]models.Event, error)
 	// Event gets an event by its id
 	Event(id string, ctx context.Context) (models.Event, error)
 	// EventCount returns the total count of events
@@ -121,6 +123,23 @@ func (e *eventRestClient) requestEvent(url string, ctx context.Context) (models.
 
 func (e *eventRestClient) Events(ctx context.Context) ([]models.Event, error) {
 	return e.requestEventSlice(e.url, ctx)
+}
+
+func (e *eventRestClient) EventsByIds(ids []string, ctx context.Context) ([]models.Event, error) {
+	body, err := json.Marshal(ids)
+	if err != nil {
+		return []models.Event{}, err
+	}
+
+	data, err := clients.GetRequestWithBody(e.url+"/ids", body, ctx)
+	if err != nil {
+		return []models.Event{}, err
+	}
+
+	eSlice := make([]models.Event, 0)
+	err = json.Unmarshal(data, &eSlice)
+	return eSlice, err
+
 }
 
 func (e *eventRestClient) Event(id string, ctx context.Context) (models.Event, error) {
