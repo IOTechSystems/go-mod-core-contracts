@@ -15,8 +15,10 @@
 package models
 
 import (
-	"github.com/google/uuid"
+	"fmt"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 var testRegistration = Registration{ID: uuid.New().String(), Name: "Test Registration", Compression: CompNone,
@@ -80,6 +82,75 @@ func TestRegistrationValidation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := tt.r.Validate()
 			checkValidationError(err, tt.expectError, tt.name, t)
+		})
+	}
+}
+
+func TestMaxRetentionEvents(t *testing.T) {
+	r := &Registration{}
+	r.UnmarshalJSON([]byte("{\"name\":\"n\",\"addressable\":{\"name\":\"n\"},\"format\":\"JSON\",\"destination\":\"MQTT_TOPIC\"}"))
+
+	tests := []struct {
+		name        string
+		data        string
+		expectValue uint
+		expectError bool
+	}{
+		{"invalid MaxRetentionEvents: string", "{\"maxRetentionEvents\":\"s\"}",
+			DefaultMaxRetentionEvents, true},
+		{"invalid MaxRetentionEvents: negative number", "{\"maxRetentionEvents\":-1}",
+			DefaultMaxRetentionEvents, true},
+		{"invalid MaxRetentionEvents: float", "{\"maxRetentionEvents\":3.1415}",
+			DefaultMaxRetentionEvents, true},
+		{fmt.Sprintf("default MaxRetentionEvents is %d", DefaultMaxRetentionEvents),
+			"{\"maxRetentionEvents\":0}", DefaultMaxRetentionEvents, false},
+		{"normal case", "{\"maxRetentionEvents\":1000}", 1000, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := r.UnmarshalJSON([]byte(tt.data))
+			if err != nil {
+				if !tt.expectError {
+					t.Errorf("unexpected error: %v", err)
+				}
+			} else {
+				if tt.expectError {
+					t.Errorf("did not receive expected error: %s", tt.name)
+				}
+				if err == nil && r.MaxRetentionEvents != tt.expectValue {
+					t.Errorf("expected value: %d, but got: %d", tt.expectValue, r.MaxRetentionEvents)
+				}
+			}
+		})
+	}
+}
+
+func TestMaxBatchEvents(t *testing.T) {
+	r := &Registration{}
+	r.UnmarshalJSON([]byte("{\"name\":\"n\",\"addressable\":{\"name\":\"n\"},\"format\":\"JSON\",\"destination\":\"MQTT_TOPIC\"}"))
+
+	tests := []struct {
+		name        string
+		data        string
+		expectError bool
+	}{
+		{"invalid MaxBatchEvents: string", "{\"maxRetentionEvents\":\"s\"}", true},
+		{"invalid MaxBatchEvents: negative number", "{\"maxRetentionEvents\":-1}", true},
+		{"invalid MaxBatchEvents: float", "{\"maxRetentionEvents\":3.1415}", true},
+		{"normal case", "{\"maxBatchEvents\":100}", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := r.UnmarshalJSON([]byte(tt.data))
+			if err != nil {
+				if !tt.expectError {
+					t.Errorf("unexpected error: %v", err)
+				}
+			} else {
+				if tt.expectError {
+					t.Errorf("did not receive expected error: %s", tt.name)
+				}
+			}
 		})
 	}
 }
