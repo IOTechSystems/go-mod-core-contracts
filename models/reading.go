@@ -58,6 +58,7 @@ type Reading struct {
 	Name          string `json:"name,omitempty" codec:"name,omitempty"`
 	Value         string `json:"value,omitempty" codec:"value,omitempty"` // Device sensor data value
 	ValueType     string `json:"valueType,omitempty" codec:"valueType,omitempty"`
+	DataType    string `json:"dataType" codec:"dataType,omitempty"`
 	FloatEncoding string `json:"floatEncoding,omitempty" codec:"floatEncoding,omitempty"`
 	BinaryValue   []byte `json:"binaryValue,omitempty" codec:"binaryValue,omitempty"` // Binary data payload
 	MediaType     string `json:"mediaType,omitempty" codec:"mediaType,omitempty"`
@@ -77,6 +78,7 @@ func (r *Reading) UnmarshalJSON(data []byte) error {
 		Name          *string `json:"name"`
 		Value         *string `json:"value"`
 		ValueType     *string `json:"valueType"`
+		DataType    *string `json:"dataType,omitempty"`
 		FloatEncoding *string `json:"floatEncoding"`
 		BinaryValue   []byte  `json:"binaryValue"`
 		MediaType     *string `json:"mediaType"`
@@ -103,6 +105,9 @@ func (r *Reading) UnmarshalJSON(data []byte) error {
 	}
 	if a.ValueType != nil {
 		r.ValueType = *a.ValueType
+	}
+	if a.DataType != nil {
+		r.DataType = *a.DataType
 	}
 	if a.FloatEncoding != nil {
 		r.FloatEncoding = *a.FloatEncoding
