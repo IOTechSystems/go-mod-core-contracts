@@ -36,6 +36,7 @@ type Reading struct {
 	Name        string `json:"name" codec:"name,omitempty"`
 	Value       string `json:"value"  codec:"value,omitempty"`            // Device sensor data value
 	BinaryValue []byte `json:"binaryValue" codec:"binaryValue,omitempty"` // Binary data payload
+	DataType    string `json:"dataType" codec:"dataType,omitempty"`
 	isValidated bool   // internal member used for validation check
 }
 
@@ -51,6 +52,7 @@ func (r Reading) MarshalJSON() ([]byte, error) {
 		Name        *string `json:"name,omitempty"`
 		Value       *string `json:"value,omitempty"`       // Device sensor data value
 		BinaryValue []byte  `json:"binaryValue,omitempty"` // Binary data payload
+		DataType    *string `json:"dataType,omitempty"`
 	}{
 		Pushed:      r.Pushed,
 		Created:     r.Created,
@@ -72,6 +74,9 @@ func (r Reading) MarshalJSON() ([]byte, error) {
 	if r.Value != "" {
 		test.Value = &r.Value
 	}
+	if r.DataType != "" {
+		test.DataType = &r.DataType
+	}
 
 	return json.Marshal(test)
 }
@@ -89,6 +94,7 @@ func (r *Reading) UnmarshalJSON(data []byte) error {
 		Name        *string `json:"name"`
 		Value       *string `json:"value"`
 		BinaryValue []byte  `json:"binaryValue"`
+		DataType    *string `json:"dataType,omitempty"`
 	}
 	a := Alias{}
 
@@ -109,6 +115,9 @@ func (r *Reading) UnmarshalJSON(data []byte) error {
 	}
 	if a.Value != nil {
 		r.Value = *a.Value
+	}
+	if a.DataType != nil {
+		r.DataType = *a.DataType
 	}
 	r.Pushed = a.Pushed
 	r.Created = a.Created
