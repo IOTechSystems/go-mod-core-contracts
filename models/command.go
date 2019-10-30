@@ -16,6 +16,7 @@ package models
 
 import (
 	"encoding/json"
+	"reflect"
 )
 
 // Command defines a specific read/write operation targeting a device
@@ -32,23 +33,24 @@ type Command struct {
 func (c Command) MarshalJSON() ([]byte, error) {
 	test := struct {
 		Timestamps
-		Id   *string `json:"id,omitempty"`
-		Name *string `json:"name,omitempty"` // Command name (unique on the profile)
-		Get  Get     `json:"get,omitempty"`  // Get Command
-		Put  Put     `json:"put,omitempty"`  // Put Command
+		Id   string `json:"id,omitempty"`
+		Name string `json:"name,omitempty"` // Command name (unique on the profile)
+		Get  *Get   `json:"get,omitempty"`  // Get Command
+		Put  *Put   `json:"put,omitempty"`  // Put Command
 	}{
 		Timestamps: c.Timestamps,
-		Get:        c.Get,
-		Put:        c.Put,
+		Id:         c.Id,
+		Name:       c.Name,
+		Get:        &c.Get,
+		Put:        &c.Put,
 	}
 
-	if c.Id != "" {
-		test.Id = &c.Id
+	// Make empty structs nil pointers so they aren't marshaled
+	if reflect.DeepEqual(c.Get, Get{}) {
+		test.Get = nil
 	}
-
-	// Make empty strings null
-	if c.Name != "" {
-		test.Name = &c.Name
+	if reflect.DeepEqual(c.Put, Put{}) {
+		test.Put = nil
 	}
 
 	return json.Marshal(test)
@@ -57,16 +59,16 @@ func (c Command) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON implements the Unmarshaler interface for the Command type
 func (c *Command) UnmarshalJSON(data []byte) error {
 	var err error
-	type Alias struct {
+	a := new(struct {
 		Timestamps `json:",inline"`
 		Id         *string `json:"id"`
 		Name       *string `json:"name"` // Command name (unique on the profile)
 		Get        Get     `json:"get"`  // Get Command
 		Put        Put     `json:"put"`  // Put Command
-	}
-	a := Alias{}
+	})
+
 	// Error with unmarshaling
-	if err = json.Unmarshal(data, &a); err != nil {
+	if err = json.Unmarshal(data, a); err != nil {
 		return err
 	}
 

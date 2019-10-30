@@ -26,6 +26,7 @@ const (
 
 // Constants related to defined routes in the service APIs
 const (
+	ApiVersionRoute            = "/api/version"
 	ApiBase                    = "/api/v1"
 	ApiAddressableRoute        = "/api/v1/addressable"
 	ApiCallbackRoute           = "/api/v1/callback"
@@ -72,4 +73,5 @@ const (
 	ContentTypeCBOR = "application/cbor"
 	ContentTypeJSON = "application/json"
 	ContentTypeYAML = "application/x-yaml"
+	ContentTypeText = "text/plain"
 )

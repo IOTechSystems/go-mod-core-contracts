@@ -17,9 +17,9 @@ package coredata
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 	"time"
 
@@ -36,6 +36,11 @@ const (
 var testValueDescriptor = models.ValueDescriptor{Created: 123, Modified: 123, Origin: 123, Name: "Temperature",
 	Description: "test description", Min: -70, Max: 140, DefaultValue: 32, Formatting: "%d",
 	Labels: []string{"temp", "room temp"}, UomLabel: "F", MediaType: clients.ContentTypeJSON, FloatEncoding: "eNotation"}
+
+var testValueDescriptorUsage = []map[string]bool{
+	{testValueDesciptorDescription1: false},
+	{testValueDesciptorDescription2: true},
+}
 
 func TestGetvaluedescriptors(t *testing.T) {
 	descriptor1 := testValueDescriptor
@@ -76,7 +81,7 @@ func TestGetvaluedescriptors(t *testing.T) {
 		Url:         url,
 		Interval:    clients.ClientMonitorDefault}
 
-	vdc := NewValueDescriptorClient(params, mockEndpoint{})
+	vdc := NewValueDescriptorClient(params, mockCoreDataEndpoint{})
 
 	vdArr, err := vdc.ValueDescriptors(context.Background())
 	if err != nil {
@@ -99,6 +104,87 @@ func TestGetvaluedescriptors(t *testing.T) {
 	}
 }
 
+func TestValueDescriptorUsage(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+
+		if r.Method != http.MethodGet {
+			t.Errorf("expected http method is GET, active http method is : %s", r.Method)
+		}
+
+		if r.URL.EscapedPath() != clients.ApiValueDescriptorRoute+"/usage" {
+			t.Errorf("expected uri path is %s, actual uri path is %s", clients.ApiValueDescriptorRoute, r.URL.EscapedPath())
+		}
+
+		data, err := json.Marshal(testValueDescriptorUsage)
+		if err != nil {
+			t.Errorf("marshaling error: %s", err.Error())
+		}
+		w.Write(data)
+
+	}))
+	defer ts.Close()
+
+	url := ts.URL + clients.ApiValueDescriptorRoute
+
+	params := types.EndpointParams{
+		ServiceKey:  clients.CoreDataServiceKey,
+		Path:        clients.ApiValueDescriptorRoute,
+		UseRegistry: false,
+		Url:         url,
+		Interval:    clients.ClientMonitorDefault}
+
+	vdc := NewValueDescriptorClient(params, mockCoreDataEndpoint{})
+	usage, err := vdc.ValueDescriptorsUsage([]string{testValueDesciptorDescription1, testValueDesciptorDescription2}, context.Background())
+	if err != nil {
+		t.Errorf(err.Error())
+		t.FailNow()
+	}
+	expected := flattenValueDescriptorUsage(testValueDescriptorUsage)
+	if !reflect.DeepEqual(expected, usage) {
+		t.Errorf("Observed response doesn't match expected.\nExpected: %v\nActual: %v\n", expected, usage)
+	}
+}
+
+func TestValueDescriptorUsageSerializationError(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer ts.Close()
+
+	url := ts.URL + clients.ApiValueDescriptorRoute
+
+	params := types.EndpointParams{
+		ServiceKey:  clients.CoreDataServiceKey,
+		Path:        clients.ApiValueDescriptorRoute,
+		UseRegistry: false,
+		Url:         url,
+		Interval:    clients.ClientMonitorDefault}
+
+	vdc := NewValueDescriptorClient(params, mockCoreDataEndpoint{})
+	_, err := vdc.ValueDescriptorsUsage([]string{testValueDesciptorDescription1, testValueDesciptorDescription2}, context.Background())
+	if err == nil {
+		t.Error("Expected an error")
+		return
+	}
+}
+
+func TestValueDescriptorUsageGetRequestError(t *testing.T) {
+	params := types.EndpointParams{
+		ServiceKey:  clients.CoreDataServiceKey,
+		Path:        clients.ApiValueDescriptorRoute,
+		UseRegistry: false,
+		Url:         "!@#",
+		Interval:    clients.ClientMonitorDefault}
+
+	vdc := NewValueDescriptorClient(params, mockCoreDataEndpoint{})
+	_, err := vdc.ValueDescriptorsUsage([]string{testValueDesciptorDescription1, testValueDesciptorDescription2}, context.Background())
+	if err == nil {
+		t.Error("Expected an error")
+		return
+	}
+}
+
 func TestNewValueDescriptorClientWithConsul(t *testing.T) {
 	deviceUrl := "http://localhost:48080" + clients.ApiValueDescriptorRoute
 	params := types.EndpointParams{
@@ -108,7 +194,7 @@ func TestNewValueDescriptorClientWithConsul(t *testing.T) {
 		Url:         deviceUrl,
 		Interval:    clients.ClientMonitorDefault}
 
-	vdc := NewValueDescriptorClient(params, mockEndpoint{})
+	vdc := NewValueDescriptorClient(params, mockCoreDataEndpoint{})
 
 	r, ok := vdc.(*valueDescriptorRestClient)
 	if !ok {
@@ -120,19 +206,5 @@ func TestNewValueDescriptorClientWithConsul(t *testing.T) {
 		t.Error("url was not initialized")
 	} else if r.url != deviceUrl {
 		t.Errorf("unexpected url value %s", r.url)
-	}
-}
-
-type mockEndpoint struct {
-}
-
-func (e mockEndpoint) Monitor(params types.EndpointParams, ch chan string) {
-	switch params.ServiceKey {
-	case clients.CoreDataServiceKey:
-		url := fmt.Sprintf("http://%s:%v%s", "localhost", 48080, params.Path)
-		ch <- url
-		break
-	default:
-		ch <- ""
 	}
 }

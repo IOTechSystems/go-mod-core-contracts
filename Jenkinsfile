@@ -46,6 +46,7 @@ pipeline {
                     }
                     steps {
                         sh 'make test'
+                        edgeXCodecov('go-mod-core-contracts-codecov-token')
                     }
                 }
                 stage('Test arm64') {
@@ -58,6 +59,7 @@ pipeline {
                     }
                     steps {
                         sh 'make test'
+                        edgeXCodecov('go-mod-core-contracts-codecov-token')
                     }
                 }
             }
@@ -77,8 +79,7 @@ pipeline {
         stage('Semver Tag') {
             when { expression { edgex.isReleaseStream() } }
             steps {
-                sh 'echo v${VERSION}'
-                sh 'git tag -a v${VERSION} -m "v${VERSION}"'
+                edgeXSemver('tag')
             }
         }
 
