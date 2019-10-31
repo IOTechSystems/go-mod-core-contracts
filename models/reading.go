@@ -29,6 +29,7 @@ type Reading struct {
 	Name        string `json:"name,omitempty" codec:"name,omitempty"`
 	Value       string `json:"value,omitempty"  codec:"value,omitempty"`            // Device sensor data value
 	BinaryValue []byte `json:"binaryValue,omitempty" codec:"binaryValue,omitempty"` // Binary data payload
+	DataType    string `json:"dataType" codec:"dataType,omitempty"`
 	isValidated bool   // internal member used for validation check
 }
 
