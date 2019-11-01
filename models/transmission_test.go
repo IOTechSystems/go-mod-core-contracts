@@ -21,20 +21,27 @@ import (
 )
 
 var TestEmptyTransmission = Transmission{}
-var TestTransmission = Transmission{Timestamps: testTimestamps, Notification: TestNotification, Receiver: "test receiver",
-	Channel: Channel{Type: ChannelType(Email), MailAddresses: []string{"jpwhite_mn@yahoo.com", "james_white2@dell.com"}}, Status: TransmissionStatus(Sent), ResendCount: 0, Records: []TransmissionRecord{TestSentTransRecord}}
+var TestTransmission = Transmission{
+	Timestamps:   testTimestamps,
+	Notification: TestNotification,
+	Receiver:     "test receiver",
+	Channel: Channel{
+		Type:          ChannelType(Email),
+		MailAddresses: []string{"me@brandonforster.com", "brandon.forster@dell.com"},
+	},
+	Status:      TransmissionStatus(Sent),
+	ResendCount: 0,
+	Records:     []TransmissionRecord{TestSentTransRecord},
+}
 
 func TestTransmission_MarshalJSON(t *testing.T) {
-	var emptyBytes = []byte(TestEmptyTransmission.String())
-	var tranBytes = []byte(TestTransmission.String())
 	tests := []struct {
 		name    string
 		trans   *Transmission
 		want    []byte
 		wantErr bool
 	}{
-		{"test empty transmission", &TestEmptyTransmission, emptyBytes, false},
-		{"test transmission", &TestTransmission, tranBytes, false},
+		{"test empty transmission", &TestEmptyTransmission, []byte(testEmptyJSON), false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -44,7 +51,7 @@ func TestTransmission_MarshalJSON(t *testing.T) {
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Transmission.MarshalJSON() = %v, want %v", got, tt.want)
+				t.Errorf("Transmission.MarshalJSON() = %v, want %v", string(got), string(tt.want))
 			}
 		})
 	}
@@ -56,13 +63,103 @@ func TestTransmission_String(t *testing.T) {
 		trans *Transmission
 		want  string
 	}{
-		{"test string of empty transmission", &TestEmptyTransmission, "{\"id\":null,\"notification\":{\"id\":null},\"channel\":{},\"resendcount\":0}"},
-		{"test string of transmission", &TestTransmission, "{\"created\":123,\"modified\":123,\"origin\":123,\"id\":null,\"notification\":{\"created\":123,\"modified\":123,\"id\":null,\"slug\":\"test slug\",\"sender\":\"test sender\",\"category\":\"SECURITY\",\"severity\":\"CRITICAL\",\"content\":\"test content\",\"description\":\"test description\",\"status\":\"NEW\",\"labels\":[\"label1\",\"labe2\"]},\"receiver\":\"test receiver\",\"channel\":{\"type\":\"EMAIL\",\"mailAddresses\":[\"jpwhite_mn@yahoo.com\",\"james_white2@dell.com\"]},\"status\":\"SENT\",\"resendcount\":0,\"records\":[{\"status\":\"SENT\",\"response\":\"ok\",\"sent\":123}]}"},
+		{"test string of empty transmission", &TestEmptyTransmission, testEmptyJSON},
+		{"test string of transmission", &TestTransmission,
+			"{" +
+				"\"created\":123," +
+				"\"modified\":123," +
+				"\"origin\":123," +
+				"\"notification\":{\"created\":123,\"modified\":123," +
+				"\"id\":\"" + TestNotificationID + "\",\"slug\":\"test slug\",\"sender\":\"test sender\"," +
+				"\"category\":\"SECURITY\",\"severity\":\"CRITICAL\",\"content\":\"test content\"," +
+				"\"description\":\"test description\",\"status\":\"NEW\",\"labels\":[\"label1\",\"labe2\"]," +
+				"\"contenttype\":\"text/plain\"}," +
+				"\"receiver\":\"test receiver\"," +
+				"\"channel\":{\"type\":\"EMAIL\"," +
+				"\"mailAddresses\":[\"me@brandonforster.com\",\"brandon.forster@dell.com\"]}," +
+				"\"status\":\"SENT\"," +
+				"\"resendcount\":0," +
+				"\"records\":[{\"status\":\"SENT\"," +
+				"\"response\":\"ok\",\"sent\":123}]" +
+				"}",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.trans.String(); got != tt.want {
 				t.Errorf("Transmission.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTransmissionValidation(t *testing.T) {
+	valid := TestTransmission
+
+	invalidNotification := TestTransmission
+	invalidNotification.Notification = Notification{}
+
+	invalidChannel := TestTransmission
+	invalidChannel.Channel = Channel{}
+
+	invalidReceiver := TestTransmission
+	invalidReceiver.Receiver = ""
+
+	invalidStatus := TestTransmission
+	invalidStatus.Status = ""
+
+	invalidResendCount := TestTransmission
+	invalidResendCount.ResendCount = -1
+
+	tests := []struct {
+		name        string
+		t           Transmission
+		expectError bool
+	}{
+		{"valid transmission", valid, false},
+		{"invalid transmisison identifiers", invalidNotification, true},
+		{"invalid channel", invalidChannel, true},
+		{"invalid receiver", invalidReceiver, true},
+		{"invalid status", invalidStatus, true},
+		{"invalid resend count", invalidResendCount, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := tt.t.Validate()
+			checkValidationError(err, tt.expectError, tt.name, t)
+		})
+	}
+}
+
+func TestTransmission_UnmarshalJSON(t *testing.T) {
+
+	var foo = Transmission{}
+
+	TestTransmissionJSON, _ := TestTransmission.MarshalJSON()
+
+	TestTransmissionWithID := TestTransmission
+	TestTransmissionWithID.ID = TestId
+	TestTransmissionWithIDJSON, _ := TestTransmissionWithID.MarshalJSON()
+
+	type args struct {
+		data []byte
+	}
+	tests := []struct {
+		name    string
+		t       *Transmission
+		args    args
+		wantErr bool
+	}{
+		{"success", &foo, args{TestTransmissionJSON}, false},
+		{"json unmarshal error", &foo, args{[]byte("\"{}\"")}, true},
+		{"with id error", &foo, args{TestTransmissionWithIDJSON}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.t.UnmarshalJSON(tt.args.data)
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Transmission.UnmarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

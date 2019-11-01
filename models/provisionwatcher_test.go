@@ -20,29 +20,38 @@ import (
 	"reflect"
 	"strconv"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
+var TestPWID = uuid.New().String()
 var TestPWName = "TestWatcher.NAME"
 var TestPWNameKey1 = "MAC"
 var TestPWNameKey2 = "HTTP"
-var TestPWVal1 = "00-05-1B-A1-99-99"
+var TestPWVal1 = "00-05-4F-A1-FF-*"
+var TestPWVal1b = "00-05-4F-A1-FF-42"
+var TestPWVal1c = "00-05-4F-A1-FF-43"
 var TestPWVal2 = "10.0.1.1"
 var TestIdentifiers = map[string]string{
 	TestPWNameKey1: TestPWVal1,
 	TestPWNameKey2: TestPWVal2,
 }
-var TestProvisionWatcher = ProvisionWatcher{Timestamps: testTimestamps, Name: TestPWName, Identifiers: TestIdentifiers,
-	Profile: TestProfile, Service: TestDeviceService, OperatingState: "ENABLED"}
+var TestBlockIds = map[string][]string{
+	TestPWNameKey1: {TestPWVal1b, TestPWVal1c},
+}
+var TestProvisionWatcher = ProvisionWatcher{Timestamps: testTimestamps, Id: TestPWID, Name: TestPWName, Identifiers: TestIdentifiers,
+	BlockingIdentifiers: TestBlockIds, Profile: TestProfile, Service: TestDeviceService, AdminState: "UNLOCKED"}
+
+var TestProvisionWatcherEmpty = ProvisionWatcher{}
 
 func TestProvisionWatcher_MarshalJSON(t *testing.T) {
-	var testPWBytes = []byte(TestProvisionWatcher.String())
 	tests := []struct {
 		name    string
 		pw      ProvisionWatcher
 		want    []byte
 		wantErr bool
 	}{
-		{"successful marshalling", TestProvisionWatcher, testPWBytes, false},
+		{"successful marshalling of empty object", TestProvisionWatcherEmpty, []byte(testEmptyJSON), false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -52,7 +61,7 @@ func TestProvisionWatcher_MarshalJSON(t *testing.T) {
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ProvisionWatcher.MarshalJSON() = %v, want %v", got, tt.want)
+				t.Errorf("ProvisionWatcher.MarshalJSON() = %v, want %v", string(got), string(tt.want))
 			}
 		})
 	}
@@ -60,6 +69,7 @@ func TestProvisionWatcher_MarshalJSON(t *testing.T) {
 
 func TestProvisionWatcher_String(t *testing.T) {
 	data, _ := json.Marshal(TestIdentifiers)
+	blockdata, _ := json.Marshal(TestBlockIds)
 	tests := []struct {
 		name string
 		pw   ProvisionWatcher
@@ -69,13 +79,15 @@ func TestProvisionWatcher_String(t *testing.T) {
 			"{\"created\":" + strconv.FormatInt(TestProvisionWatcher.Created, 10) +
 				",\"modified\":" + strconv.FormatInt(TestProvisionWatcher.Modified, 10) +
 				",\"origin\":" + strconv.FormatInt(TestProvisionWatcher.Origin, 10) +
-				",\"id\":\"\"" +
+				",\"id\":\"" + TestPWID + "\"" +
 				",\"name\":\"" + TestPWName + "\"" +
 				",\"identifiers\":" + fmt.Sprintf("%s", data) +
+				",\"blockingidentifiers\":" + fmt.Sprintf("%s", blockdata) +
 				",\"profile\":" + TestProvisionWatcher.Profile.String() +
 				",\"service\":" + TestProvisionWatcher.Service.String() +
-				",\"operatingState\":\"ENABLED\"" +
+				",\"adminState\":\"UNLOCKED\"" +
 				"}"},
+		{"provision watcher to string, empty", TestProvisionWatcherEmpty, testEmptyJSON},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

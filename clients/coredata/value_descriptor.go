@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/url"
+	"strings"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/clients"
 	"github.com/edgexfoundry/go-mod-core-contracts/clients/types"
@@ -40,6 +41,9 @@ type ValueDescriptorClient interface {
 	ValueDescriptorsForDeviceByName(deviceName string, ctx context.Context) ([]models.ValueDescriptor, error)
 	// ValueDescriptorsByUomLabel returns the value descriptors for the specified uomLabel
 	ValueDescriptorsByUomLabel(uomLabel string, ctx context.Context) ([]models.ValueDescriptor, error)
+	// ValueDescriptorsUsage return a map describing which ValueDescriptors are currently in use. The key is the
+	// ValueDescriptor name and the value is a bool specifying if the ValueDescriptor is in use.
+	ValueDescriptorsUsage(names []string, ctx context.Context) (map[string]bool, error)
 	// Adds the specified value descriptor
 	Add(vdr *models.ValueDescriptor, ctx context.Context) (string, error)
 	// Updates the specified value descriptor
@@ -63,6 +67,9 @@ func NewValueDescriptorClient(params types.EndpointParams, m clients.Endpointer)
 
 func (d *valueDescriptorRestClient) init(params types.EndpointParams) {
 	if params.UseRegistry {
+		//Fetch URL in real time for immediate use
+		d.url = d.endpoint.Fetch(params)
+		//Set up refresh interval to keep URL current
 		ch := make(chan string, 1)
 		go d.endpoint.Monitor(params, ch)
 		go func(ch chan string) {
@@ -129,6 +136,27 @@ func (v *valueDescriptorRestClient) ValueDescriptorsForDeviceByName(deviceName s
 func (v *valueDescriptorRestClient) ValueDescriptorsByUomLabel(uomLabel string, ctx context.Context) ([]models.ValueDescriptor, error) {
 	return v.requestValueDescriptorSlice(v.url+"/uomlabel/"+uomLabel, ctx)
 }
+func (v *valueDescriptorRestClient) ValueDescriptorsUsage(names []string, ctx context.Context) (map[string]bool, error) {
+	u, err := url.Parse(v.url + "/usage")
+	if err != nil {
+		return nil, err
+	}
+
+	q := u.Query()
+	q.Add("names", strings.Join(names, ","))
+	u.RawQuery = q.Encode()
+	data, err := clients.GetRequest(u.String(), ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := []map[string]bool{}
+	err = json.Unmarshal(data, &resp)
+
+	// Flatmap the original response to a data structure which is more useful.
+	usage := flattenValueDescriptorUsage(resp)
+	return usage, err
+}
 
 func (v *valueDescriptorRestClient) Add(vdr *models.ValueDescriptor, ctx context.Context) (string, error) {
 	return clients.PostJsonRequest(v.url, vdr, ctx)
@@ -144,4 +172,18 @@ func (v *valueDescriptorRestClient) Delete(id string, ctx context.Context) error
 
 func (v *valueDescriptorRestClient) DeleteByName(name string, ctx context.Context) error {
 	return clients.DeleteRequest(v.url+"/name/"+name, ctx)
+}
+
+// flattenValueDescriptorUsage puts all key and values into one map.
+// This makes processing more easy.
+func flattenValueDescriptorUsage(response []map[string]bool) map[string]bool {
+	// Flatmap the original response to a data structure which is more useful.
+	usage := map[string]bool{}
+	for _, m := range response {
+		for key, value := range m {
+			usage[key] = value
+		}
+	}
+
+	return usage
 }
