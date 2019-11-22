@@ -29,7 +29,7 @@ type Reading struct {
 	Name        string `json:"name,omitempty" codec:"name,omitempty"`
 	Value       string `json:"value,omitempty"  codec:"value,omitempty"`            // Device sensor data value
 	BinaryValue []byte `json:"binaryValue,omitempty" codec:"binaryValue,omitempty"` // Binary data payload
-	DataType    string `json:"dataType" codec:"dataType,omitempty"`
+	DataType    string `json:"dataType,omitempty" codec:"dataType,omitempty"`
 	isValidated bool   // internal member used for validation check
 }
 
@@ -46,7 +46,7 @@ func (r *Reading) UnmarshalJSON(data []byte) error {
 		Name        *string `json:"name"`
 		Value       *string `json:"value"`
 		BinaryValue []byte  `json:"binaryValue"`
-		DataType    *string `json:"dataType,omitempty"`
+		DataType    *string `json:"dataType"`
 	}
 	a := Alias{}
 
