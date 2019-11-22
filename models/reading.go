@@ -36,7 +36,7 @@ type Reading struct {
 	Name        string `json:"name" codec:"name,omitempty"`
 	Value       string `json:"value"  codec:"value,omitempty"`            // Device sensor data value
 	BinaryValue []byte `json:"binaryValue" codec:"binaryValue,omitempty"` // Binary data payload
-	DataType    string `json:"dataType" codec:"dataType,omitempty"`
+	DataType    string `json:"dataType,omitempty" codec:"dataType,omitempty"`
 	isValidated bool   // internal member used for validation check
 }
 
@@ -52,7 +52,7 @@ func (r Reading) MarshalJSON() ([]byte, error) {
 		Name        *string `json:"name,omitempty"`
 		Value       *string `json:"value,omitempty"`       // Device sensor data value
 		BinaryValue []byte  `json:"binaryValue,omitempty"` // Binary data payload
-		DataType    *string `json:"dataType,omitempty"`
+		DataType    *string `json:"dataType"`
 	}{
 		Pushed:      r.Pushed,
 		Created:     r.Created,
