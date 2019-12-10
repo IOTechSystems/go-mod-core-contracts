@@ -30,6 +30,7 @@ const (
 	DestXMPP        = "XMPP_TOPIC"
 	DestAWSMQTT     = "AWS_TOPIC"
 	DestInfluxDB    = "INFLUXDB_ENDPOINT"
+	DestKafka       = "KAFKA_TOPIC"
 )
 
 // Compression algorithm types
@@ -187,7 +188,8 @@ func (reg Registration) Validate() (bool, error) {
 			reg.Destination != DestAzureMQTT &&
 			reg.Destination != DestAWSMQTT &&
 			reg.Destination != DestRest &&
-			reg.Destination != DestInfluxDB {
+			reg.Destination != DestInfluxDB &&
+			reg.Destination != DestKafka {
 			return false, NewErrContractInvalid(fmt.Sprintf("Destination invalid: %s", reg.Destination))
 		}
 
