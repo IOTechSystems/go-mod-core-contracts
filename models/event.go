@@ -29,6 +29,7 @@ type Event struct {
 	Origin      int64     `json:"origin,omitempty" codec:"origin,omitempty"`     // Origin is a timestamp that can communicate the time of the original reading, prior to event creation
 	Readings    []Reading `json:"readings,omitempty" codec:"readings,omitempty"` // Readings will contain zero to many entries for the associated readings of a given event.
 	isValidated bool      // internal member used for validation check
+	CommandName string    `json:"commandName,omitempty" codec:"commandName,omitempty"`
 }
 
 func encodeAsCBOR(e Event) ([]byte, error) {
@@ -48,13 +49,14 @@ func encodeAsCBOR(e Event) ([]byte, error) {
 func (e *Event) UnmarshalJSON(data []byte) error {
 	var err error
 	type Alias struct {
-		ID       *string   `json:"id"`
-		Pushed   int64     `json:"pushed"`
-		Device   *string   `json:"device"`
-		Created  int64     `json:"created"`
-		Modified int64     `json:"modified"`
-		Origin   int64     `json:"origin"`
-		Readings []Reading `json:"readings"`
+		ID          *string   `json:"id"`
+		Pushed      int64     `json:"pushed"`
+		Device      *string   `json:"device"`
+		Created     int64     `json:"created"`
+		Modified    int64     `json:"modified"`
+		Origin      int64     `json:"origin"`
+		Readings    []Reading `json:"readings"`
+		CommandName *string   `json:"commandName"`
 	}
 	a := Alias{}
 
@@ -75,6 +77,9 @@ func (e *Event) UnmarshalJSON(data []byte) error {
 	e.Modified = a.Modified
 	e.Origin = a.Origin
 	e.Readings = a.Readings
+	if a.CommandName != nil {
+		e.CommandName = *a.CommandName
+	}
 
 	e.isValidated, err = e.Validate()
 	return err
