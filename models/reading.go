@@ -30,6 +30,8 @@ type Reading struct {
 	Value       string `json:"value,omitempty"  codec:"value,omitempty"`            // Device sensor data value
 	BinaryValue []byte `json:"binaryValue,omitempty" codec:"binaryValue,omitempty"` // Binary data payload
 	DataType    string `json:"dataType,omitempty" codec:"dataType,omitempty"`
+	ValueType   string `json:"valueType,omitempty" codec:"valueType,omitempty"`
+	UomLabel    string `json:"uomLabel,omitempty" codec:"uomLabel,omitempty"`
 	isValidated bool   // internal member used for validation check
 }
 
@@ -47,6 +49,8 @@ func (r *Reading) UnmarshalJSON(data []byte) error {
 		Value       *string `json:"value"`
 		BinaryValue []byte  `json:"binaryValue"`
 		DataType    *string `json:"dataType"`
+		ValueType   *string `json:"valueType"`
+		UomLabel    *string `json:"uomLabel"`
 	}
 	a := Alias{}
 
@@ -70,6 +74,12 @@ func (r *Reading) UnmarshalJSON(data []byte) error {
 	}
 	if a.DataType != nil {
 		r.DataType = *a.DataType
+	}
+	if a.ValueType != nil {
+		r.ValueType = *a.ValueType
+	}
+	if a.UomLabel != nil {
+		r.UomLabel = *a.UomLabel
 	}
 	r.Pushed = a.Pushed
 	r.Created = a.Created
