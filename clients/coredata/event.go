@@ -119,7 +119,7 @@ func (e *eventRestClient) EventsByIds(ids []string, ctx context.Context) ([]mode
 		return []models.Event{}, err
 	}
 
-	data, err := clients.GetRequestWithBody(e.url+"/ids", body, ctx)
+	data, err := clients.GetRequestWithBody("/ids", body, ctx, e.urlClient)
 	if err != nil {
 		return []models.Event{}, err
 	}

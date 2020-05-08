@@ -87,13 +87,17 @@ func GetRequestWithURL(ctx context.Context, url string) ([]byte, error) {
 }
 
 // Helper method to make the get request with a body
-func GetRequestWithBody(url string, body []byte, ctx context.Context) ([]byte, error) {
-	req, err := http.NewRequest(http.MethodGet, url, bytes.NewReader(body))
+func GetRequestWithBody(urlSuffix string, body []byte, ctx context.Context, urlClient interfaces.URLClient) ([]byte, error) {
+	urlPrefix, err := urlClient.Prefix()
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(http.MethodGet, urlPrefix+urlSuffix, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
 
-	c := NewCorrelatedRequest(req, ctx)
+	c := NewCorrelatedRequest(ctx, req)
 	resp, err := makeRequest(c.Request)
 	if err != nil {
 		return nil, err
