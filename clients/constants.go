@@ -69,6 +69,8 @@ const (
 	SecuritySecretsSetupServiceKey      = "edgex-security-secrets-setup"
 	SecurityProxySetupServiceKey        = "edgex-security-proxy-setup"
 	SecurityFileTokenProviderServiceKey = "edgex-security-file-token-provider"
+	ExportDistroServiceKey              = "edgex-export-distro"
+	ExportClientServiceKey              = "edgex-export-client"
 )
 
 // Constants related to the possible content types supported by the APIs
