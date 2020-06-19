@@ -111,3 +111,24 @@ func TestCborEncoding(t *testing.T) {
 		t.Error("Failed to properly encode all reading data")
 	}
 }
+
+func TestNormalizeValueTypeCase(t *testing.T) {
+	tests := []struct {
+		name      string
+		valueType string
+		want      string
+	}{
+		{"normalize Bool value type", "bool", ValueTypeBool},
+		{"normalize Float32 value type", "FLOAT32", ValueTypeFloat32},
+		{"normalize Int64Array value type", "int64array", ValueTypeInt64Array},
+		{"normalize Float64Array value type", "FLOAT64ARRAY", ValueTypeFloat64Array},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			normalized := normalizeValueTypeCase(tt.valueType)
+			if normalized != tt.want {
+				t.Errorf("normalized value type = %s, want %s", normalized, tt.want)
+			}
+		})
+	}
+}
