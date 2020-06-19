@@ -16,6 +16,7 @@ package models
 
 import (
 	"encoding/json"
+	"strings"
 )
 
 // Constants related to Reading ValueTypes
@@ -114,7 +115,7 @@ func (r *Reading) UnmarshalJSON(data []byte) error {
 		r.Value = *a.Value
 	}
 	if a.ValueType != nil {
-		r.ValueType = *a.ValueType
+		r.ValueType = normalizeValueTypeCase(*a.ValueType)
 	}
 	if a.DataType != nil {
 		r.DataType = *a.ValueType
@@ -167,6 +168,13 @@ func (r Reading) Validate() (bool, error) {
 		return false, NewErrContractInvalid("float encoding must be specified for float values")
 	}
 	return true, nil
+}
+
+// normalizeValueTypeCase normalize the reading's valueType to upper camel case
+func normalizeValueTypeCase(valueType string) string {
+	normalized := strings.Title(strings.ToLower(valueType))
+	normalized = strings.ReplaceAll(normalized, "array", "Array")
+	return normalized
 }
 
 // String returns a JSON encoded string representation of the model
