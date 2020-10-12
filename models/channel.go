@@ -19,11 +19,13 @@ import (
 	"encoding/json"
 )
 
-// Channel supports transmissions and notifications with fields for delivery via email or REST
+// Channel supports transmissions and notifications with fields for delivery via email, REST, or ZeroMQ
 type Channel struct {
-	Type          ChannelType `json:"type,omitempty"`          // Type indicates whether the channel facilitates email or REST
+	Type          ChannelType `json:"type,omitempty"`          // Type indicates whether the channel facilitates email, REST, or ZeroMQ
 	MailAddresses []string    `json:"mailAddresses,omitempty"` // MailAddresses contains email addresses
 	Url           string      `json:"url,omitempty"`           // URL contains a REST API destination
+	Port          int         `json:"port,omitempty"`          // Port specifies the port to which the channel is bound
+	Topic         string      `json:"topic,omitempty"`         // Topic for filtering messages, usually be used by MQTT or ZeroMQ
 }
 
 func (c Channel) String() string {

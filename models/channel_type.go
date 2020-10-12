@@ -24,8 +24,9 @@ import (
 type ChannelType string
 
 const (
-	Rest  = "REST"
-	Email = "EMAIL"
+	Rest   = "REST"
+	Email  = "EMAIL"
+	ZeroMQ = "ZeroMQ"
 )
 
 // UnmarshalJSON implements the Unmarshaler interface for the type
@@ -36,7 +37,7 @@ func (as *ChannelType) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("ChannelType should be a string, got %s", data)
 	}
 
-	got, err := map[string]ChannelType{"REST": Rest, "EMAIL": Email}[s]
+	got, err := map[string]ChannelType{"REST": Rest, "EMAIL": Email, "ZeroMQ": ZeroMQ}[s]
 	if !err {
 		return fmt.Errorf("invalid ChannelType %q", s)
 	}
@@ -45,7 +46,7 @@ func (as *ChannelType) UnmarshalJSON(data []byte) error {
 }
 
 func (as ChannelType) Validate() (bool, error) {
-	_, err := map[string]ChannelType{"REST": Rest, "EMAIL": Email}[string(as)]
+	_, err := map[string]ChannelType{"REST": Rest, "EMAIL": Email, "ZeroMQ": ZeroMQ}[string(as)]
 	if !err {
 		return false, NewErrContractInvalid(fmt.Sprintf("invalid Channeltype %q", as))
 	}
