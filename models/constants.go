@@ -14,15 +14,23 @@
 
 package models
 
-// These constants are used by the unit tests in the models.
 const (
+	// These constants are used by the unit tests in the models.
 	// common
 	testEmptyJSON = "{}"
-
 	// action
 	testCode           = "200"
 	testDescription    = "ok"
 	testExpectedvalue1 = "temperature"
 	testExpectedvalue2 = "humidity"
 	testActionPath     = "test/path"
+
+	// These constants are the valid values of SecretSource variable of Channel struct
+	SecretSourceSecretStore = "secretstore"
+	SecretSourceFile        = "file"
+
+	// These constants are the default names of secret keys in the secret store
+	SecretKeyCertificate = "cert"
+	SecretKeyPrivateKey  = "key"
+	SecretKeyCA          = "ca"
 )
