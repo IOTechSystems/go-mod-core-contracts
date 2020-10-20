@@ -21,6 +21,7 @@ func TestChannelType_UnmarshalJSON(t *testing.T) {
 	var eChannelType = ChannelType(Email)
 	var rChannelType = ChannelType(Rest)
 	var zChannelType = ChannelType(ZeroMQ)
+	var mChannelType = ChannelType(MQTT)
 
 	tests := []struct {
 		name    string
@@ -31,6 +32,7 @@ func TestChannelType_UnmarshalJSON(t *testing.T) {
 		{"test unmarshal email", &eChannelType, []byte("\"EMAIL\""), false},
 		{"test unmarshal rest", &rChannelType, []byte("\"REST\""), false},
 		{"test unmarshal 0mq", &zChannelType, []byte("\"ZeroMQ\""), false},
+		{"test unmarshal mqtt", &mChannelType, []byte("\"MQTT\""), false},
 		{"test unmarshal error", &eChannelType, []byte("\"foo\""), true},
 	}
 	for _, tt := range tests {
@@ -46,6 +48,7 @@ func TestChannelType_Validate(t *testing.T) {
 	var eChannelType = ChannelType(Email)
 	var rChannelType = ChannelType(Rest)
 	var zChannelType = ChannelType(ZeroMQ)
+	var mChannelType = ChannelType(MQTT)
 	var invalid = ChannelType("foo")
 
 	tests := []struct {
@@ -56,6 +59,7 @@ func TestChannelType_Validate(t *testing.T) {
 		{"valid EMAIL channel", eChannelType, false},
 		{"valid REST channel", rChannelType, false},
 		{"valid ZeroMQ channel", zChannelType, false},
+		{"valid MQTT channel", mChannelType, false},
 		{"invalid channel type", invalid, true},
 	}
 	for _, tt := range tests {
