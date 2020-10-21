@@ -25,9 +25,10 @@ import (
 type CategoryEnum string
 
 const (
-	SECURITY  CategoryEnum = "SECURITY"
-	HW_HEALTH CategoryEnum = "HW_HEALTH"
-	SW_HEALTH CategoryEnum = "SW_HEALTH"
+	SECURITY       CategoryEnum = "SECURITY"
+	HW_HEALTH      CategoryEnum = "HW_HEALTH"
+	SW_HEALTH      CategoryEnum = "SW_HEALTH"
+	DEVICE_CHANGED CategoryEnum = "DEVICE_CHANGED"
 )
 
 type SeverityEnum string
