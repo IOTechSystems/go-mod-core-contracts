@@ -71,6 +71,14 @@ type Notification struct {
 	Modified    int          `json:"modified,omitempty"`    // The last modification timestamp
 }
 
+type NotificationContent struct {
+	DeviceName        string
+	DeviceServiceName string
+	ActionType        string
+	OperatingState    string
+	AdminState        string
+}
+
 // NewNotificationsClient creates an instance of NotificationsClient
 func NewNotificationsClient(urlClient interfaces.URLClient) NotificationsClient {
 	return &notificationsRestClient{
