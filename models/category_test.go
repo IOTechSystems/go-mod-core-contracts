@@ -21,6 +21,7 @@ func TestNotificationsCategory_UnmarshalJSON(t *testing.T) {
 	var swHealth = NotificationsCategory(Swhealth)
 	var hwHealth = NotificationsCategory(Hwhealth)
 	var security = NotificationsCategory(Security)
+	var devicechanged = NotificationsCategory(DeviceChanged)
 
 	tests := []struct {
 		name    string
@@ -31,6 +32,7 @@ func TestNotificationsCategory_UnmarshalJSON(t *testing.T) {
 		{"Test marshal of sw health", &swHealth, []byte("\"SW_HEALTH\""), false},
 		{"Test marshal of hw health", &hwHealth, []byte("\"HW_HEALTH\""), false},
 		{"Test marshal of security", &security, []byte("\"SECURITY\""), false},
+		{"Test marshal of devicechanged", &devicechanged, []byte("\"DEVICE_CHANGED\""), false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -53,6 +55,7 @@ func TestIsNotificationsCategory(t *testing.T) {
 		{"test SW HEALTH", Swhealth, true},
 		{"test HW HEALTH", Hwhealth, true},
 		{"test SECURITY", Security, true},
+		{"test DEVICE_CHANGED", DeviceChanged, true},
 		{"test fail on non-notif cat", "foo", false},
 	}
 	for _, tt := range tests {

@@ -20,15 +20,16 @@ import (
 
 	"github.com/edgexfoundry/go-mod-core-contracts/clients"
 	"github.com/edgexfoundry/go-mod-core-contracts/clients/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/models"
 )
 
 type CategoryEnum string
 
 const (
-	SECURITY       CategoryEnum = "SECURITY"
-	HW_HEALTH      CategoryEnum = "HW_HEALTH"
-	SW_HEALTH      CategoryEnum = "SW_HEALTH"
-	DEVICE_CHANGED CategoryEnum = "DEVICE_CHANGED"
+	SECURITY       CategoryEnum = models.Security
+	HW_HEALTH      CategoryEnum = models.Swhealth
+	SW_HEALTH      CategoryEnum = models.Hwhealth
+	DEVICE_CHANGED CategoryEnum = models.DeviceChanged
 )
 
 type SeverityEnum string

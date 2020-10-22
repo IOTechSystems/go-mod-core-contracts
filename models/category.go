@@ -24,9 +24,10 @@ import (
 type NotificationsCategory string
 
 const (
-	Security = "SECURITY"
-	Hwhealth = "HW_HEALTH"
-	Swhealth = "SW_HEALTH"
+	Security      = "SECURITY"
+	Hwhealth      = "HW_HEALTH"
+	Swhealth      = "SW_HEALTH"
+	DeviceChanged = "DEVICE_CHANGED"
 )
 
 // UnmarshalJSON implements the Unmarshaler interface for the type
@@ -37,7 +38,11 @@ func (as *NotificationsCategory) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("NotificationsCategory should be a string, got %s", data)
 	}
 
-	got, err := map[string]NotificationsCategory{"SECURITY": Security, "HW_HEALTH": Hwhealth, "SW_HEALTH": Swhealth}[s]
+	got, err := map[string]NotificationsCategory{
+		"SECURITY":       Security,
+		"HW_HEALTH":      Hwhealth,
+		"SW_HEALTH":      Swhealth,
+		"DEVICE_CHANGED": DeviceChanged}[s]
 	if !err {
 		return fmt.Errorf("invalid NotificationsCategory %q", s)
 	}
@@ -47,7 +52,11 @@ func (as *NotificationsCategory) UnmarshalJSON(data []byte) error {
 
 // IsNotificationsCategory allows external code to verify whether the supplied string is a valid NotificationsCategory value
 func IsNotificationsCategory(as string) bool {
-	_, err := map[string]NotificationsCategory{"SECURITY": Security, "HW_HEALTH": Hwhealth, "SW_HEALTH": Swhealth}[as]
+	_, err := map[string]NotificationsCategory{
+		"SECURITY":       Security,
+		"HW_HEALTH":      Hwhealth,
+		"SW_HEALTH":      Swhealth,
+		"DEVICE_CHANGED": DeviceChanged}[as]
 	if !err {
 		return false
 	}
