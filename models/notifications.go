@@ -142,8 +142,8 @@ func (n Notification) Validate() (bool, error) {
 		if n.Severity != "" && n.Severity != "CRITICAL" && n.Severity != "NORMAL" {
 			return false, NewErrContractInvalid("Invalid notification severity")
 		}
-		if n.Category != "" && n.Category != "SECURITY" && n.Category != "HW_HEALTH" && n.Category != "SW_HEALTH" {
-			return false, NewErrContractInvalid("Invalid notification severity")
+		if n.Category != "" && n.Category != Security && n.Category != Hwhealth && n.Category != Swhealth && n.Category != DeviceChanged {
+			return false, NewErrContractInvalid("Invalid notification category")
 		}
 		if n.Status != "" && n.Status != "NEW" && n.Status != "PROCESSED" && n.Status != "ESCALATED" {
 			return false, NewErrContractInvalid("Invalid notification severity")
