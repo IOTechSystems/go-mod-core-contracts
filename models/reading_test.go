@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	"github.com/fxamacker/cbor/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 var TestId = "Thermometer"
@@ -129,6 +130,7 @@ func TestNormalizeValueTypeCase(t *testing.T) {
 			if normalized != tt.want {
 				t.Errorf("normalized value type = %s, want %s", normalized, tt.want)
 			}
+			assert.Equal(t, tt.want, normalized)
 		})
 	}
 }
