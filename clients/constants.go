@@ -20,8 +20,8 @@ package clients
 //
 // Miscellaneous constants
 const (
-	ClientMonitorDefault = 15000            // Defaults the interval at which a given service client will refresh its endpoint from the Registry, if used
-	CorrelationHeader    = "correlation-id" // Sets the key of the Correlation ID HTTP header
+	ClientMonitorDefault = 15000              // Defaults the interval at which a given service client will refresh its endpoint from the Registry, if used
+	CorrelationHeader    = "X-Correlation-ID" // Sets the key of the Correlation ID HTTP header
 )
 
 // Constants related to defined routes in the service APIs
@@ -41,7 +41,7 @@ const (
 	ApiMetricsRoute            = "/api/v1/metrics"
 	ApiNotificationRoute       = "/api/v1/notification"
 	ApiNotifyRegistrationRoute = "/api/v1/notify/registrations"
-	ApiOperationRoute          = "/api/v1/operations"
+	ApiOperationRoute          = "/api/v1/operation"
 	ApiPingRoute               = "/api/v1/ping"
 	ApiProvisionWatcherRoute   = "/api/v1/provisionwatcher"
 	ApiReadingRoute            = "/api/v1/reading"
@@ -71,6 +71,7 @@ const (
 	SecurityFileTokenProviderServiceKey = "edgex-security-file-token-provider"
 	ExportDistroServiceKey              = "edgex-export-distro"
 	ExportClientServiceKey              = "edgex-export-client"
+	SecurityBootstrapRedisKey           = "edgex-security-bootstrap-redis"
 )
 
 // Constants related to the possible content types supported by the APIs
@@ -80,4 +81,5 @@ const (
 	ContentTypeJSON = "application/json"
 	ContentTypeYAML = "application/x-yaml"
 	ContentTypeText = "text/plain"
+	ContentTypeXML  = "application/xml"
 )

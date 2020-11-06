@@ -34,8 +34,8 @@ type Addressable struct {
 	User        string `json:"user,omitempty"`        // User id for authentication
 	Password    string `json:"password,omitempty"`    // Password of the user for authentication for the addressable
 	Topic       string `json:"topic,omitempty"`       // Topic for message bus addressables
-	Cert        string `json:"cert,omitempty"` // Path to the Certificate file for authentication
-	Key         string `json:"key,omitempty"`  // Path to The Private key file for authentication
+	Cert        string `json:"cert,omitempty"`        // Path to the Certificate file for authentication
+	Key         string `json:"key,omitempty"`         // Path to The Private key file for authentication
 	isValidated bool   // internal member used for validation check
 }
 
