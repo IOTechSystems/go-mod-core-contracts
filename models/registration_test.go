@@ -93,12 +93,14 @@ func TestMaxRetentionEvents(t *testing.T) {
 	tests := []struct {
 		name        string
 		data        string
-		expectValue uint
+		expectValue uint32
 		expectError bool
 	}{
 		{"invalid MaxRetentionEvents: string", "{\"maxRetentionEvents\":\"s\"}",
 			DefaultMaxRetentionEvents, true},
 		{"invalid MaxRetentionEvents: negative number", "{\"maxRetentionEvents\":-1}",
+			DefaultMaxRetentionEvents, true},
+		{"invalid MaxRetentionEvents: out of range", "{\"maxRetentionEvents\":4294967296}",
 			DefaultMaxRetentionEvents, true},
 		{"invalid MaxRetentionEvents: float", "{\"maxRetentionEvents\":3.1415}",
 			DefaultMaxRetentionEvents, true},
@@ -136,6 +138,7 @@ func TestMaxBatchEvents(t *testing.T) {
 	}{
 		{"invalid MaxBatchEvents: string", "{\"maxRetentionEvents\":\"s\"}", true},
 		{"invalid MaxBatchEvents: negative number", "{\"maxRetentionEvents\":-1}", true},
+		{"invalid MaxBatchEvents: out of range", "{\"maxRetentionEvents\":4294967296}", true},
 		{"invalid MaxBatchEvents: float", "{\"maxRetentionEvents\":3.1415}", true},
 		{"normal case", "{\"maxBatchEvents\":100}", false},
 	}
