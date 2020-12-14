@@ -81,8 +81,8 @@ type Registration struct {
 	Enable             bool              `json:"enable"`
 	Destination        string            `json:"destination,omitempty"`
 	ProcessFrequency   string            `json:"processFrequency,omitempty"`
-	MaxRetentionEvents uint              `json:"maxRetentionEvents,omitempty"`
-	MaxBatchEvents     uint              `json:"maxBatchEvents,omitempty"`
+	MaxRetentionEvents uint32            `json:"maxRetentionEvents,omitempty"`
+	MaxBatchEvents     uint32            `json:"maxBatchEvents,omitempty"`
 	NeedDataType       bool              `json:"needDataType,omitempty"`
 	isValidated        bool              // internal member used for validation check
 }
@@ -104,8 +104,8 @@ func (r *Registration) UnmarshalJSON(data []byte) error {
 		Enable             bool              `json:"enable"`
 		Destination        *string           `json:"destination"`
 		ProcessFrequency   string            `json:"processFrequency"`
-		MaxRetentionEvents uint              `json:"maxRetentionEvents"`
-		MaxBatchEvents     uint              `json:"maxBatchEvents"`
+		MaxRetentionEvents uint32            `json:"maxRetentionEvents"`
+		MaxBatchEvents     uint32            `json:"maxBatchEvents"`
 		NeedDataType       bool              `json:"needDataType"`
 	}
 	a := Alias{}
