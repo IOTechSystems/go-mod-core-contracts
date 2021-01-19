@@ -32,8 +32,8 @@ const (
 	testUser      = "edgexer"
 	testPassword  = "password"
 	testTopic     = "device_topic"
-	testCert = "/export/keys/mycert.pem.crt"
-	testKey = "/export/keys/myprivatekey.pem.key"
+	testCert      = "/export/keys/mycert.pem.crt"
+	testKey       = "/export/keys/myprivatekey.pem.key"
 )
 
 var TestAddressable = Addressable{Timestamps: testTimestamps, Name: testAddrName, Protocol: testProtocol, HTTPMethod: testMethod, Address: testAddress, Port: testPort, Path: clients.ApiDeviceRoute, Publisher: testPublisher, User: testUser, Password: testPassword, Topic: testTopic, Cert: testCert, Key: testKey}
