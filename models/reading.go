@@ -135,6 +135,10 @@ func (r *Reading) UnmarshalJSON(data []byte) error {
 	r.Modified = a.Modified
 	r.BinaryValue = a.BinaryValue
 
+	if (r.ValueType == ValueTypeFloat32 || r.ValueType == ValueTypeFloat64) && r.FloatEncoding != Base64Encoding {
+		r.FloatEncoding = ENotation
+	}
+
 	r.isValidated, err = r.Validate()
 	return err
 }
@@ -164,9 +168,6 @@ func (r Reading) Validate() (bool, error) {
 		return false, NewErrContractInvalid("media type must be specified for binary values")
 	}
 
-	if (r.ValueType == ValueTypeFloat32 || r.ValueType == ValueTypeFloat64) && len(r.FloatEncoding) == 0 {
-		return false, NewErrContractInvalid("float encoding must be specified for float values")
-	}
 	return true, nil
 }
 

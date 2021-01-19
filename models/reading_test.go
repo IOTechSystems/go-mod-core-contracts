@@ -23,6 +23,7 @@ import (
 
 	"github.com/fxamacker/cbor/v2"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var TestId = "Thermometer"
@@ -80,8 +81,6 @@ func TestReadingValidation(t *testing.T) {
 		{"missing value", Reading{Device: "test", Name: "test"}, true},
 		{"missing media type", Reading{Name: "test", BinaryValue: TestBinaryValue}, true},
 		{"media type present", Reading{Name: "test", Value: "test", MediaType: TestMediaType}, false},
-		{"missing float encoding f64", Reading{Name: "test", ValueType: ValueTypeFloat64, Value: "3.14"}, true},
-		{"missing float encoding f32", Reading{Name: "test", ValueType: ValueTypeFloat32, Value: "3.14"}, true},
 		{"valid float f64", Reading{Name: "test", ValueType: ValueTypeFloat64, FloatEncoding: TestFloatEncoding, Value: "3.14"}, false},
 		{"valid float f32", Reading{Name: "test", ValueType: ValueTypeFloat32, FloatEncoding: TestFloatEncoding, Value: "3.14"}, false},
 		{"valid empty binary value", Reading{Name: "test", ValueType: ValueTypeBinary}, false},
@@ -131,6 +130,43 @@ func TestNormalizeValueTypeCase(t *testing.T) {
 				t.Errorf("normalized value type = %s, want %s", normalized, tt.want)
 			}
 			assert.Equal(t, tt.want, normalized)
+		})
+	}
+}
+
+func TestReading_FloatEncoding(t *testing.T) {
+	reading := TestReading
+	reading.ValueType = ValueTypeFloat32
+
+	readingBase64Encoding := reading
+	readingBase64Encoding.FloatEncoding = Base64Encoding
+
+	readingENotation := reading
+	readingENotation.FloatEncoding = ENotation
+
+	readingWithEmptyFloatEncoding := reading
+	readingWithEmptyFloatEncoding.FloatEncoding = ""
+
+	readingWithUnsupportedFloatEncoding := reading
+	readingWithUnsupportedFloatEncoding.FloatEncoding = "Base128"
+
+	tests := []struct {
+		name                  string
+		reading               Reading
+		expectedFloatEncoding string
+	}{
+		{"Base64Encoding", readingBase64Encoding, Base64Encoding},
+		{"ENotation", readingENotation, ENotation},
+		{"ENotation", readingWithEmptyFloatEncoding, ENotation},
+		{"ENotation", readingWithUnsupportedFloatEncoding, ENotation},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b, err := json.Marshal(tt.reading)
+			require.NoError(t, err)
+			err = tt.reading.UnmarshalJSON(b)
+			require.NoError(t, err)
+			assert.Equal(t, tt.expectedFloatEncoding, tt.reading.FloatEncoding)
 		})
 	}
 }
