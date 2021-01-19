@@ -106,7 +106,7 @@ func Test_encodeAsCBOR(t *testing.T) {
 func TestEvent_ToXML(t *testing.T) {
 	// Since the order in map is random we have to verify the individual items exists without depending on order
 	contains := []string{
-		"<Event><ID>1e12bd0a-89ca-4747-ad76-a43157d6521a</ID><Pushed>123</Pushed><Device>test device name</Device><Created>123</Created><Modified>123</Modified><Origin>123</Origin><Readings><Id>Thermometer</Id><Pushed>123</Pushed><Created>123</Created><Origin>123</Origin><Modified>123</Modified><Device>test device name</Device><Name>Temperature</Name><Value>45</Value><ValueType>Int16</ValueType><DataType>Int16</DataType><UomLabel></UomLabel><FloatEncoding>float16</FloatEncoding><BinaryValue>�</BinaryValue><MediaType>application/cbor</MediaType></Readings><CommandName></CommandName><Tags>",
+		"<Event><ID>1e12bd0a-89ca-4747-ad76-a43157d6521a</ID><Pushed>123</Pushed><Device>test device name</Device><Created>123</Created><Modified>123</Modified><Origin>123</Origin><Readings><Id>Thermometer</Id><Pushed>123</Pushed><Created>123</Created><Origin>123</Origin><Modified>123</Modified><Device>test device name</Device><Name>Temperature</Name><Value>45</Value><ValueType>Int16</ValueType><UomLabel></UomLabel><FloatEncoding>float16</FloatEncoding><BinaryValue>�</BinaryValue><MediaType>application/cbor</MediaType></Readings><CommandName></CommandName><Tags>",
 		"<GatewayID>Houston-0001</GatewayID>",
 		"<Latitude>29.630771</Latitude>",
 		"<Longitude>-95.377603</Longitude>",

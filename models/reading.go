@@ -65,7 +65,6 @@ type Reading struct {
 	Name          string `json:"name,omitempty" codec:"name,omitempty"`
 	Value         string `json:"value,omitempty" codec:"value,omitempty"` // Device sensor data value
 	ValueType     string `json:"valueType,omitempty" codec:"valueType,omitempty"`
-	DataType      string `json:"dataType,omitempty" codec:"dataType,omitempty"`
 	UomLabel      string `json:"uomLabel,omitempty" codec:"uomLabel,omitempty"`
 	FloatEncoding string `json:"floatEncoding,omitempty" codec:"floatEncoding,omitempty"`
 	// BinaryValue binary data payload. This information is not persisted in the Database and is expected to be empty
@@ -88,7 +87,6 @@ func (r *Reading) UnmarshalJSON(data []byte) error {
 		Name          *string `json:"name"`
 		Value         *string `json:"value"`
 		ValueType     *string `json:"valueType"`
-		DataType      *string `json:"dataType"`
 		UomLabel      *string `json:"uomLabel"`
 		FloatEncoding *string `json:"floatEncoding"`
 		BinaryValue   []byte  `json:"binaryValue"`
@@ -116,9 +114,6 @@ func (r *Reading) UnmarshalJSON(data []byte) error {
 	}
 	if a.ValueType != nil {
 		r.ValueType = normalizeValueTypeCase(*a.ValueType)
-	}
-	if a.DataType != nil {
-		r.DataType = *a.ValueType
 	}
 	if a.UomLabel != nil {
 		r.UomLabel = *a.UomLabel

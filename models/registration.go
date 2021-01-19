@@ -83,7 +83,6 @@ type Registration struct {
 	ProcessFrequency   string            `json:"processFrequency,omitempty"`
 	MaxRetentionEvents uint32            `json:"maxRetentionEvents,omitempty"`
 	MaxBatchEvents     uint32            `json:"maxBatchEvents,omitempty"`
-	NeedDataType       bool              `json:"needDataType,omitempty"`
 	isValidated        bool              // internal member used for validation check
 }
 
@@ -106,7 +105,6 @@ func (r *Registration) UnmarshalJSON(data []byte) error {
 		ProcessFrequency   string            `json:"processFrequency"`
 		MaxRetentionEvents uint32            `json:"maxRetentionEvents"`
 		MaxBatchEvents     uint32            `json:"maxBatchEvents"`
-		NeedDataType       bool              `json:"needDataType"`
 	}
 	a := Alias{}
 
@@ -144,7 +142,6 @@ func (r *Registration) UnmarshalJSON(data []byte) error {
 	if r.MaxRetentionEvents == 0 {
 		r.MaxRetentionEvents = DefaultMaxRetentionEvents
 	}
-	r.NeedDataType = a.NeedDataType
 
 	r.isValidated, err = r.Validate()
 
