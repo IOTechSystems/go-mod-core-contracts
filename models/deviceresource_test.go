@@ -15,14 +15,14 @@
 package models
 
 import (
+	"encoding/json"
 	"reflect"
-	"strings"
 	"testing"
 )
 
 var TestDeviceResourceDescription = "test device object description"
 var TestDeviceResourceName = "test device object name"
-var TestDeviceResourceTags = []string{"tag1", "tag2"}
+var TestDeviceResourceTags = map[string]string{"key1": "value1", "key2": "value2"}
 var TestDeviceResource = DeviceResource{Description: TestDeviceResourceDescription, Name: TestDeviceResourceName,
 	Tags: TestDeviceResourceTags, Properties: TestProfileProperty}
 
@@ -51,6 +51,9 @@ func TestDeviceResource_MarshalJSON(t *testing.T) {
 }
 
 func TestDeviceResource_String(t *testing.T) {
+	b, _ := json.Marshal(TestDeviceResourceTags)
+	expectedTags := string(b)
+
 	tests := []struct {
 		name string
 		do   DeviceResource
@@ -61,7 +64,7 @@ func TestDeviceResource_String(t *testing.T) {
 			TestDeviceResource,
 			"{\"description\":\"" + TestDeviceResourceDescription + "\"" +
 				",\"name\":\"" + TestDeviceResourceName + "\"" +
-				",\"tags\":[\"" + strings.Join(TestDeviceResourceTags, "\",\"") + "\"]" +
+				",\"tags\":" + expectedTags +
 				",\"properties\":" + TestProfileProperty.String() + "}",
 		},
 		{
