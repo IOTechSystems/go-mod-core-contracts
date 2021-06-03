@@ -23,7 +23,7 @@ import (
 type DeviceResource struct {
 	Description string            `json:"description" yaml:"description,omitempty"`
 	Name        string            `json:"name" yaml:"name,omitempty"`
-	Tag         string            `json:"tag" yaml:"tag,omitempty"`
+	Tags        []string          `json:"tags" yaml:"tags,omitempty"`
 	Properties  ProfileProperty   `json:"properties" yaml:"properties"`
 	Attributes  map[string]string `json:"attributes" yaml:"attributes,omitempty"`
 }
@@ -33,13 +33,13 @@ func (do DeviceResource) MarshalJSON() ([]byte, error) {
 	test := struct {
 		Description string             `json:"description,omitempty"`
 		Name        string             `json:"name,omitempty"`
-		Tag         string             `json:"tag,omitempty"`
+		Tags        []string           `json:"tags,omitempty"`
 		Properties  *ProfileProperty   `json:"properties,omitempty"`
 		Attributes  *map[string]string `json:"attributes,omitempty"`
 	}{
 		Description: do.Description,
 		Name:        do.Name,
-		Tag:         do.Tag,
+		Tags:        do.Tags,
 		Properties:  &do.Properties,
 	}
 

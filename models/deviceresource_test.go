@@ -16,13 +16,15 @@ package models
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 )
 
 var TestDeviceResourceDescription = "test device object description"
 var TestDeviceResourceName = "test device object name"
-var TestDeviceResourceTag = "test device object tag"
-var TestDeviceResource = DeviceResource{Description: TestDeviceResourceDescription, Name: TestDeviceResourceName, Tag: TestDeviceResourceTag, Properties: TestProfileProperty}
+var TestDeviceResourceTags = []string{"tag1", "tag2"}
+var TestDeviceResource = DeviceResource{Description: TestDeviceResourceDescription, Name: TestDeviceResourceName,
+	Tags: TestDeviceResourceTags, Properties: TestProfileProperty}
 
 func TestDeviceResource_MarshalJSON(t *testing.T) {
 	var emptyDeviceResource = DeviceResource{}
@@ -59,7 +61,7 @@ func TestDeviceResource_String(t *testing.T) {
 			TestDeviceResource,
 			"{\"description\":\"" + TestDeviceResourceDescription + "\"" +
 				",\"name\":\"" + TestDeviceResourceName + "\"" +
-				",\"tag\":\"" + TestDeviceResourceTag + "\"" +
+				",\"tags\":[\"" + strings.Join(TestDeviceResourceTags, "\",\"") + "\"]" +
 				",\"properties\":" + TestProfileProperty.String() + "}",
 		},
 		{
