@@ -22,10 +22,9 @@ import (
 
 var TestDeviceResourceDescription = "test device object description"
 var TestDeviceResourceName = "test device object name"
-var TestDeviceResourceTag = "test device object tag"
-var TestDeviceResourceTags = []string{TestDeviceResourceTag}
+var TestDeviceResourceTags = []string{"tag1", "tag2"}
 var TestDeviceResource = DeviceResource{Description: TestDeviceResourceDescription, Name: TestDeviceResourceName,
-	Tag: TestDeviceResourceTag, Tags: TestDeviceResourceTags, Properties: TestProfileProperty}
+	Tags: TestDeviceResourceTags, Properties: TestProfileProperty}
 
 func TestDeviceResource_MarshalJSON(t *testing.T) {
 	var emptyDeviceResource = DeviceResource{}
@@ -62,8 +61,7 @@ func TestDeviceResource_String(t *testing.T) {
 			TestDeviceResource,
 			"{\"description\":\"" + TestDeviceResourceDescription + "\"" +
 				",\"name\":\"" + TestDeviceResourceName + "\"" +
-				",\"tag\":\"" + TestDeviceResourceTag + "\"" +
-				",\"tags\":[\"" + strings.Join(TestDeviceResourceTags, ",") + "\"]" +
+				",\"tags\":[\"" + strings.Join(TestDeviceResourceTags, "\",\"") + "\"]" +
 				",\"properties\":" + TestProfileProperty.String() + "}",
 		},
 		{
