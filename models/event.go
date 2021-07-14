@@ -25,16 +25,16 @@ import (
 
 // Event represents a single measurable event read from a device
 type Event struct {
-	ID          string            `json:"id,omitempty" codec:"id,omitempty"`             // ID uniquely identifies an event, for example a UUID
-	Pushed      int64             `json:"pushed,omitempty" codec:"pushed,omitempty"`     // Pushed is a timestamp indicating when the event was exported. If unexported, the value is zero.
-	Device      string            `json:"device,omitempty" codec:"device,omitempty"`     // Device identifies the source of the event, can be a device name or id. Usually the device name.
-	Created     int64             `json:"created,omitempty" codec:"created,omitempty"`   // Created is a timestamp indicating when the event was created.
-	Modified    int64             `json:"modified,omitempty" codec:"modified,omitempty"` // Modified is a timestamp indicating when the event was last modified.
-	Origin      int64             `json:"origin,omitempty" codec:"origin,omitempty"`     // Origin is a timestamp that can communicate the time of the original reading, prior to event creation
-	Readings    []Reading         `json:"readings,omitempty" codec:"readings,omitempty"` // Readings will contain zero to many entries for the associated readings of a given event.
-	Tags        map[string]string `json:"tags,omitempty" codec:"tags,omitempty" xml:"-"` // Tags is an optional collection of key/value pairs that all the event to be tagged with custom information. Ignored for XML since maps not supported.
-	isValidated bool              // internal member used for validation check
-	CommandName string            `json:"commandName,omitempty" codec:"commandName,omitempty"`
+	ID          string                 `json:"id,omitempty" codec:"id,omitempty"`             // ID uniquely identifies an event, for example a UUID
+	Pushed      int64                  `json:"pushed,omitempty" codec:"pushed,omitempty"`     // Pushed is a timestamp indicating when the event was exported. If unexported, the value is zero.
+	Device      string                 `json:"device,omitempty" codec:"device,omitempty"`     // Device identifies the source of the event, can be a device name or id. Usually the device name.
+	Created     int64                  `json:"created,omitempty" codec:"created,omitempty"`   // Created is a timestamp indicating when the event was created.
+	Modified    int64                  `json:"modified,omitempty" codec:"modified,omitempty"` // Modified is a timestamp indicating when the event was last modified.
+	Origin      int64                  `json:"origin,omitempty" codec:"origin,omitempty"`     // Origin is a timestamp that can communicate the time of the original reading, prior to event creation
+	Readings    []Reading              `json:"readings,omitempty" codec:"readings,omitempty"` // Readings will contain zero to many entries for the associated readings of a given event.
+	Tags        map[string]interface{} `json:"tags,omitempty" codec:"tags,omitempty" xml:"-"` // Tags is an optional collection of key/value pairs that all the event to be tagged with custom information. Ignored for XML since maps not supported.
+	isValidated bool                   // internal member used for validation check
+	CommandName string                 `json:"commandName,omitempty" codec:"commandName,omitempty"`
 }
 
 func encodeAsCBOR(e Event) ([]byte, error) {
@@ -50,15 +50,15 @@ func encodeAsCBOR(e Event) ([]byte, error) {
 func (e *Event) UnmarshalJSON(data []byte) error {
 	var err error
 	type Alias struct {
-		ID          *string           `json:"id"`
-		Pushed      int64             `json:"pushed"`
-		Device      *string           `json:"device"`
-		Created     int64             `json:"created"`
-		Modified    int64             `json:"modified"`
-		Origin      int64             `json:"origin"`
-		Readings    []Reading         `json:"readings"`
-		Tags        map[string]string `json:"tags"`
-		CommandName *string           `json:"commandName"`
+		ID          *string                `json:"id"`
+		Pushed      int64                  `json:"pushed"`
+		Device      *string                `json:"device"`
+		Created     int64                  `json:"created"`
+		Modified    int64                  `json:"modified"`
+		Origin      int64                  `json:"origin"`
+		Readings    []Reading              `json:"readings"`
+		Tags        map[string]interface{} `json:"tags"`
+		CommandName *string                `json:"commandName"`
 	}
 	a := Alias{}
 
