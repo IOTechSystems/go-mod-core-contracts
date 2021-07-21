@@ -26,6 +26,9 @@ const (
 	testPublisher  = "testPublisher"
 	testTopic      = "testTopic"
 	testEmail      = "test@example.com"
+	testScheme     = "tcp"
+	testSecretPath = "mqtt"
+	testAuthMode   = "none"
 )
 
 var testRESTAddress = Address{
@@ -43,9 +46,12 @@ var testMQTTPubAddress = Address{
 	Host: testHost,
 	Port: testPort,
 	MQTTPubAddress: MQTTPubAddress{
-		Publisher: testPublisher,
-		Topic:     testTopic,
+		Scheme:     "tcp",
+		Publisher:  testPublisher,
+		SecretPath: "mqtt",
+		AuthMode:   "none",
 	},
+	MessageBus: MessageBus{Topic: testTopic},
 }
 
 var testEmailAddress = Address{
@@ -62,9 +68,9 @@ func TestAddress_UnmarshalJSON(t *testing.T) {
 		testRESTAddress.Path, testRESTAddress.HTTPMethod,
 	)
 	mqttJsonStr := fmt.Sprintf(
-		`{"type":"%s","host":"%s","port":%d,"Publisher":"%s","Topic":"%s"}`,
+		`{"type":"%s","host":"%s","port":%d,"publisher":"%s","topic":"%s", "scheme":"%s", "secretPath":"%s", "authMode":"%s"}`,
 		testMQTTPubAddress.Type, testMQTTPubAddress.Host, testMQTTPubAddress.Port,
-		testMQTTPubAddress.Publisher, testMQTTPubAddress.Topic,
+		testMQTTPubAddress.Publisher, testMQTTPubAddress.Topic, testMQTTPubAddress.Scheme, testMQTTPubAddress.SecretPath, testMQTTPubAddress.AuthMode,
 	)
 	emailJsonStr := fmt.Sprintf(`{"type":"%s","Recipients":["%s"]}`, testEmailAddress.Type, testEmail)
 
@@ -163,17 +169,20 @@ func TestAddress_marshalJSON(t *testing.T) {
 		`{"type":"%s","host":"%s","port":%d,"httpMethod":"%s"}`,
 		restAddress.Type, restAddress.Host, restAddress.Port, restAddress.HTTPMethod,
 	)
-	mattAddress := Address{
+	mqttAddress := Address{
 		Type: common.MQTT,
 		Host: testHost, Port: testPort,
 		MQTTPubAddress: MQTTPubAddress{
-			Publisher: testPublisher,
-			Topic:     testTopic,
+			Scheme:     testScheme,
+			SecretPath: testSecretPath,
+			AuthMode:   testAuthMode,
+			Publisher:  testPublisher,
 		},
+		MessageBus: MessageBus{Topic: testTopic},
 	}
 	expectedMQTTJsonStr := fmt.Sprintf(
-		`{"type":"%s","host":"%s","port":%d,"publisher":"%s","topic":"%s"}`,
-		mattAddress.Type, mattAddress.Host, mattAddress.Port, mattAddress.Publisher, mattAddress.Topic,
+		`{"type":"%s","host":"%s","port":%d,"publisher":"%s","scheme":"%s","secretPath":"%s","authMode":"%s","topic":"%s"}`,
+		mqttAddress.Type, mqttAddress.Host, mqttAddress.Port, mqttAddress.Publisher, mqttAddress.Scheme, mqttAddress.SecretPath, mqttAddress.AuthMode, mqttAddress.Topic,
 	)
 	emailAddress := Address{
 		Type: common.EMAIL,
@@ -182,8 +191,8 @@ func TestAddress_marshalJSON(t *testing.T) {
 		},
 	}
 	expectedEmailJsonStr := fmt.Sprintf(
-		`{"type":"%s","host":"","port":0,"recipients":["%s"]}`,
-		emailAddress.Type, emailAddress.Recipients[0],
+		`{"type":"%s","host":"%s","port":%d,"recipients":["%s"]}`,
+		emailAddress.Type, emailAddress.Host, emailAddress.Port, emailAddress.Recipients[0],
 	)
 
 	tests := []struct {
@@ -192,7 +201,7 @@ func TestAddress_marshalJSON(t *testing.T) {
 		expectedJSONStr string
 	}{
 		{"marshal REST address", restAddress, expectedRESTJsonStr},
-		{"marshal MQTT address", mattAddress, expectedMQTTJsonStr},
+		{"marshal MQTT address", mqttAddress, expectedMQTTJsonStr},
 		{"marshal Email address", emailAddress, expectedEmailJsonStr},
 	}
 
