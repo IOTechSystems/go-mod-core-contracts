@@ -32,7 +32,7 @@ var TestEvent = Event{
 	Origin:   123,
 	Modified: 123,
 	Readings: []Reading{TestReading},
-	Tags: map[string]string{
+	Tags: map[string]interface{}{
 		"GatewayID": "Houston-0001",
 		"Latitude":  "29.630771",
 		"Longitude": "-95.377603",
