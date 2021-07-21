@@ -15,7 +15,7 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
-var supportedChannelTypes = []string{common.EMAIL, common.REST}
+var supportedChannelTypes = []string{common.EMAIL, common.REST, common.MQTT, common.ZeroMQ}
 
 // AddSubscriptionRequest defines the Request Content for POST Subscription DTO.
 type AddSubscriptionRequest struct {
