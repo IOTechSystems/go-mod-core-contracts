@@ -51,6 +51,12 @@ func unmarshalAddress(b []byte) (address Address, err error) {
 			return address, errors.NewCommonEdgeX(errors.KindContractInvalid, "Failed to unmarshal Email address.", err)
 		}
 		address = mail
+	case common.ZeroMQ:
+		var zeromq ZeroMQPubAddress
+		if err = json.Unmarshal(b, &zeromq); err != nil {
+			return address, errors.NewCommonEdgeX(errors.KindContractInvalid, "Failed to unmarshal ZeroMQ address.", err)
+		}
+		address = zeromq
 	default:
 		return address, errors.NewCommonEdgeX(errors.KindContractInvalid, "Unsupported address type", err)
 	}
@@ -86,6 +92,18 @@ type MQTTPubAddress struct {
 	Retained       bool
 	AutoReconnect  bool
 	ConnectTimeout int
+
+	// Scheme indicates the scheme of the URI, see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Syntax
+	Scheme string
+	// SecretPath is the name of the path in secret provider to retrieve your secrets. Must be non-blank.
+	SecretPath string
+	// AuthMode indicates what to use when connecting to the broker.
+	// Options are "none", "cacert" , "usernamepassword", "clientcert".
+	// If a CA Cert exists in the SecretPath then it will be used for
+	// all modes except "none".
+	AuthMode string
+	// SkipCertVerify indicates if the server certificate verification should be skipped
+	SkipCertVerify bool
 }
 
 func (a MQTTPubAddress) GetBaseAddress() BaseAddress { return a.BaseAddress }
@@ -97,3 +115,11 @@ type EmailAddress struct {
 }
 
 func (a EmailAddress) GetBaseAddress() BaseAddress { return a.BaseAddress }
+
+// ZeroMQPubAddress is a ZeroMQ specific struct
+type ZeroMQPubAddress struct {
+	BaseAddress
+	Topic string
+}
+
+func (a ZeroMQPubAddress) GetBaseAddress() BaseAddress { return a.BaseAddress }
