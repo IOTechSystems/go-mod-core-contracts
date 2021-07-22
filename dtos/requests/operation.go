@@ -17,7 +17,7 @@ import (
 type OperationRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	ServiceName           string `json:"serviceName" validate:"required"`
-	Action                string `json:"action" validate:"oneof='start' 'stop' 'restart'"`
+	Action                string `json:"action" validate:"oneof='start' 'stop' 'restart' 'rm' 'inspect'"`
 }
 
 // Validate satisfies the Validator interface
