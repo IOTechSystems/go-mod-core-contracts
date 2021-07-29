@@ -238,6 +238,8 @@ const (
 	MQTT   = "MQTT"
 	EMAIL  = "EMAIL"
 	ZeroMQ = "ZeroMQ"
+	HTTP   = "http"
+	TCP    = "tcp"
 )
 
 // Constants for SMA Operation Action
