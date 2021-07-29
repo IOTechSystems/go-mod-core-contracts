@@ -14,14 +14,16 @@ import (
 type Address struct {
 	Type string `json:"type" validate:"oneof='REST' 'MQTT' 'EMAIL' 'ZeroMQ'"`
 
-	Host string `json:"host" validate:"required_unless=Type EMAIL"`
-	Port int    `json:"port" validate:"required_unless=Type EMAIL"`
+	Scheme string `json:"scheme,omitempty"`
+	Host   string `json:"host,omitempty" validate:"required_unless=Type EMAIL"`
+	Port   int    `json:"port,omitempty" validate:"required_unless=Type EMAIL"`
 
-	RESTAddress      `json:",inline" validate:"-"`
-	MQTTPubAddress   `json:",inline" validate:"-"`
-	EmailAddress     `json:",inline" validate:"-"`
-	ZeroMQPubAddress `json:",inline" validate:"-"`
-	MessageBus       `json:",inline" validate:"-"`
+	RESTAddress    `json:",inline" validate:"-"`
+	MQTTPubAddress `json:",inline" validate:"-"`
+	EmailAddress   `json:",inline" validate:"-"`
+	ZeroMQAddress  `json:",inline" validate:"-"`
+	MessageBus     `json:",inline" validate:"-"`
+	Security       `json:",inline" validate:"-"`
 }
 
 // Validate satisfies the Validator interface
@@ -83,10 +85,6 @@ type MQTTPubAddress struct {
 	Retained       bool   `json:"retained,omitempty"`
 	AutoReconnect  bool   `json:"autoReconnect,omitempty"`
 	ConnectTimeout int    `json:"connectTimeout,omitempty"`
-	Scheme         string `json:"scheme,omitempty" validate:"required"`
-	SecretPath     string `json:"secretPath,omitempty" validate:"required"`
-	AuthMode       string `json:"authMode,omitempty" validate:"required,oneof='none' 'usernamepassword' 'cacert' 'clientcert'"`
-	SkipCertVerify bool   `json:"skipCertVerify,omitempty"`
 }
 
 func NewMQTTAddress(host string, port int, publisher string, topic string) Address {
@@ -118,10 +116,16 @@ type MessageBus struct {
 	Topic string `json:"topic,omitempty" validate:"required"`
 }
 
-type ZeroMQPubAddress struct {
+type Security struct {
+	SecretPath     string `json:"secretPath,omitempty" validate:"required"`
+	AuthMode       string `json:"authMode,omitempty" validate:"required,oneof='none' 'usernamepassword' 'cacert' 'clientcert'"`
+	SkipCertVerify bool   `json:"skipCertVerify,omitempty"`
 }
 
-func NewZeroMQPubAddress(topic string) Address {
+type ZeroMQAddress struct {
+}
+
+func NewZeroMQAddress(topic string) Address {
 	return Address{
 		Type:       common.ZeroMQ,
 		MessageBus: MessageBus{Topic: topic},
@@ -143,26 +147,27 @@ func ToAddressModel(a Address) models.Address {
 	case common.MQTT:
 		address = models.MQTTPubAddress{
 			BaseAddress: models.BaseAddress{
-				Type: a.Type, Host: a.Host, Port: a.Port,
+				Type: a.Type, Scheme: a.Scheme, Host: a.Host, Port: a.Port,
 			},
+			Security: models.Security{
+				SecretPath:     a.SecretPath,
+				AuthMode:       a.AuthMode,
+				SkipCertVerify: a.SkipCertVerify,
+			},
+			MessageBus:     models.MessageBus{Topic: a.Topic},
 			Publisher:      a.MQTTPubAddress.Publisher,
-			Topic:          a.MessageBus.Topic,
 			QoS:            a.QoS,
 			KeepAlive:      a.KeepAlive,
 			Retained:       a.Retained,
 			AutoReconnect:  a.AutoReconnect,
 			ConnectTimeout: a.ConnectTimeout,
-			Scheme:         a.Scheme,
-			SecretPath:     a.SecretPath,
-			AuthMode:       a.AuthMode,
-			SkipCertVerify: a.SkipCertVerify,
 		}
 	case common.ZeroMQ:
-		address = models.ZeroMQPubAddress{
+		address = models.ZeroMQAddress{
 			BaseAddress: models.BaseAddress{
 				Type: a.Type, Host: a.Host, Port: a.Port,
 			},
-			Topic: a.MessageBus.Topic,
+			MessageBus: models.MessageBus{Topic: a.Topic},
 		}
 	case common.EMAIL:
 		address = models.EmailAddress{
@@ -177,9 +182,10 @@ func ToAddressModel(a Address) models.Address {
 
 func FromAddressModelToDTO(address models.Address) Address {
 	dto := Address{
-		Type: address.GetBaseAddress().Type,
-		Host: address.GetBaseAddress().Host,
-		Port: address.GetBaseAddress().Port,
+		Type:   address.GetBaseAddress().Type,
+		Scheme: address.GetBaseAddress().Scheme,
+		Host:   address.GetBaseAddress().Host,
+		Port:   address.GetBaseAddress().Port,
 	}
 
 	switch a := address.(type) {
@@ -196,13 +202,14 @@ func FromAddressModelToDTO(address models.Address) Address {
 			Retained:       a.Retained,
 			AutoReconnect:  a.AutoReconnect,
 			ConnectTimeout: a.ConnectTimeout,
-			Scheme:         a.Scheme,
+		}
+		dto.MessageBus = MessageBus{Topic: a.Topic}
+		dto.Security = Security{
 			SecretPath:     a.SecretPath,
 			AuthMode:       a.AuthMode,
 			SkipCertVerify: a.SkipCertVerify,
 		}
-		dto.MessageBus = MessageBus{Topic: a.Topic}
-	case models.ZeroMQPubAddress:
+	case models.ZeroMQAddress:
 		dto.MessageBus = MessageBus{Topic: a.Topic}
 	case models.EmailAddress:
 		dto.EmailAddress = EmailAddress{

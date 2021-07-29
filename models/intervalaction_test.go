@@ -43,8 +43,8 @@ func actionWithMQTTPubAddressData() IntervalAction {
 				Host: TestHost,
 				Port: TestPort,
 			},
-			Publisher: TestPublisher,
-			Topic:     TestTopic,
+			MessageBus: MessageBus{Topic: TestTopic},
+			Publisher:  TestPublisher,
 		},
 	}
 }
