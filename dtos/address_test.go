@@ -43,12 +43,14 @@ var testRESTAddress = Address{
 }
 
 var testMQTTPubAddress = Address{
-	Type: common.MQTT,
-	Host: testHost,
-	Port: testPort,
+	Type:   common.MQTT,
+	Scheme: testScheme,
+	Host:   testHost,
+	Port:   testPort,
 	MQTTPubAddress: MQTTPubAddress{
-		Scheme:     "tcp",
-		Publisher:  testPublisher,
+		Publisher: testPublisher,
+	},
+	Security: Security{
 		SecretPath: "mqtt",
 		AuthMode:   "none",
 	},
@@ -168,19 +170,20 @@ func TestAddress_marshalJSON(t *testing.T) {
 		restAddress.Type, restAddress.Host, restAddress.Port, restAddress.HTTPMethod,
 	)
 	mqttAddress := Address{
-		Type: common.MQTT,
-		Host: testHost, Port: testPort,
+		Type:   common.MQTT,
+		Scheme: testScheme, Host: testHost, Port: testPort,
 		MQTTPubAddress: MQTTPubAddress{
-			Scheme:     testScheme,
-			SecretPath: testSecretPath,
-			AuthMode:   testAuthMode,
-			Publisher:  testPublisher,
+			Publisher: testPublisher,
 		},
 		MessageBus: MessageBus{Topic: testTopic},
+		Security: Security{
+			SecretPath: testSecretPath,
+			AuthMode:   testAuthMode,
+		},
 	}
 	expectedMQTTJsonStr := fmt.Sprintf(
-		`{"type":"%s","host":"%s","port":%d,"publisher":"%s","scheme":"%s","secretPath":"%s","authMode":"%s","topic":"%s"}`,
-		mqttAddress.Type, mqttAddress.Host, mqttAddress.Port, mqttAddress.Publisher, mqttAddress.Scheme, mqttAddress.SecretPath, mqttAddress.AuthMode, mqttAddress.Topic,
+		`{"type":"%s","scheme":"%s","host":"%s","port":%d,"publisher":"%s","topic":"%s","secretPath":"%s","authMode":"%s"}`,
+		mqttAddress.Type, mqttAddress.Scheme, mqttAddress.Host, mqttAddress.Port, mqttAddress.Publisher, mqttAddress.Topic, mqttAddress.SecretPath, mqttAddress.AuthMode,
 	)
 	emailAddress := Address{
 		Type: common.EMAIL,
@@ -189,8 +192,8 @@ func TestAddress_marshalJSON(t *testing.T) {
 		},
 	}
 	expectedEmailJsonStr := fmt.Sprintf(
-		`{"type":"%s","host":"%s","port":%d,"recipients":["%s"]}`,
-		emailAddress.Type, emailAddress.Host, emailAddress.Port, emailAddress.Recipients[0],
+		`{"type":"%s","recipients":["%s"]}`,
+		emailAddress.Type, emailAddress.Recipients[0],
 	)
 
 	tests := []struct {
