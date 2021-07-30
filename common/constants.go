@@ -222,9 +222,12 @@ const (
 // Constants for Address
 const (
 	// Type
-	REST  = "REST"
-	MQTT  = "MQTT"
-	EMAIL = "EMAIL"
+	REST   = "REST"
+	MQTT   = "MQTT"
+	EMAIL  = "EMAIL"
+	ZeroMQ = "ZeroMQ"
+	HTTP   = "http"
+	TCP    = "tcp"
 )
 
 // Constants for SMA Operation Action

@@ -88,7 +88,7 @@ func TestAddSubscriptionRequest_Validate(t *testing.T) {
 	}
 	unsupportedChannelType := addSubscriptionRequestData()
 	unsupportedChannelType.Subscription.Channels = []dtos.Address{
-		dtos.NewMQTTAddress("host", 123, "publisher", "topic"),
+		dtos.Address{Type: "unknown"},
 	}
 
 	noCategories := addSubscriptionRequestData()
@@ -211,7 +211,7 @@ func TestUpdateSubscriptionRequest_Validate(t *testing.T) {
 	}
 	unsupportedChannelType := NewUpdateSubscriptionRequest(updateSubscriptionData())
 	unsupportedChannelType.Subscription.Channels = []dtos.Address{
-		dtos.NewMQTTAddress("host", 123, "publisher", "topic"),
+		dtos.Address{Type: "unknown"},
 	}
 	validWithoutChannels := NewUpdateSubscriptionRequest(updateSubscriptionData())
 	validWithoutChannels.Subscription.Channels = nil
