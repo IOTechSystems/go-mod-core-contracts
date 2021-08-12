@@ -21,13 +21,13 @@ import (
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.x#/Event
 type Event struct {
 	common.Versionable `json:",inline"`
-	Id                 string            `json:"id" validate:"required,uuid"`
-	DeviceName         string            `json:"deviceName" validate:"required,edgex-dto-rfc3986-unreserved-chars"`
-	ProfileName        string            `json:"profileName" validate:"required,edgex-dto-rfc3986-unreserved-chars"`
-	SourceName         string            `json:"sourceName" validate:"required,edgex-dto-rfc3986-unreserved-chars"`
-	Origin             int64             `json:"origin" validate:"required"`
-	Readings           []BaseReading     `json:"readings" validate:"gt=0,dive,required"`
-	Tags               map[string]string `json:"tags,omitempty" xml:"-"` // Have to ignore since map not supported for XML
+	Id                 string                 `json:"id" validate:"required,uuid"`
+	DeviceName         string                 `json:"deviceName" validate:"required,edgex-dto-rfc3986-unreserved-chars"`
+	ProfileName        string                 `json:"profileName" validate:"required,edgex-dto-rfc3986-unreserved-chars"`
+	SourceName         string                 `json:"sourceName" validate:"required,edgex-dto-rfc3986-unreserved-chars"`
+	Origin             int64                  `json:"origin" validate:"required"`
+	Readings           []BaseReading          `json:"readings" validate:"gt=0,dive,required"`
+	Tags               map[string]interface{} `json:"tags,omitempty" xml:"-"` // Have to ignore since map not supported for XML
 }
 
 // NewEvent creates and returns an initialized Event with no Readings
@@ -49,7 +49,7 @@ func FromEventModelToDTO(event models.Event) Event {
 		readings = append(readings, FromReadingModelToDTO(reading))
 	}
 
-	tags := make(map[string]string)
+	tags := make(map[string]interface{})
 	for tag, value := range event.Tags {
 		tags[tag] = value
 	}

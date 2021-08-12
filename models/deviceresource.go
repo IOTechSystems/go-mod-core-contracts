@@ -12,7 +12,7 @@ type DeviceResource struct {
 	Description string
 	Name        string
 	IsHidden    bool
-	Tags        map[string]string
+	Tags        map[string]interface{}
 	Properties  ResourceProperties
 	Attributes  map[string]interface{}
 }

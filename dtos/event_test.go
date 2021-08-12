@@ -24,7 +24,7 @@ var valid = models.Event{
 	ProfileName: TestDeviceProfileName,
 	SourceName:  TestSourceName,
 	Origin:      TestTimestamp,
-	Tags: map[string]string{
+	Tags: map[string]interface{}{
 		"GatewayID": "Houston-0001",
 		"Latitude":  "29.630771",
 		"Longitude": "-95.377603",
@@ -38,7 +38,7 @@ var expectedDTO = Event{
 	ProfileName: TestDeviceProfileName,
 	SourceName:  TestSourceName,
 	Origin:      TestTimestamp,
-	Tags: map[string]string{
+	Tags: map[string]interface{}{
 		"GatewayID": "Houston-0001",
 		"Latitude":  "29.630771",
 		"Longitude": "-95.377603",
