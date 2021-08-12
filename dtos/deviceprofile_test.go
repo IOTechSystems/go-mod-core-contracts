@@ -31,7 +31,7 @@ var testDeviceProfile = models.DeviceProfile{
 	DeviceResources: []models.DeviceResource{{
 		Name:        TestDeviceResourceName,
 		Description: TestDescription,
-		Tag:         TestTag,
+		Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		Attributes:  testAttributes,
 		Properties: models.ResourceProperties{
 			ValueType: common.ValueTypeInt16,
@@ -60,7 +60,7 @@ func profileData() DeviceProfile {
 		DeviceResources: []DeviceResource{{
 			Name:        TestDeviceResourceName,
 			Description: TestDescription,
-			Tag:         TestTag,
+			Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 			Attributes:  testAttributes,
 			Properties: ResourceProperties{
 				ValueType: common.ValueTypeInt16,
