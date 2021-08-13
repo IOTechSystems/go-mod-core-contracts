@@ -15,6 +15,7 @@ type Device struct {
 	Description    string
 	AdminState     AdminState
 	OperatingState OperatingState
+	ProtocolName   string
 	Protocols      map[string]ProtocolProperties
 	LastConnected  int64
 	LastReported   int64
