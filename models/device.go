@@ -12,6 +12,7 @@ type Device struct {
 	Description    string
 	AdminState     AdminState
 	OperatingState OperatingState
+	ProtocolName   string
 	Protocols      map[string]ProtocolProperties
 	Labels         []string
 	Location       interface{}

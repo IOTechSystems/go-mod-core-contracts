@@ -24,6 +24,8 @@ type Device struct {
 	Protocols      map[string]ProtocolProperties `json:"protocols" yaml:"protocols" validate:"required,gt=0"`
 	Tags           map[string]any                `json:"tags,omitempty" yaml:"tags,omitempty"`
 	Properties     map[string]any                `json:"properties,omitempty" yaml:"properties,omitempty"`
+
+	ProtocolName   string
 }
 
 type UpdateDevice struct {
@@ -40,6 +42,9 @@ type UpdateDevice struct {
 	Protocols      map[string]ProtocolProperties `json:"protocols" validate:"omitempty,gt=0"`
 	Tags           map[string]any                `json:"tags"`
 	Properties     map[string]any                `json:"properties"`
+
+	// we don't allow this to be updated
+	//ProtocolName   *string
 }
 
 // ToDeviceModel transforms the Device DTO to the Device Model
@@ -58,6 +63,8 @@ func ToDeviceModel(dto Device) models.Device {
 	d.Protocols = ToProtocolModels(dto.Protocols)
 	d.Tags = dto.Tags
 	d.Properties = dto.Properties
+
+	d.ProtocolName = dto.ProtocolName
 	return d
 }
 
@@ -78,6 +85,8 @@ func FromDeviceModelToDTO(d models.Device) Device {
 	dto.Protocols = FromProtocolModelsToDTOs(d.Protocols)
 	dto.Tags = d.Tags
 	dto.Properties = d.Properties
+
+	dto.ProtocolName = d.ProtocolName
 	return dto
 }
 
