@@ -25,6 +25,7 @@ type Device struct {
 	ServiceName    string                        `json:"serviceName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	ProfileName    string                        `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	AutoEvents     []AutoEvent                   `json:"autoEvents,omitempty" validate:"dive"`
+	ProtocolName   string                        `json:"protocolName,omitempty"`
 	Protocols      map[string]ProtocolProperties `json:"protocols" validate:"required,gt=0"`
 }
 
@@ -43,6 +44,8 @@ type UpdateDevice struct {
 	Labels         []string                      `json:"labels"`
 	Location       interface{}                   `json:"location"`
 	AutoEvents     []AutoEvent                   `json:"autoEvents" validate:"dive"`
+	// we don't allow this to be updated
+	//ProtocolName   *string                       `json:"protocolName" validate:"omitempty"`
 	Protocols      map[string]ProtocolProperties `json:"protocols" validate:"omitempty,gt=0"`
 	Notify         *bool                         `json:"notify"`
 }
@@ -62,6 +65,7 @@ func ToDeviceModel(dto Device) models.Device {
 	d.Labels = dto.Labels
 	d.Location = dto.Location
 	d.AutoEvents = ToAutoEventModels(dto.AutoEvents)
+	d.ProtocolName = dto.ProtocolName
 	d.Protocols = ToProtocolModels(dto.Protocols)
 	return d
 }
@@ -81,6 +85,7 @@ func FromDeviceModelToDTO(d models.Device) Device {
 	dto.Labels = d.Labels
 	dto.Location = d.Location
 	dto.AutoEvents = FromAutoEventModelsToDTOs(d.AutoEvents)
+	dto.ProtocolName = d.ProtocolName
 	dto.Protocols = FromProtocolModelsToDTOs(d.Protocols)
 	return dto
 }
