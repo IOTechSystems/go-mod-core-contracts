@@ -9,23 +9,36 @@ import (
 	"strings"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
 	v1Models "github.com/edgexfoundry/go-mod-core-contracts/v2/v1/models"
 )
 
-// TransformToV1DeviceProfile transform v2 profile to v1
-func TransformToV1DeviceProfile(profile models.DeviceProfile) v1Models.DeviceProfile {
-	dto := v1Models.DeviceProfile{
+// TransformProfileFromV2ToV1 transform v2 profile to v1
+func TransformProfileFromV2ToV1(profile models.DeviceProfile) (v1Models.DeviceProfile, errors.EdgeX) {
+	v2dpDto := dtos.FromDeviceProfileModelToDTO(profile)
+	err := v2dpDto.Validate()
+	if err != nil {
+		return v1Models.DeviceProfile{}, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v2 device profile", err)
+	}
+
+	v1dp := v1Models.DeviceProfile{
 		DescribedObject: v1Models.DescribedObject{Description: profile.Description},
 		Name:            profile.Name,
 		Manufacturer:    profile.Manufacturer,
 		Model:           profile.Model,
 		Labels:          profile.Labels,
 	}
-	dto.DeviceResources = toV1DeviceResources(profile.DeviceResources)
-	dto.DeviceCommands = toV1DeviceCommands(profile.DeviceCommands)
-	dto.CoreCommands = toV1CoreCommand(profile.DeviceCommands)
-	return dto
+	v1dp.DeviceResources = toV1DeviceResources(profile.DeviceResources)
+	v1dp.DeviceCommands = toV1DeviceCommands(profile.DeviceCommands)
+	v1dp.CoreCommands = toV1CoreCommand(profile.DeviceResources, profile.DeviceCommands)
+
+	_, err = v1dp.Validate()
+	if err != nil {
+		return v1dp, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v1 device profile after transforming from v2 to v1", err)
+	}
+	return v1dp, nil
 }
 
 func toV1DeviceResources(deviceResources []models.DeviceResource) []v1Models.DeviceResource {
@@ -130,18 +143,47 @@ func reverseMapKeyValue(mappings map[string]string) map[string]string {
 	return valueMappings
 }
 
-func toV1CoreCommand(deviceCommands []models.DeviceCommand) []v1Models.Command {
-	commands := make([]v1Models.Command, len(deviceCommands))
-	for i, c := range deviceCommands {
-		commands[i] = v1Models.Command{
-			Name: c.Name,
+func toV1CoreCommand(v2DeviceResources []models.DeviceResource, v2DeviceCommands []models.DeviceCommand) []v1Models.Command {
+	var commands []v1Models.Command
+
+	// Create v1 CoreCommands by v2DeviceCommands
+	for _, cmd := range v2DeviceCommands {
+		if cmd.IsHidden {
+			continue
 		}
-		if strings.Contains(c.ReadWrite, common.ReadWrite_R) {
-			commands[i].Get = toV1GetAction(c.Name, c.ResourceOperations)
+		v1Command := v1Models.Command{
+			Name: cmd.Name,
 		}
-		if strings.Contains(c.ReadWrite, common.ReadWrite_W) {
-			commands[i].Put = toV1PutAction(c.Name, c.ResourceOperations)
+		if strings.Contains(cmd.ReadWrite, common.ReadWrite_R) {
+			v1Command.Get = toV1GetAction(cmd.Name, cmd.ResourceOperations)
 		}
+		if strings.Contains(cmd.ReadWrite, common.ReadWrite_W) {
+			v1Command.Put = toV1PutAction(cmd.Name, cmd.ResourceOperations)
+		}
+		commands = append(commands, v1Command)
+	}
+
+	// Create v1 CoreCommands by v2DeviceResources
+	for _, resource := range v2DeviceResources {
+		if resource.IsHidden {
+			continue
+		}
+		// // Skip if the resource exists in the v2 DeviceCommands
+		for _, cmd := range v2DeviceCommands {
+			if resource.Name == cmd.Name {
+				continue
+			}
+		}
+		v1Command := v1Models.Command{
+			Name: resource.Name,
+		}
+		if strings.Contains(resource.Properties.ReadWrite, common.ReadWrite_R) {
+			v1Command.Get = toV1GetAction(resource.Name, []models.ResourceOperation{{DeviceResource: resource.Name}})
+		}
+		if strings.Contains(resource.Properties.ReadWrite, common.ReadWrite_W) {
+			v1Command.Put = toV1PutAction(resource.Name, []models.ResourceOperation{{DeviceResource: resource.Name}})
+		}
+		commands = append(commands, v1Command)
 	}
 
 	return commands
@@ -191,18 +233,35 @@ func toV1PutAction(cmdName string, resourceOperations []models.ResourceOperation
 	}
 }
 
-// TransformToV2DeviceProfile transform v1 profile to v2
-func TransformToV2DeviceProfile(profile v1Models.DeviceProfile) models.DeviceProfile {
-	dto := models.DeviceProfile{
+// TransformProfileFromV1ToV2 transform v1 profile to v2
+func TransformProfileFromV1ToV2(profile v1Models.DeviceProfile) (models.DeviceProfile, errors.EdgeX) {
+	_, err := profile.Validate()
+	if err != nil {
+		return models.DeviceProfile{}, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v1 device profile", err)
+	}
+
+	v2dp := models.DeviceProfile{
 		Description:  profile.Description,
 		Name:         profile.Name,
 		Manufacturer: profile.Manufacturer,
 		Model:        profile.Model,
 		Labels:       profile.Labels,
 	}
-	dto.DeviceResources = toV2DeviceResources(profile)
-	dto.DeviceCommands = toV2DeviceCommands(profile.DeviceCommands)
-	return dto
+	v2dp.DeviceResources = toV2DeviceResources(profile)
+	v2dp.DeviceCommands = toV2DeviceCommands(profile.DeviceCommands)
+	for i, r := range v2dp.DeviceResources {
+		v2dp.DeviceResources[i].IsHidden = isV2ResourceHidden(r.Name, v2dp.DeviceCommands, profile.CoreCommands)
+	}
+	for i, cmd := range v2dp.DeviceCommands {
+		v2dp.DeviceCommands[i].IsHidden = isV2DeviceCommandHidden(cmd.Name, profile.CoreCommands)
+	}
+
+	v2dpDto := dtos.FromDeviceProfileModelToDTO(v2dp)
+	err = v2dpDto.Validate()
+	if err != nil {
+		return v2dp, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v2 device profile after transforming from v1 to v2", err)
+	}
+	return v2dp, nil
 }
 
 func toV2DeviceResources(profile v1Models.DeviceProfile) []models.DeviceResource {
@@ -211,7 +270,7 @@ func toV2DeviceResources(profile v1Models.DeviceProfile) []models.DeviceResource
 		resources[i] = models.DeviceResource{
 			Description: r.Description,
 			Name:        r.Name,
-			IsHidden:    isResourceHidden(r.Name, profile),
+			IsHidden:    true,
 			Tags:        toV2Tags(r.Tags),
 			Properties: models.ResourceProperties{
 				ValueType:    strings.Title(strings.ToLower(r.Properties.Value.Type)),
@@ -235,44 +294,34 @@ func toV2DeviceResources(profile v1Models.DeviceProfile) []models.DeviceResource
 	return resources
 }
 
-func isResourceHidden(resourceName string, profile v1Models.DeviceProfile) bool {
-	// Check whether the resource exists in the CoreCommands, if exists, the resource is not hidden.
-	for _, coreCommand := range profile.CoreCommands {
-		for _, res := range coreCommand.Get.Responses {
-			isContains := contains(res.ExpectedValues, resourceName)
-			if isContains {
-				return false
-			}
-		}
-		isContains := contains(coreCommand.Put.ParameterNames, resourceName)
-		if isContains {
-			return false
-		}
-	}
-	// Check whether the resource exists in the DeviceCommands, if exists, the resource is not hidden.
-	for _, deviceCommand := range profile.DeviceCommands {
-		for _, ro := range deviceCommand.Get {
-			if ro.DeviceResource == resourceName {
-				return false
-			}
-		}
-		for _, ro := range deviceCommand.Set {
-			if ro.DeviceResource == resourceName {
-				return false
-			}
-		}
-	}
-
-	return true
-}
-
-func contains(list []string, e string) bool {
-	for _, v := range list {
-		if v == e {
+func isV2ResourceHidden(resourceName string, v2deviceCommands []models.DeviceCommand, v1CoreCommands []v1Models.Command) bool {
+	// Skip the checking if the resource exists in the v2 DeviceCommands
+	for _, v2deviceCommand := range v2deviceCommands {
+		if v2deviceCommand.Name == resourceName {
 			return true
 		}
 	}
-	return false
+
+	// Check whether the resource exists in the v1 CoreCommands, if exists, the resource is not hidden.
+	for _, v1CoreCommand := range v1CoreCommands {
+		if v1CoreCommand.Name == resourceName {
+			return false
+		}
+	}
+	return true
+}
+
+func isV2DeviceCommandHidden(v2DeviceCommandName string, v1CoreCommands []v1Models.Command) bool {
+	for _, v1CoreCommand := range v1CoreCommands {
+		if v1CoreCommand.Name == v2DeviceCommandName || v2SetCommandName(v1CoreCommand.Name) == v2DeviceCommandName {
+			return false
+		}
+	}
+	return true
+}
+
+func v2SetCommandName(cmdName string) string {
+	return fmt.Sprintf("%s_Set", cmdName)
 }
 
 func toV2Tags(tags map[string]string) map[string]interface{} {
@@ -292,53 +341,70 @@ func toV2Attributes(attributes map[string]string) map[string]interface{} {
 }
 
 func toV2DeviceCommands(deviceCommands []v1Models.ProfileResource) []models.DeviceCommand {
-	commands := make([]models.DeviceCommand, len(deviceCommands))
-	for i, c := range deviceCommands {
-		commands[i] = models.DeviceCommand{
-			Name:               c.Name,
-			IsHidden:           false,
-			ReadWrite:          "",
-			ResourceOperations: nil,
-		}
-		var ros []models.ResourceOperation
-		if len(c.Get) > 0 && len(c.Set) > 0 {
-			commands[i].ReadWrite = common.ReadWrite_RW
-			for _, getOp := range c.Get {
-				for _, setOp := range c.Set {
-					if getOp.DeviceResource == setOp.DeviceResource {
-						ro := models.ResourceOperation{
-							DeviceResource: getOp.DeviceResource,
-							DefaultValue:   "",
-							Mappings:       getOp.Mappings,
-						}
-						ros = append(ros, ro)
-						break
-					}
-				}
+	var commands []models.DeviceCommand
+	for _, c := range deviceCommands {
+		if len(c.Get) > 0 && len(c.Set) > 0 && len(c.Get) == len(c.Set) {
+			command := models.DeviceCommand{
+				Name:               c.Name,
+				IsHidden:           true,
+				ReadWrite:          common.ReadWrite_RW,
+				ResourceOperations: toV2ResourceOperations(common.ReadWrite_RW, c.Get),
 			}
+			commands = append(commands, command)
+
+		} else if len(c.Get) > 0 && len(c.Set) > 0 && len(c.Get) != len(c.Set) {
+			readCommand := models.DeviceCommand{
+				Name:               c.Name,
+				IsHidden:           true,
+				ReadWrite:          common.ReadWrite_R,
+				ResourceOperations: toV2ResourceOperations(common.ReadWrite_R, c.Get),
+			}
+			commands = append(commands, readCommand)
+
+			writeCommand := models.DeviceCommand{
+				Name:               v2SetCommandName(c.Name),
+				IsHidden:           true,
+				ReadWrite:          common.ReadWrite_W,
+				ResourceOperations: toV2ResourceOperations(common.ReadWrite_W, c.Set),
+			}
+			commands = append(commands, writeCommand)
+
 		} else if len(c.Set) > 0 {
-			commands[i].ReadWrite = common.ReadWrite_W
-			for _, op := range c.Set {
-				ro := models.ResourceOperation{
-					DeviceResource: op.DeviceResource,
-					DefaultValue:   "",
-					Mappings:       op.Mappings,
-				}
-				ros = append(ros, ro)
+			command := models.DeviceCommand{
+				Name:               c.Name,
+				IsHidden:           true,
+				ReadWrite:          common.ReadWrite_W,
+				ResourceOperations: toV2ResourceOperations(common.ReadWrite_W, c.Set),
 			}
-		} else {
-			commands[i].ReadWrite = common.ReadWrite_R
-			for _, op := range c.Get {
-				ro := models.ResourceOperation{
-					DeviceResource: op.DeviceResource,
-					DefaultValue:   "",
-					Mappings:       op.Mappings,
-				}
-				ros = append(ros, ro)
+			commands = append(commands, command)
+
+		} else if len(c.Get) > 0 {
+			command := models.DeviceCommand{
+				Name:               c.Name,
+				IsHidden:           true,
+				ReadWrite:          common.ReadWrite_R,
+				ResourceOperations: toV2ResourceOperations(common.ReadWrite_R, c.Get),
 			}
+			commands = append(commands, command)
+
 		}
-		commands[i].ResourceOperations = ros
 	}
 
 	return commands
+}
+
+func toV2ResourceOperations(readWrite string, v1ros []v1Models.ResourceOperation) []models.ResourceOperation {
+	var v2ros []models.ResourceOperation
+	for _, v1ro := range v1ros {
+		v2ro := models.ResourceOperation{
+			DeviceResource: v1ro.DeviceResource,
+			DefaultValue:   "",
+			Mappings:       v1ro.Mappings,
+		}
+		if readWrite == common.ReadWrite_W && len(v2ro.Mappings) != 0 {
+			v2ro.Mappings = reverseMapKeyValue(v2ro.Mappings)
+		}
+		v2ros = append(v2ros, v2ro)
+	}
+	return v2ros
 }

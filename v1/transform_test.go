@@ -3,12 +3,14 @@
 package v1
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	v2Model "github.com/edgexfoundry/go-mod-core-contracts/v2/models"
 	v1Model "github.com/edgexfoundry/go-mod-core-contracts/v2/v1/models"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -17,18 +19,16 @@ const (
 	TestModel        = "CoolMasterNet"
 	TestDescription  = "TestDescription"
 
-	TestSourceSwitchName                       = "Switch"
-	TestSourceSwitchDescriptionSwitch          = "On/Off , 0-OFF 1-ON"
-	TestSourceOperationModeName                = "OperationMode"
-	TestSourceOperationModeDescriptionSwitch   = "0-Cool 1-Heat 2-Auto 3-Dry 4-HAUX 5-Fan 6-HH 8-VAM Auto 9-VAM Bypass 10-VAM Heat Exc 11-VAM Normal"
-	TestSourceRoomTemperatureName              = "RoomTemperature"
-	TestSourceRoomTemperatureDescriptionSwitch = "Room Temperature x10 °C (Read Only)"
-	TestSourceTemperatureName                  = "Temperature"
-	TestSourceTemperatureDescriptionSwitch     = "Temperature x10 °C"
+	TestSourceSwitchName                 = "Switch"
+	TestSourceSwitchDescription          = "On/Off , 0-OFF 1-ON"
+	TestSourceOperationModeName          = "OperationMode"
+	TestSourceOperationModeDescription   = "0-Cool 1-Heat 2-Auto 3-Dry 4-HAUX 5-Fan 6-HH 8-VAM Auto 9-VAM Bypass 10-VAM Heat Exc 11-VAM Normal"
+	TestSourceRoomTemperatureName        = "RoomTemperature"
+	TestSourceRoomTemperatureDescription = "Room Temperature x10 °C (Read Only)"
+	TestSourceTemperatureName            = "Temperature"
+	TestSourceTemperatureDescription     = "Temperature x10 °C"
 
 	TestDeviceCommandValuesName = "Values"
-
-	TestDeviceCommandName = "TestDeviceCommand"
 )
 
 var (
@@ -58,77 +58,78 @@ var testAttributes = map[string]interface{}{
 	"TestAttribute": "TestAttributeValue",
 }
 
+var testV1DeviceResources = []v1Model.DeviceResource{{
+	Name:        TestSourceSwitchName,
+	Description: TestSourceSwitchDescription,
+	Tags:        TestSourceSwitchTags,
+	Attributes:  TestSourceSwitchAttributes,
+	Properties: v1Model.ProfileProperty{
+		Value: v1Model.PropertyValue{
+			Type:         "Bool",
+			ReadWrite:    common.ReadWrite_RW,
+			DefaultValue: "true",
+		},
+		Units: v1Model.Units{
+			Type:         "String",
+			ReadWrite:    common.ReadWrite_R,
+			DefaultValue: "On/Off",
+		},
+	},
+}, {
+	Name:        TestSourceOperationModeName,
+	Description: TestSourceOperationModeDescription,
+	Tags:        TestSourceOperationModeTags,
+	Attributes:  TestSourceOperationModeAttributes,
+	Properties: v1Model.ProfileProperty{
+		Value: v1Model.PropertyValue{
+			Type:      "Int16",
+			ReadWrite: common.ReadWrite_RW,
+		},
+		Units: v1Model.Units{
+			Type:         "String",
+			ReadWrite:    common.ReadWrite_R,
+			DefaultValue: "Operation Mode",
+		},
+	},
+}, {
+	Name:        TestSourceRoomTemperatureName,
+	Description: TestSourceRoomTemperatureDescription,
+	Tags:        TestSourceRoomTemperatureTags,
+	Attributes:  TestSourceRoomTemperatureAttributes,
+	Properties: v1Model.ProfileProperty{
+		Value: v1Model.PropertyValue{
+			Type:          "Float32",
+			ReadWrite:     common.ReadWrite_R,
+			Scale:         "0.1",
+			FloatEncoding: "eNotation",
+		},
+		Units: v1Model.Units{
+			Type:         "String",
+			ReadWrite:    common.ReadWrite_R,
+			DefaultValue: "degrees Celsius",
+		},
+	},
+}, {
+	Name:        TestSourceTemperatureName,
+	Description: TestSourceTemperatureDescription,
+	Tags:        TestSourceTemperatureTags,
+	Attributes:  TestSourceTemperatureAttributes,
+	Properties: v1Model.ProfileProperty{
+		Value: v1Model.PropertyValue{
+			Type:          "Float64",
+			ReadWrite:     common.ReadWrite_RW,
+			Scale:         "0.1",
+			FloatEncoding: "eNotation",
+		},
+		Units: v1Model.Units{
+			Type:         "String",
+			ReadWrite:    common.ReadWrite_R,
+			DefaultValue: "degrees Celsius",
+		},
+	},
+}}
+
 func v1ProfileData() v1Model.DeviceProfile {
-	var testDeviceResources = []v1Model.DeviceResource{{
-		Name:        TestSourceSwitchName,
-		Description: TestSourceSwitchDescriptionSwitch,
-		Tags:        TestSourceSwitchTags,
-		Attributes:  TestSourceSwitchAttributes,
-		Properties: v1Model.ProfileProperty{
-			Value: v1Model.PropertyValue{
-				Type:         "Bool",
-				ReadWrite:    common.ReadWrite_RW,
-				DefaultValue: "true",
-			},
-			Units: v1Model.Units{
-				Type:         "String",
-				ReadWrite:    common.ReadWrite_R,
-				DefaultValue: "On/Off",
-			},
-		},
-	}, {
-		Name:        TestSourceOperationModeName,
-		Description: TestSourceOperationModeDescriptionSwitch,
-		Tags:        TestSourceOperationModeTags,
-		Attributes:  TestSourceOperationModeAttributes,
-		Properties: v1Model.ProfileProperty{
-			Value: v1Model.PropertyValue{
-				Type:      "Int16",
-				ReadWrite: common.ReadWrite_RW,
-			},
-			Units: v1Model.Units{
-				Type:         "String",
-				ReadWrite:    common.ReadWrite_R,
-				DefaultValue: "Operation Mode",
-			},
-		},
-	}, {
-		Name:        TestSourceRoomTemperatureName,
-		Description: TestSourceRoomTemperatureDescriptionSwitch,
-		Tags:        TestSourceRoomTemperatureTags,
-		Attributes:  TestSourceRoomTemperatureAttributes,
-		Properties: v1Model.ProfileProperty{
-			Value: v1Model.PropertyValue{
-				Type:          "Float32",
-				ReadWrite:     common.ReadWrite_R,
-				Scale:         "0.1",
-				FloatEncoding: "eNotation",
-			},
-			Units: v1Model.Units{
-				Type:         "String",
-				ReadWrite:    common.ReadWrite_R,
-				DefaultValue: "degrees Celsius",
-			},
-		},
-	}, {
-		Name:        TestSourceTemperatureName,
-		Description: TestSourceTemperatureDescriptionSwitch,
-		Tags:        TestSourceTemperatureTags,
-		Attributes:  TestSourceTemperatureAttributes,
-		Properties: v1Model.ProfileProperty{
-			Value: v1Model.PropertyValue{
-				Type:          "Float64",
-				ReadWrite:     common.ReadWrite_RW,
-				Scale:         "0.1",
-				FloatEncoding: "eNotation",
-			},
-			Units: v1Model.Units{
-				Type:         "String",
-				ReadWrite:    common.ReadWrite_R,
-				DefaultValue: "degrees Celsius",
-			},
-		},
-	}}
 
 	var testDeviceCommands = []v1Model.ProfileResource{{
 		Name: TestDeviceCommandValuesName,
@@ -164,12 +165,10 @@ func v1ProfileData() v1Model.DeviceProfile {
 					Path: "/api/v1/device/{deviceId}/Values",
 					Responses: []v1Model.Response{
 						{
-							Code:           "200",
-							Description:    "Issue the Get command Values",
-							ExpectedValues: []string{"Switch", "OperationMode", "Temperature"},
+							Code: "200", Description: "Issue the Get command Values",
+							ExpectedValues: []string{TestSourceSwitchName, TestSourceOperationModeName, TestSourceTemperatureName},
 						}, {
-							Code:        "500",
-							Description: "internal server error",
+							Code: "500", Description: "internal server error",
 						},
 					},
 				},
@@ -179,15 +178,13 @@ func v1ProfileData() v1Model.DeviceProfile {
 					Path: "/api/v1/device/{deviceId}/Values",
 					Responses: []v1Model.Response{
 						{
-							Code:        "204",
-							Description: "Issue the Put command Values",
+							Code: "204", Description: "Issue the Put command Values",
 						}, {
-							Code:        "500",
-							Description: "internal server error",
+							Code: "500", Description: "internal server error",
 						},
 					},
 				},
-				ParameterNames: []string{"Switch", "OperationMode", "Temperature"},
+				ParameterNames: []string{TestSourceSwitchName, TestSourceOperationModeName, TestSourceTemperatureName},
 			},
 		},
 	}
@@ -201,7 +198,7 @@ func v1ProfileData() v1Model.DeviceProfile {
 			Description: TestDescription,
 		},
 
-		DeviceResources: testDeviceResources,
+		DeviceResources: testV1DeviceResources,
 		DeviceCommands:  testDeviceCommands,
 		CoreCommands:    testCoreCommands,
 	}
@@ -210,8 +207,8 @@ func v1ProfileData() v1Model.DeviceProfile {
 func v2ProfileData() v2Model.DeviceProfile {
 	var testDeviceResources = []v2Model.DeviceResource{{
 		Name:        TestSourceSwitchName,
-		IsHidden:    false,
-		Description: TestSourceSwitchDescriptionSwitch,
+		IsHidden:    true,
+		Description: TestSourceSwitchDescription,
 		Tags:        toV2Tags(TestSourceSwitchTags),
 		Attributes:  toV2Attributes(TestSourceSwitchAttributes),
 		Properties: v2Model.ResourceProperties{
@@ -222,8 +219,8 @@ func v2ProfileData() v2Model.DeviceProfile {
 		},
 	}, {
 		Name:        TestSourceOperationModeName,
-		IsHidden:    false,
-		Description: TestSourceOperationModeDescriptionSwitch,
+		IsHidden:    true,
+		Description: TestSourceOperationModeDescription,
 		Tags:        toV2Tags(TestSourceOperationModeTags),
 		Attributes:  toV2Attributes(TestSourceOperationModeAttributes),
 		Properties: v2Model.ResourceProperties{
@@ -234,7 +231,7 @@ func v2ProfileData() v2Model.DeviceProfile {
 	}, {
 		Name:        TestSourceRoomTemperatureName,
 		IsHidden:    true,
-		Description: TestSourceRoomTemperatureDescriptionSwitch,
+		Description: TestSourceRoomTemperatureDescription,
 		Tags:        toV2Tags(TestSourceRoomTemperatureTags),
 		Attributes:  toV2Attributes(TestSourceRoomTemperatureAttributes),
 		Properties: v2Model.ResourceProperties{
@@ -245,8 +242,8 @@ func v2ProfileData() v2Model.DeviceProfile {
 		},
 	}, {
 		Name:        TestSourceTemperatureName,
-		IsHidden:    false,
-		Description: TestSourceTemperatureDescriptionSwitch,
+		IsHidden:    true,
+		Description: TestSourceTemperatureDescription,
 		Tags:        toV2Tags(TestSourceTemperatureTags),
 		Attributes:  toV2Attributes(TestSourceTemperatureAttributes),
 		Properties: v2Model.ResourceProperties{
@@ -286,18 +283,105 @@ func v2ProfileData() v2Model.DeviceProfile {
 	}
 }
 
-func TestTransformToV2DeviceProfile(t *testing.T) {
-	expected := v2ProfileData()
+func TestTransformProfileFromV1ToV2(t *testing.T) {
 	data := v1ProfileData()
+	data.DeviceCommands = []v1Model.ProfileResource{{
+		Name: TestDeviceCommandValuesName,
+		Get: []v1Model.ResourceOperation{{
+			Index: "0", Operation: "get", DeviceResource: TestSourceSwitchName,
+			Mappings: map[string]string{"true": "ON", "false": "OFF"},
+		}},
+		Set: []v1Model.ResourceOperation{{
+			Index: "0", Operation: "set", DeviceResource: TestSourceSwitchName,
+			Mappings: map[string]string{"ON": "true", "OFF": "false"},
+		}, {
+			Index: "1", Operation: "set", DeviceResource: TestSourceOperationModeName,
+			Mappings: map[string]string{
+				"Cool": "0", "Heat": "1", "Auto": "2", "Dry": "3", "HAUX": "4", "Fan": "5", "HH": "6", "VAM Auto": "8", "VAM Bypass": "9", "VAM Heat": "10", "VAM Normal": "11",
+			},
+		}},
+	}}
+	data.CoreCommands = []v1Model.Command{
+		{
+			Name: TestDeviceCommandValuesName,
+			Get: v1Model.Get{
+				Action: v1Model.Action{
+					Path: "/api/v1/device/{deviceId}/Values",
+					Responses: []v1Model.Response{
+						{
+							Code: "200", Description: "Issue the Get command Values",
+							ExpectedValues: []string{TestSourceSwitchName},
+						}, {
+							Code: "500", Description: "internal server error",
+						},
+					},
+				},
+			},
+			Put: v1Model.Put{
+				Action: v1Model.Action{
+					Path: "/api/v1/device/{deviceId}/Values",
+					Responses: []v1Model.Response{
+						{
+							Code: "204", Description: "Issue the Put command Values",
+						}, {
+							Code: "500", Description: "internal server error",
+						},
+					},
+				},
+				ParameterNames: []string{TestSourceSwitchName, TestSourceOperationModeName},
+			},
+		},
+	}
+	expected := v2ProfileData()
+	expected.DeviceCommands = []v2Model.DeviceCommand{{
+		Name:      TestDeviceCommandValuesName,
+		IsHidden:  false,
+		ReadWrite: common.ReadWrite_R,
+		ResourceOperations: []v2Model.ResourceOperation{
+			{
+				DeviceResource: TestSourceSwitchName,
+				Mappings:       map[string]string{"true": "ON", "false": "OFF"},
+			},
+		},
+	}, {
+		Name:      v2SetCommandName(TestDeviceCommandValuesName),
+		IsHidden:  false,
+		ReadWrite: common.ReadWrite_W,
+		ResourceOperations: []v2Model.ResourceOperation{
+			{
+				DeviceResource: TestSourceSwitchName,
+				Mappings:       map[string]string{"true": "ON", "false": "OFF"},
+			}, {
+				DeviceResource: TestSourceOperationModeName,
+				Mappings: map[string]string{
+					"0": "Cool", "1": "Heat", "2": "Auto", "3": "Dry", "4": "HAUX", "5": "Fan", "6": "HH", "8": "VAM Auto", "9": "VAM Bypass", "10": "VAM Heat", "11": "VAM Normal",
+				},
+			},
+		},
+	}}
 
-	actual := TransformToV2DeviceProfile(data)
-	assert.Equal(t, expected, actual)
+	var tests = []struct {
+		name     string
+		data     v1Model.DeviceProfile
+		expected v2Model.DeviceProfile
+	}{
+		{"transform profile from v1 to v2", v1ProfileData(), v2ProfileData()},
+		{"get operation size is different to set operation", data, expected},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			actual, err := TransformProfileFromV1ToV2(testCase.data)
+			require.NoError(t, err)
+			assert.Equal(t, testCase.expected, actual)
+		})
+	}
 }
 
-func TestTransformToV1DeviceProfile(t *testing.T) {
+func TestTransformProfileFromV2ToV1(t *testing.T) {
 	expected := v1ProfileData()
 	data := v2ProfileData()
 
-	actual := TransformToV1DeviceProfile(data)
+	actual, err := TransformProfileFromV2ToV1(data)
+	require.NoError(t, err)
 	assert.Equal(t, expected, actual)
 }
