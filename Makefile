@@ -6,7 +6,7 @@ GO=CGO_ENABLED=0 GO111MODULE=on go
 tidy:
 	go mod tidy
 
-unittest:
+unittest: tidy
 	$(GO) test ./... -coverprofile=coverage.out ./...
 
 lint:
