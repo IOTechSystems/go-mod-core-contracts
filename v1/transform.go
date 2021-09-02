@@ -168,12 +168,11 @@ func toV1CoreCommand(v2DeviceResources []models.DeviceResource, v2DeviceCommands
 		if resource.IsHidden {
 			continue
 		}
-		// // Skip if the resource exists in the v2 DeviceCommands
-		for _, cmd := range v2DeviceCommands {
-			if resource.Name == cmd.Name {
-				continue
-			}
+		// Skip if the resource exists in the v2 DeviceCommands
+		if existFromV2DeviceCommands(resource.Name, v2DeviceCommands) {
+			continue
 		}
+
 		v1Command := v1Models.Command{
 			Name: resource.Name,
 		}
@@ -187,6 +186,15 @@ func toV1CoreCommand(v2DeviceResources []models.DeviceResource, v2DeviceCommands
 	}
 
 	return commands
+}
+
+func existFromV2DeviceCommands(resourceName string, v2DeviceCommands []models.DeviceCommand) bool {
+	for _, cmd := range v2DeviceCommands {
+		if resourceName == cmd.Name {
+			return true
+		}
+	}
+	return false
 }
 
 func toV1GetAction(cmdName string, resourceOperations []models.ResourceOperation) v1Models.Get {
@@ -250,7 +258,7 @@ func TransformProfileFromV1ToV2(profile v1Models.DeviceProfile) (models.DevicePr
 	v2dp.DeviceResources = toV2DeviceResources(profile)
 	v2dp.DeviceCommands = toV2DeviceCommands(profile.DeviceCommands)
 	for i, r := range v2dp.DeviceResources {
-		v2dp.DeviceResources[i].IsHidden = isV2ResourceHidden(r.Name, v2dp.DeviceCommands, profile.CoreCommands)
+		v2dp.DeviceResources[i].IsHidden = isV2ResourceHidden(r.Name, profile.CoreCommands)
 	}
 	for i, cmd := range v2dp.DeviceCommands {
 		v2dp.DeviceCommands[i].IsHidden = isV2DeviceCommandHidden(cmd.Name, profile.CoreCommands)
@@ -294,14 +302,7 @@ func toV2DeviceResources(profile v1Models.DeviceProfile) []models.DeviceResource
 	return resources
 }
 
-func isV2ResourceHidden(resourceName string, v2deviceCommands []models.DeviceCommand, v1CoreCommands []v1Models.Command) bool {
-	// Skip the checking if the resource exists in the v2 DeviceCommands
-	for _, v2deviceCommand := range v2deviceCommands {
-		if v2deviceCommand.Name == resourceName {
-			return true
-		}
-	}
-
+func isV2ResourceHidden(resourceName string, v1CoreCommands []v1Models.Command) bool {
 	// Check whether the resource exists in the v1 CoreCommands, if exists, the resource is not hidden.
 	for _, v1CoreCommand := range v1CoreCommands {
 		if v1CoreCommand.Name == resourceName {
@@ -398,7 +399,7 @@ func toV2ResourceOperations(readWrite string, v1ros []v1Models.ResourceOperation
 	for _, v1ro := range v1ros {
 		v2ro := models.ResourceOperation{
 			DeviceResource: v1ro.DeviceResource,
-			DefaultValue:   "",
+			DefaultValue:   v1ro.Parameter,
 			Mappings:       v1ro.Mappings,
 		}
 		if readWrite == common.ReadWrite_W && len(v2ro.Mappings) != 0 {
