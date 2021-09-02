@@ -25,6 +25,11 @@ type Device struct {
 	ProfileName    string
 	AutoEvents     []AutoEvent
 	Notify         bool
+	// Properties are required for device discovery, the feedback from JCI was that when discovering a device they
+	// want as much info as we can find about the device (so for example in a big system they have a better idea of what
+	// actual device is being provisioned). So we added a properties field to carry this information. IMHO this is a valid
+	// generic requirement to support discovery.
+	Properties map[string]interface{}
 }
 
 // ProtocolProperties contains the device connection information in key/value pair
