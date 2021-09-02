@@ -12,7 +12,6 @@ type Device struct {
 	Description    string
 	AdminState     AdminState
 	OperatingState OperatingState
-	ProtocolName   string
 	Protocols      map[string]ProtocolProperties
 	Labels         []string
 	Location       interface{}
@@ -21,6 +20,9 @@ type Device struct {
 	AutoEvents     []AutoEvent
 	Tags           map[string]any
 	Properties     map[string]any
+
+	// Central
+	ProtocolName   string
 }
 
 // ProtocolProperties contains the device connection information in key/value pair
