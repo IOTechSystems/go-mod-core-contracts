@@ -12,7 +12,7 @@
  * the License.
  *******************************************************************************/
 
-package models
+package v1models
 
 import (
 	"reflect"

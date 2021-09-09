@@ -12,31 +12,23 @@
  * the License.
  *******************************************************************************/
 
-package models
+package v1models
 
 import "encoding/json"
 
-// Put models a put command in EdgeX
-type Put struct {
-	Action         `yaml:",inline"`
-	ParameterNames []string `json:"parameterNames,omitempty" yaml:"parameterNames,omitempty"`
+// DescribedObject is a hold-over from the Java conversion and is supposed to represent inheritance whereby a type
+// with a Description property IS A DescribedObject. However since there is no inheritance in Go, this should be
+// eliminated and the Description property moved to the relevant types. 4 types currently use this.
+type DescribedObject struct {
+	Timestamps  `yaml:",inline"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"` // Description. Capicé?
 }
 
-// String returns a JSON encoded string representation of the model
-func (p Put) String() string {
-	out, err := json.Marshal(p)
+// String returns a JSON formatted string representation of this DescribedObject
+func (o DescribedObject) String() string {
+	out, err := json.Marshal(o)
 	if err != nil {
 		return err.Error()
 	}
 	return string(out)
-}
-
-// Append the associated value descriptors to the list
-func (p *Put) AllAssociatedValueDescriptors(vdNames *map[string]string) {
-	for _, pn := range p.ParameterNames {
-		// Only add to the map if the value descriptor is NOT there
-		if _, ok := (*vdNames)[pn]; !ok {
-			(*vdNames)[pn] = pn
-		}
-	}
 }

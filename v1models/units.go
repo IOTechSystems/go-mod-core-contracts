@@ -12,33 +12,21 @@
  * the License.
  *******************************************************************************/
 
-package models
+package v1models
 
 import "encoding/json"
 
-type Get struct {
-	Action `json:",omitempty" yaml:",inline"`
+type Units struct {
+	Type         string `json:"type,omitempty" yaml:"type,omitempty"`
+	ReadWrite    string `json:"readWrite,omitempty" yaml:"readWrite,omitempty"`
+	DefaultValue string `json:"defaultValue,omitempty" yaml:"defaultValue,omitempty"`
 }
 
-/*
- * To String function for Get Struct
- */
-func (g Get) String() string {
-	out, err := json.Marshal(g)
+// String returns a JSON encoded string representation of the model
+func (u Units) String() string {
+	out, err := json.Marshal(u)
 	if err != nil {
 		return err.Error()
 	}
 	return string(out)
-}
-
-// Append the associated value descriptors to the list
-func (g *Get) AllAssociatedValueDescriptors(vdNames *map[string]string) {
-	for _, r := range g.Action.Responses {
-		for _, ev := range r.ExpectedValues {
-			// Only add to the map if the value is not there
-			if _, ok := (*vdNames)[ev]; !ok {
-				(*vdNames)[ev] = ev
-			}
-		}
-	}
 }
