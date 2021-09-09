@@ -12,43 +12,33 @@
  * the License.
  *******************************************************************************/
 
-package models
+package v1models
 
 import (
 	"encoding/json"
-	"reflect"
 )
 
-type ProfileProperty struct {
-	Value PropertyValue `json:"value"`
-	Units Units         `json:"units"`
+type Timestamps struct {
+	Created  int64 `json:"created,omitempty" yaml:"created,omitempty"`
+	Modified int64 `json:"modified,omitempty" yaml:"modified,omitempty"`
+	Origin   int64 `json:"origin,omitempty" yaml:"origin,omitempty"`
 }
 
-// MarshalJSON implements the Marshaler interface
-func (pp ProfileProperty) MarshalJSON() ([]byte, error) {
-	test := struct {
-		Value *PropertyValue `json:"value,omitempty"`
-		Units *Units         `json:"units,omitempty"`
-	}{
-		Value: &pp.Value,
-		Units: &pp.Units,
-	}
-
-	if reflect.DeepEqual(pp.Value, PropertyValue{}) {
-		test.Value = nil
-	}
-	if reflect.DeepEqual(pp.Units, Units{}) {
-		test.Units = nil
-	}
-
-	return json.Marshal(test)
-}
-
-// String returns a JSON encoded string representation of this ProfileProperty
-func (pp ProfileProperty) String() string {
-	out, err := json.Marshal(pp)
+// String returns a JSON encoded string representation of the model
+func (ts *Timestamps) String() string {
+	out, err := json.Marshal(ts)
 	if err != nil {
 		return err.Error()
 	}
 	return string(out)
+}
+
+/*
+ * Compare the Created of two objects to determine given is newer
+ */
+func (ts *Timestamps) compareTo(i Timestamps) int {
+	if i.Created > ts.Created {
+		return 1
+	}
+	return -1
 }
