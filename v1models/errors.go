@@ -12,23 +12,21 @@
  * the License.
  *******************************************************************************/
 
-package models
+package v1models
 
-import "encoding/json"
-
-// DescribedObject is a hold-over from the Java conversion and is supposed to represent inheritance whereby a type
-// with a Description property IS A DescribedObject. However since there is no inheritance in Go, this should be
-// eliminated and the Description property moved to the relevant types. 4 types currently use this.
-type DescribedObject struct {
-	Timestamps  `yaml:",inline"`
-	Description string `json:"description,omitempty" yaml:"description,omitempty"` // Description. Capicé?
+// ErrContractInvalid is a specific error type for handling model validation failures. Type checking within
+// the calling application will facilitate more explicit error handling whereby it's clear that validation
+// has failed as opposed to something unexpected happening.
+type ErrContractInvalid struct {
+	errMsg string
 }
 
-// String returns a JSON formatted string representation of this DescribedObject
-func (o DescribedObject) String() string {
-	out, err := json.Marshal(o)
-	if err != nil {
-		return err.Error()
-	}
-	return string(out)
+// NewErrContractInvalid returns an instance of the error interface with ErrContractInvalid as its implementation.
+func NewErrContractInvalid(message string) error {
+	return ErrContractInvalid{errMsg: message}
+}
+
+// Error fulfills the error interface and returns an error message assembled from the state of ErrContractInvalid.
+func (e ErrContractInvalid) Error() string {
+	return e.errMsg
 }

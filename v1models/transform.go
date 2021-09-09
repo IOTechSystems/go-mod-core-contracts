@@ -1,6 +1,6 @@
 // Copyright (C) 2021 IOTech Ltd
 
-package v1
+package v1models
 
 import (
 	"fmt"
@@ -12,19 +12,18 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
-	v1Models "github.com/edgexfoundry/go-mod-core-contracts/v2/v1/models"
 )
 
 // TransformProfileFromV2ToV1 transform v2 profile to v1
-func TransformProfileFromV2ToV1(profile models.DeviceProfile) (v1Models.DeviceProfile, errors.EdgeX) {
+func TransformProfileFromV2ToV1(profile models.DeviceProfile) (DeviceProfile, errors.EdgeX) {
 	v2dpDto := dtos.FromDeviceProfileModelToDTO(profile)
 	err := v2dpDto.Validate()
 	if err != nil {
-		return v1Models.DeviceProfile{}, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v2 device profile", err)
+		return DeviceProfile{}, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v2 device profile", err)
 	}
 
-	v1dp := v1Models.DeviceProfile{
-		DescribedObject: v1Models.DescribedObject{Description: profile.Description},
+	v1dp := DeviceProfile{
+		DescribedObject: DescribedObject{Description: profile.Description},
 		Name:            profile.Name,
 		Manufacturer:    profile.Manufacturer,
 		Model:           profile.Model,
@@ -41,16 +40,16 @@ func TransformProfileFromV2ToV1(profile models.DeviceProfile) (v1Models.DevicePr
 	return v1dp, nil
 }
 
-func toV1DeviceResources(deviceResources []models.DeviceResource) []v1Models.DeviceResource {
-	resources := make([]v1Models.DeviceResource, len(deviceResources))
+func toV1DeviceResources(deviceResources []models.DeviceResource) []DeviceResource {
+	resources := make([]DeviceResource, len(deviceResources))
 	for i, r := range deviceResources {
-		resources[i] = v1Models.DeviceResource{
+		resources[i] = DeviceResource{
 			Name:        r.Name,
 			Description: r.Description,
 			Tags:        toV1Tags(r.Tags),
 			Attributes:  toV1Attribute(r.Attributes),
-			Properties: v1Models.ProfileProperty{
-				Value: v1Models.PropertyValue{
+			Properties: ProfileProperty{
+				Value: PropertyValue{
 					Type:         r.Properties.ValueType,
 					ReadWrite:    r.Properties.ReadWrite,
 					Minimum:      r.Properties.Minimum,
@@ -64,7 +63,7 @@ func toV1DeviceResources(deviceResources []models.DeviceResource) []v1Models.Dev
 					Assertion:    r.Properties.Assertion,
 					MediaType:    r.Properties.MediaType,
 				},
-				Units: v1Models.Units{
+				Units: Units{
 					Type:         "String",
 					ReadWrite:    common.ReadWrite_R,
 					DefaultValue: r.Properties.Units,
@@ -101,10 +100,10 @@ const (
 	ResourceOperationSet = "set"
 )
 
-func toV1DeviceCommands(deviceCommands []models.DeviceCommand) []v1Models.ProfileResource {
-	commands := make([]v1Models.ProfileResource, len(deviceCommands))
+func toV1DeviceCommands(deviceCommands []models.DeviceCommand) []ProfileResource {
+	commands := make([]ProfileResource, len(deviceCommands))
 	for i, c := range deviceCommands {
-		commands[i] = v1Models.ProfileResource{
+		commands[i] = ProfileResource{
 			Name: c.Name,
 		}
 		if strings.Contains(c.ReadWrite, common.ReadWrite_R) {
@@ -118,14 +117,14 @@ func toV1DeviceCommands(deviceCommands []models.DeviceCommand) []v1Models.Profil
 	return commands
 }
 
-func toV1Operation(op string, resourceOperations []models.ResourceOperation) []v1Models.ResourceOperation {
-	operations := make([]v1Models.ResourceOperation, len(resourceOperations))
+func toV1Operation(op string, resourceOperations []models.ResourceOperation) []ResourceOperation {
+	operations := make([]ResourceOperation, len(resourceOperations))
 	for i, ro := range resourceOperations {
 		valueMappings := ro.Mappings
 		if op == ResourceOperationSet && len(ro.Mappings) != 0 {
 			valueMappings = reverseMapKeyValue(ro.Mappings)
 		}
-		operations[i] = v1Models.ResourceOperation{
+		operations[i] = ResourceOperation{
 			Index:          strconv.Itoa(i),
 			Operation:      op,
 			DeviceResource: ro.DeviceResource,
@@ -143,15 +142,15 @@ func reverseMapKeyValue(mappings map[string]string) map[string]string {
 	return valueMappings
 }
 
-func toV1CoreCommand(v2DeviceResources []models.DeviceResource, v2DeviceCommands []models.DeviceCommand) []v1Models.Command {
-	var commands []v1Models.Command
+func toV1CoreCommand(v2DeviceResources []models.DeviceResource, v2DeviceCommands []models.DeviceCommand) []Command {
+	var commands []Command
 
 	// Create v1 CoreCommands by v2DeviceCommands
 	for _, cmd := range v2DeviceCommands {
 		if cmd.IsHidden {
 			continue
 		}
-		v1Command := v1Models.Command{
+		v1Command := Command{
 			Name: cmd.Name,
 		}
 		if strings.Contains(cmd.ReadWrite, common.ReadWrite_R) {
@@ -173,7 +172,7 @@ func toV1CoreCommand(v2DeviceResources []models.DeviceResource, v2DeviceCommands
 			continue
 		}
 
-		v1Command := v1Models.Command{
+		v1Command := Command{
 			Name: resource.Name,
 		}
 		if strings.Contains(resource.Properties.ReadWrite, common.ReadWrite_R) {
@@ -197,14 +196,14 @@ func existFromV2DeviceCommands(resourceName string, v2DeviceCommands []models.De
 	return false
 }
 
-func toV1GetAction(cmdName string, resourceOperations []models.ResourceOperation) v1Models.Get {
+func toV1GetAction(cmdName string, resourceOperations []models.ResourceOperation) Get {
 	expectedValues := make([]string, len(resourceOperations))
 	for i, ro := range resourceOperations {
 		expectedValues[i] = ro.DeviceResource
 	}
-	action := v1Models.Action{
+	action := Action{
 		Path: fmt.Sprintf("/api/v1/device/{deviceId}/%s", cmdName),
-		Responses: []v1Models.Response{
+		Responses: []Response{
 			{
 				Code:           strconv.Itoa(http.StatusOK),
 				Description:    fmt.Sprintf("Issue the Get command %s", cmdName),
@@ -215,17 +214,17 @@ func toV1GetAction(cmdName string, resourceOperations []models.ResourceOperation
 			},
 		},
 	}
-	return v1Models.Get{Action: action}
+	return Get{Action: action}
 }
 
-func toV1PutAction(cmdName string, resourceOperations []models.ResourceOperation) v1Models.Put {
+func toV1PutAction(cmdName string, resourceOperations []models.ResourceOperation) Put {
 	parameterNames := make([]string, len(resourceOperations))
 	for i, ro := range resourceOperations {
 		parameterNames[i] = ro.DeviceResource
 	}
-	action := v1Models.Action{
+	action := Action{
 		Path: fmt.Sprintf("/api/v1/device/{deviceId}/%s", cmdName),
-		Responses: []v1Models.Response{
+		Responses: []Response{
 			{
 				Code:        strconv.Itoa(http.StatusNoContent),
 				Description: fmt.Sprintf("Issue the Put command %s", cmdName),
@@ -235,14 +234,14 @@ func toV1PutAction(cmdName string, resourceOperations []models.ResourceOperation
 			},
 		},
 	}
-	return v1Models.Put{
+	return Put{
 		Action:         action,
 		ParameterNames: parameterNames,
 	}
 }
 
 // TransformProfileFromV1ToV2 transform v1 profile to v2
-func TransformProfileFromV1ToV2(profile v1Models.DeviceProfile) (models.DeviceProfile, errors.EdgeX) {
+func TransformProfileFromV1ToV2(profile DeviceProfile) (models.DeviceProfile, errors.EdgeX) {
 	_, err := profile.Validate()
 	if err != nil {
 		return models.DeviceProfile{}, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v1 device profile", err)
@@ -272,7 +271,7 @@ func TransformProfileFromV1ToV2(profile v1Models.DeviceProfile) (models.DevicePr
 	return v2dp, nil
 }
 
-func toV2DeviceResources(profile v1Models.DeviceProfile) []models.DeviceResource {
+func toV2DeviceResources(profile DeviceProfile) []models.DeviceResource {
 	resources := make([]models.DeviceResource, len(profile.DeviceResources))
 	for i, r := range profile.DeviceResources {
 		resources[i] = models.DeviceResource{
@@ -302,7 +301,7 @@ func toV2DeviceResources(profile v1Models.DeviceProfile) []models.DeviceResource
 	return resources
 }
 
-func isV2ResourceHidden(resourceName string, v1CoreCommands []v1Models.Command) bool {
+func isV2ResourceHidden(resourceName string, v1CoreCommands []Command) bool {
 	// Check whether the resource exists in the v1 CoreCommands, if exists, the resource is not hidden.
 	for _, v1CoreCommand := range v1CoreCommands {
 		if v1CoreCommand.Name == resourceName {
@@ -312,7 +311,7 @@ func isV2ResourceHidden(resourceName string, v1CoreCommands []v1Models.Command) 
 	return true
 }
 
-func isV2DeviceCommandHidden(v2DeviceCommandName string, v1CoreCommands []v1Models.Command) bool {
+func isV2DeviceCommandHidden(v2DeviceCommandName string, v1CoreCommands []Command) bool {
 	for _, v1CoreCommand := range v1CoreCommands {
 		if v1CoreCommand.Name == v2DeviceCommandName || v2SetCommandName(v1CoreCommand.Name) == v2DeviceCommandName {
 			return false
@@ -341,7 +340,7 @@ func toV2Attributes(attributes map[string]string) map[string]interface{} {
 	return dto
 }
 
-func toV2DeviceCommands(deviceCommands []v1Models.ProfileResource) []models.DeviceCommand {
+func toV2DeviceCommands(deviceCommands []ProfileResource) []models.DeviceCommand {
 	var commands []models.DeviceCommand
 	for _, c := range deviceCommands {
 		if len(c.Get) > 0 && len(c.Set) > 0 && len(c.Get) == len(c.Set) {
@@ -394,7 +393,7 @@ func toV2DeviceCommands(deviceCommands []v1Models.ProfileResource) []models.Devi
 	return commands
 }
 
-func toV2ResourceOperations(readWrite string, v1ros []v1Models.ResourceOperation) []models.ResourceOperation {
+func toV2ResourceOperations(readWrite string, v1ros []ResourceOperation) []models.ResourceOperation {
 	var v2ros []models.ResourceOperation
 	for _, v1ro := range v1ros {
 		v2ro := models.ResourceOperation{

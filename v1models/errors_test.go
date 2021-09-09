@@ -12,24 +12,22 @@
  * the License.
  *******************************************************************************/
 
-package models
+package v1models
 
-import (
-	"encoding/json"
-)
+import "testing"
 
-// Action describes state related to the capabilities of a device
-type Action struct {
-	Path      string     `json:"path,omitempty" yaml:"path,omitempty"`           // Path used by service for action on a device or sensor
-	Responses []Response `json:"responses,omitempty" yaml:"responses,omitempty"` // Responses from get or put requests to service
-	URL       string     `json:"url,omitempty" yaml:"url,omitempty"`             // Url for requests from command service
-}
-
-// String returns a JSON formatted string representation of the Action
-func (a Action) String() string {
-	out, err := json.Marshal(a)
+func checkValidationError(err error, expectError bool, testName string, t *testing.T) {
 	if err != nil {
-		return err.Error()
+		if !expectError {
+			t.Errorf("unexpected error: %v", err)
+		}
+		_, ok := err.(ErrContractInvalid)
+		if !ok {
+			t.Errorf("incorrect error type returned")
+		}
+	} else {
+		if expectError {
+			t.Errorf("did not receive expected error: %s", testName)
+		}
 	}
-	return string(out)
 }

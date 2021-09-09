@@ -1,23 +1,19 @@
 // Copyright (C) 2021 IOTech Ltd
 
-package v1
+package v1models
 
 import (
 	"testing"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	v2Model "github.com/edgexfoundry/go-mod-core-contracts/v2/models"
-	v1Model "github.com/edgexfoundry/go-mod-core-contracts/v2/v1/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 const (
-	TestProfileName  = "Test-Device-Modbus-Profile"
-	TestManufacturer = "Cool Automation"
-	TestModel        = "CoolMasterNet"
-	TestDescription  = "TestDescription"
+	TestDescription = "TestDescription"
 
 	TestSourceSwitchName                 = "Switch"
 	TestSourceSwitchDescription          = "On/Off , 0-OFF 1-ON"
@@ -58,18 +54,18 @@ var testAttributes = map[string]interface{}{
 	"TestAttribute": "TestAttributeValue",
 }
 
-var testV1DeviceResources = []v1Model.DeviceResource{{
+var testV1DeviceResources = []DeviceResource{{
 	Name:        TestSourceSwitchName,
 	Description: TestSourceSwitchDescription,
 	Tags:        TestSourceSwitchTags,
 	Attributes:  TestSourceSwitchAttributes,
-	Properties: v1Model.ProfileProperty{
-		Value: v1Model.PropertyValue{
+	Properties: ProfileProperty{
+		Value: PropertyValue{
 			Type:         "Bool",
 			ReadWrite:    common.ReadWrite_RW,
 			DefaultValue: "true",
 		},
-		Units: v1Model.Units{
+		Units: Units{
 			Type:         "String",
 			ReadWrite:    common.ReadWrite_R,
 			DefaultValue: "On/Off",
@@ -80,12 +76,12 @@ var testV1DeviceResources = []v1Model.DeviceResource{{
 	Description: TestSourceOperationModeDescription,
 	Tags:        TestSourceOperationModeTags,
 	Attributes:  TestSourceOperationModeAttributes,
-	Properties: v1Model.ProfileProperty{
-		Value: v1Model.PropertyValue{
+	Properties: ProfileProperty{
+		Value: PropertyValue{
 			Type:      "Int16",
 			ReadWrite: common.ReadWrite_RW,
 		},
-		Units: v1Model.Units{
+		Units: Units{
 			Type:         "String",
 			ReadWrite:    common.ReadWrite_R,
 			DefaultValue: "Operation Mode",
@@ -96,14 +92,14 @@ var testV1DeviceResources = []v1Model.DeviceResource{{
 	Description: TestSourceRoomTemperatureDescription,
 	Tags:        TestSourceRoomTemperatureTags,
 	Attributes:  TestSourceRoomTemperatureAttributes,
-	Properties: v1Model.ProfileProperty{
-		Value: v1Model.PropertyValue{
+	Properties: ProfileProperty{
+		Value: PropertyValue{
 			Type:          "Float32",
 			ReadWrite:     common.ReadWrite_R,
 			Scale:         "0.1",
 			FloatEncoding: "eNotation",
 		},
-		Units: v1Model.Units{
+		Units: Units{
 			Type:         "String",
 			ReadWrite:    common.ReadWrite_R,
 			DefaultValue: "degrees Celsius",
@@ -114,14 +110,14 @@ var testV1DeviceResources = []v1Model.DeviceResource{{
 	Description: TestSourceTemperatureDescription,
 	Tags:        TestSourceTemperatureTags,
 	Attributes:  TestSourceTemperatureAttributes,
-	Properties: v1Model.ProfileProperty{
-		Value: v1Model.PropertyValue{
+	Properties: ProfileProperty{
+		Value: PropertyValue{
 			Type:          "Float64",
 			ReadWrite:     common.ReadWrite_RW,
 			Scale:         "0.1",
 			FloatEncoding: "eNotation",
 		},
-		Units: v1Model.Units{
+		Units: Units{
 			Type:         "String",
 			ReadWrite:    common.ReadWrite_R,
 			DefaultValue: "degrees Celsius",
@@ -129,11 +125,11 @@ var testV1DeviceResources = []v1Model.DeviceResource{{
 	},
 }}
 
-func v1ProfileData() v1Model.DeviceProfile {
+func v1ProfileData() DeviceProfile {
 
-	var testDeviceCommands = []v1Model.ProfileResource{{
+	var testDeviceCommands = []ProfileResource{{
 		Name: TestDeviceCommandValuesName,
-		Get: []v1Model.ResourceOperation{{
+		Get: []ResourceOperation{{
 			Index: "0", Operation: "get", DeviceResource: TestSourceSwitchName,
 			Mappings: map[string]string{"true": "ON", "false": "OFF"},
 		}, {
@@ -144,7 +140,7 @@ func v1ProfileData() v1Model.DeviceProfile {
 		}, {
 			Index: "2", Operation: "get", DeviceResource: TestSourceTemperatureName,
 		}},
-		Set: []v1Model.ResourceOperation{{
+		Set: []ResourceOperation{{
 			Index: "0", Operation: "set", DeviceResource: TestSourceSwitchName,
 			Mappings: map[string]string{"ON": "true", "OFF": "false"},
 		}, {
@@ -157,13 +153,13 @@ func v1ProfileData() v1Model.DeviceProfile {
 		}},
 	}}
 
-	var testCoreCommands = []v1Model.Command{
+	var testCoreCommands = []Command{
 		{
 			Name: TestDeviceCommandValuesName,
-			Get: v1Model.Get{
-				Action: v1Model.Action{
+			Get: Get{
+				Action: Action{
 					Path: "/api/v1/device/{deviceId}/Values",
-					Responses: []v1Model.Response{
+					Responses: []Response{
 						{
 							Code: "200", Description: "Issue the Get command Values",
 							ExpectedValues: []string{TestSourceSwitchName, TestSourceOperationModeName, TestSourceTemperatureName},
@@ -173,10 +169,10 @@ func v1ProfileData() v1Model.DeviceProfile {
 					},
 				},
 			},
-			Put: v1Model.Put{
-				Action: v1Model.Action{
+			Put: Put{
+				Action: Action{
 					Path: "/api/v1/device/{deviceId}/Values",
-					Responses: []v1Model.Response{
+					Responses: []Response{
 						{
 							Code: "204", Description: "Issue the Put command Values",
 						}, {
@@ -189,12 +185,12 @@ func v1ProfileData() v1Model.DeviceProfile {
 		},
 	}
 
-	return v1Model.DeviceProfile{
+	return DeviceProfile{
 		Name:         TestProfileName,
 		Manufacturer: TestManufacturer,
 		Model:        TestModel,
 		Labels:       testLabels,
-		DescribedObject: v1Model.DescribedObject{
+		DescribedObject: DescribedObject{
 			Description: TestDescription,
 		},
 
@@ -285,13 +281,13 @@ func v2ProfileData() v2Model.DeviceProfile {
 
 func TestTransformProfileFromV1ToV2(t *testing.T) {
 	data := v1ProfileData()
-	data.DeviceCommands = []v1Model.ProfileResource{{
+	data.DeviceCommands = []ProfileResource{{
 		Name: TestDeviceCommandValuesName,
-		Get: []v1Model.ResourceOperation{{
+		Get: []ResourceOperation{{
 			Index: "0", Operation: "get", DeviceResource: TestSourceSwitchName,
 			Mappings: map[string]string{"true": "ON", "false": "OFF"},
 		}},
-		Set: []v1Model.ResourceOperation{{
+		Set: []ResourceOperation{{
 			Index: "0", Operation: "set", DeviceResource: TestSourceSwitchName,
 			Mappings: map[string]string{"ON": "true", "OFF": "false"},
 		}, {
@@ -301,13 +297,13 @@ func TestTransformProfileFromV1ToV2(t *testing.T) {
 			},
 		}},
 	}}
-	data.CoreCommands = []v1Model.Command{
+	data.CoreCommands = []Command{
 		{
 			Name: TestDeviceCommandValuesName,
-			Get: v1Model.Get{
-				Action: v1Model.Action{
+			Get: Get{
+				Action: Action{
 					Path: "/api/v1/device/{deviceId}/Values",
-					Responses: []v1Model.Response{
+					Responses: []Response{
 						{
 							Code: "200", Description: "Issue the Get command Values",
 							ExpectedValues: []string{TestSourceSwitchName},
@@ -317,10 +313,10 @@ func TestTransformProfileFromV1ToV2(t *testing.T) {
 					},
 				},
 			},
-			Put: v1Model.Put{
-				Action: v1Model.Action{
+			Put: Put{
+				Action: Action{
 					Path: "/api/v1/device/{deviceId}/Values",
-					Responses: []v1Model.Response{
+					Responses: []Response{
 						{
 							Code: "204", Description: "Issue the Put command Values",
 						}, {
@@ -362,7 +358,7 @@ func TestTransformProfileFromV1ToV2(t *testing.T) {
 
 	var tests = []struct {
 		name     string
-		data     v1Model.DeviceProfile
+		data     DeviceProfile
 		expected v2Model.DeviceProfile
 	}{
 		{"transform profile from v1 to v2", v1ProfileData(), v2ProfileData()},
