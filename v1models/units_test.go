@@ -12,21 +12,34 @@
  * the License.
  *******************************************************************************/
 
-package models
+package v1models
 
-import "encoding/json"
+import (
+	"testing"
+)
 
-type Units struct {
-	Type         string `json:"type,omitempty" yaml:"type,omitempty"`
-	ReadWrite    string `json:"readWrite,omitempty" yaml:"readWrite,omitempty"`
-	DefaultValue string `json:"defaultValue,omitempty" yaml:"defaultValue,omitempty"`
-}
+var TestUnitsType = "String"
+var TestUnitsRW = "R"
+var TestUnitsDV = "Degrees Fahrenheit"
+var TestUnits = Units{Type: TestUnitsType, ReadWrite: TestUnitsRW, DefaultValue: TestUnitsDV}
 
-// String returns a JSON encoded string representation of the model
-func (u Units) String() string {
-	out, err := json.Marshal(u)
-	if err != nil {
-		return err.Error()
+func TestUnits_String(t *testing.T) {
+	tests := []struct {
+		name string
+		u    Units
+		want string
+	}{
+		{"units to string", TestUnits,
+			"{\"type\":\"" + TestUnitsType + "\"" +
+				",\"readWrite\":\"" + TestUnitsRW + "\"" +
+				",\"defaultValue\":\"" + TestUnitsDV + "\"}"},
+		{"units to string, empty", Units{}, testEmptyJSON},
 	}
-	return string(out)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.u.String(); got != tt.want {
+				t.Errorf("Units.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
