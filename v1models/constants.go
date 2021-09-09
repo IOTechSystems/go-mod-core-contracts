@@ -12,33 +12,17 @@
  * the License.
  *******************************************************************************/
 
-package models
+package v1models
 
-import (
-	"encoding/json"
+// These constants are used by the unit tests in the models.
+const (
+	TestId        = "Thermometer"
+	testEmptyJSON = "{}"
+
+	// action
+	testCode           = "200"
+	testDescription    = "ok"
+	testExpectedvalue1 = "temperature"
+	testExpectedvalue2 = "humidity"
+	testActionPath     = "test/path"
 )
-
-type Timestamps struct {
-	Created  int64 `json:"created,omitempty" yaml:"created,omitempty"`
-	Modified int64 `json:"modified,omitempty" yaml:"modified,omitempty"`
-	Origin   int64 `json:"origin,omitempty" yaml:"origin,omitempty"`
-}
-
-// String returns a JSON encoded string representation of the model
-func (ts *Timestamps) String() string {
-	out, err := json.Marshal(ts)
-	if err != nil {
-		return err.Error()
-	}
-	return string(out)
-}
-
-/*
- * Compare the Created of two objects to determine given is newer
- */
-func (ts *Timestamps) compareTo(i Timestamps) int {
-	if i.Created > ts.Created {
-		return 1
-	}
-	return -1
-}

@@ -13,7 +13,7 @@ type DeviceInfo struct {
 	Properties  map[string]interface{}               `json:"properties"`
 }
 
-func ToV2Device(device DeviceInfo, serviceName string) models.Device {
+func ToEdgeXV2Device(device DeviceInfo, serviceName string) models.Device {
 	return models.Device{
 		Name:           device.Name,
 		Description:    "",

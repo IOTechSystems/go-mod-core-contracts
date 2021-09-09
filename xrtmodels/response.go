@@ -2,7 +2,7 @@
 
 package xrtmodels
 
-import v1Model "github.com/edgexfoundry/go-mod-core-contracts/v2/v1/models"
+import "github.com/edgexfoundry/go-mod-core-contracts/v2/v1models"
 
 type BaseResponse struct {
 	Client    string `json:"client"`
@@ -76,5 +76,5 @@ type ProfileResponse struct {
 
 type ProfileResult struct {
 	BaseResult `json:",inline"`
-	Profile    v1Model.DeviceProfile `json:"profile"`
+	Profile    v1models.DeviceProfile `json:"profile"`
 }

@@ -4,7 +4,7 @@ package xrtmodels
 
 import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
-	v1Model "github.com/edgexfoundry/go-mod-core-contracts/v2/v1/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/v1models"
 
 	"github.com/google/uuid"
 )
@@ -35,12 +35,12 @@ type BaseRequest struct {
 
 type AddProfileRequest struct {
 	BaseRequest `json:",inline"`
-	Profile     v1Model.DeviceProfile `json:"profile"`
+	Profile     v1models.DeviceProfile `json:"profile"`
 }
 
 type UpdateProfileRequest struct {
 	BaseRequest `json:",inline"`
-	Profile     v1Model.DeviceProfile `json:"profile"`
+	Profile     v1models.DeviceProfile `json:"profile"`
 }
 
 type ProfileRequest struct {
@@ -86,7 +86,7 @@ func NewBaseRequest(op string, clientName string) BaseRequest {
 }
 
 // NewProfileAddRequest creates request with v1 device profile
-func NewProfileAddRequest(profile v1Model.DeviceProfile, clientName string) AddProfileRequest {
+func NewProfileAddRequest(profile v1models.DeviceProfile, clientName string) AddProfileRequest {
 	req := AddProfileRequest{
 		BaseRequest: BaseRequest{
 			Client:    clientName,
@@ -100,7 +100,7 @@ func NewProfileAddRequest(profile v1Model.DeviceProfile, clientName string) AddP
 }
 
 // NewProfileUpdateRequest creates request with v1 device profile
-func NewProfileUpdateRequest(profile v1Model.DeviceProfile, clientName string) UpdateProfileRequest {
+func NewProfileUpdateRequest(profile v1models.DeviceProfile, clientName string) UpdateProfileRequest {
 	req := UpdateProfileRequest{
 		BaseRequest: BaseRequest{
 			Client:    clientName,
