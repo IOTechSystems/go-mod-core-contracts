@@ -24,6 +24,10 @@ const (
 	DeviceDeleteOperation      = "device:delete"
 	DeviceListOperation        = "device:list"
 
+	ScheduleAddOperation    = "schedule:add"
+	ScheduleListOperation   = "schedule:list"
+	ScheduleDeleteOperation = "schedule:delete"
+
 	DiscoveryTriggerOperation = "discovery:trigger"
 )
 
@@ -75,6 +79,16 @@ type PutResourceRequest struct {
 	BaseRequest `json:",inline"`
 	DeviceName  string                 `json:"device"`
 	Values      map[string]interface{} `json:"values"`
+}
+
+type ScheduleRequest struct {
+	BaseRequest `json:",inline"`
+	Schedule    string `json:"schedule"`
+}
+
+type AddScheduleRequest struct {
+	BaseRequest `json:",inline"`
+	Schedule    Schedule `json:"schedule"`
 }
 
 func NewBaseRequest(op string, clientName string) BaseRequest {
@@ -218,5 +232,29 @@ func NewDeviceResourceSetRequest(deviceName string, clientName string, values ma
 		Values:     nil,
 	}
 	req.Values = values
+	return req
+}
+
+func NewScheduleAddRequest(deviceName string, clientName string, schedule Schedule) AddScheduleRequest {
+	req := AddScheduleRequest{
+		BaseRequest: BaseRequest{
+			Client:    clientName,
+			RequestId: uuid.New().String(),
+			Op:        ScheduleAddOperation,
+		},
+		Schedule: schedule,
+	}
+	return req
+}
+
+func NewScheduleDeleteRequest(scheduleName string, clientName string) ScheduleRequest {
+	req := ScheduleRequest{
+		BaseRequest: BaseRequest{
+			Client:    clientName,
+			RequestId: uuid.New().String(),
+			Op:        ScheduleDeleteOperation,
+		},
+		Schedule: scheduleName,
+	}
 	return req
 }
