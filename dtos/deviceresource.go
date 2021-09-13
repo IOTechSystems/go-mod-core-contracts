@@ -10,12 +10,12 @@ import "github.com/edgexfoundry/go-mod-core-contracts/v2/models"
 // DeviceResource and its properties are defined in the APIv2 specification:
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.x#/DeviceResource
 type DeviceResource struct {
-	Description string                 `json:"description" yaml:"description"`
+	Description string                 `json:"description" yaml:"description,omitempty"`
 	Name        string                 `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	IsHidden    bool                   `json:"isHidden" yaml:"isHidden"`
-	Tags        map[string]interface{} `json:"tags" yaml:"tags"`
+	Tags        map[string]interface{} `json:"tags" yaml:"tags,omitempty"`
 	Properties  ResourceProperties     `json:"properties" yaml:"properties"`
-	Attributes  map[string]interface{} `json:"attributes" yaml:"attributes"`
+	Attributes  map[string]interface{} `json:"attributes" yaml:"attributes,omitempty"`
 }
 
 // ToDeviceResourceModel transforms the DeviceResource DTO to the DeviceResource model
