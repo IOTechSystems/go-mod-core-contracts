@@ -14,6 +14,11 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
 )
 
+const (
+	primaryTable    = "primaryTable"
+	startingAddress = "startingAddress"
+)
+
 // TransformProfileFromV2ToV1 transform v2 profile to v1
 func TransformProfileFromV2ToV1(profile models.DeviceProfile) (DeviceProfile, errors.EdgeX) {
 	v2dpDto := dtos.FromDeviceProfileModelToDTO(profile)
@@ -407,4 +412,52 @@ func toV2ResourceOperations(readWrite string, v1ros []ResourceOperation) []model
 		v2ros = append(v2ros, v2ro)
 	}
 	return v2ros
+}
+
+// ConvertStartingAddressToOneBased convert startingAddress attribute from zero-based to one-based when transforming from v2 to v1 profile
+func ConvertStartingAddressToOneBased(profile *DeviceProfile) errors.EdgeX {
+	if len(profile.DeviceResources) == 0 {
+		return nil
+	}
+	if isModbusAttributes(profile.DeviceResources[0].Attributes) {
+		for i, resource := range profile.DeviceResources {
+			for k, v := range resource.Attributes {
+				if k == startingAddress {
+					val, err := strconv.Atoi(v)
+					if err != nil {
+						return errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid startingAddress", err)
+					}
+					profile.DeviceResources[i].Attributes[k] = fmt.Sprintf("%v", val+1)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+// ConvertStartingAddressToZeroBased convert startingAddress attribute from one-based to zero-based when transforming from v1 to v2 profile
+func ConvertStartingAddressToZeroBased(profile *models.DeviceProfile) errors.EdgeX {
+	if len(profile.DeviceResources) == 0 {
+		return nil
+	}
+	if isModbusAttributes(toV1Attribute(profile.DeviceResources[0].Attributes)) {
+		for i, resource := range profile.DeviceResources {
+			for k, v := range resource.Attributes {
+				if k == startingAddress {
+					val, err := strconv.Atoi(fmt.Sprint(v))
+					if err != nil {
+						return errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid startingAddress", err)
+					}
+					profile.DeviceResources[i].Attributes[k] = val - 1
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func isModbusAttributes(attributes map[string]string) bool {
+	_, isPrimaryTableExists := attributes[primaryTable]
+	_, isStartingAddressExists := attributes[startingAddress]
+	return isPrimaryTableExists && isStartingAddressExists
 }

@@ -28,25 +28,10 @@ const (
 )
 
 var (
-	TestSourceSwitchAttributes = map[string]string{
-		"primaryTable": "COILS", "startingAddress": "1",
-	}
-	TestSourceSwitchTags = map[string]string{"source": "switch"}
-
-	TestSourceOperationModeAttributes = map[string]string{
-		"primaryTable": "HOLDING_REGISTERS", "startingAddress": "2",
-	}
-	TestSourceOperationModeTags = map[string]string{"source": "operation mode"}
-
-	TestSourceRoomTemperatureAttributes = map[string]string{
-		"primaryTable": "INPUT_REGISTERS", "startingAddress": "4",
-	}
+	TestSourceSwitchTags          = map[string]string{"source": "switch"}
+	TestSourceOperationModeTags   = map[string]string{"source": "operation mode"}
 	TestSourceRoomTemperatureTags = map[string]string{"source": "room temperature"}
-
-	TestSourceTemperatureAttributes = map[string]string{
-		"primaryTable": "HOLDING_REGISTERS", "startingAddress": "5",
-	}
-	TestSourceTemperatureTags = map[string]string{"source": "temperature"}
+	TestSourceTemperatureTags     = map[string]string{"source": "temperature"}
 )
 
 var testLabels = []string{"HVAC", "Air conditioner"}
@@ -58,7 +43,9 @@ var testV1DeviceResources = []DeviceResource{{
 	Name:        TestSourceSwitchName,
 	Description: TestSourceSwitchDescription,
 	Tags:        TestSourceSwitchTags,
-	Attributes:  TestSourceSwitchAttributes,
+	Attributes: map[string]string{
+		"primaryTable": "COILS", "startingAddress": "1",
+	},
 	Properties: ProfileProperty{
 		Value: PropertyValue{
 			Type:         "Bool",
@@ -75,7 +62,9 @@ var testV1DeviceResources = []DeviceResource{{
 	Name:        TestSourceOperationModeName,
 	Description: TestSourceOperationModeDescription,
 	Tags:        TestSourceOperationModeTags,
-	Attributes:  TestSourceOperationModeAttributes,
+	Attributes: map[string]string{
+		"primaryTable": "HOLDING_REGISTERS", "startingAddress": "2",
+	},
 	Properties: ProfileProperty{
 		Value: PropertyValue{
 			Type:      "Int16",
@@ -91,7 +80,9 @@ var testV1DeviceResources = []DeviceResource{{
 	Name:        TestSourceRoomTemperatureName,
 	Description: TestSourceRoomTemperatureDescription,
 	Tags:        TestSourceRoomTemperatureTags,
-	Attributes:  TestSourceRoomTemperatureAttributes,
+	Attributes: map[string]string{
+		"primaryTable": "INPUT_REGISTERS", "startingAddress": "4",
+	},
 	Properties: ProfileProperty{
 		Value: PropertyValue{
 			Type:          "Float32",
@@ -109,7 +100,9 @@ var testV1DeviceResources = []DeviceResource{{
 	Name:        TestSourceTemperatureName,
 	Description: TestSourceTemperatureDescription,
 	Tags:        TestSourceTemperatureTags,
-	Attributes:  TestSourceTemperatureAttributes,
+	Attributes: map[string]string{
+		"primaryTable": "HOLDING_REGISTERS", "startingAddress": "5",
+	},
 	Properties: ProfileProperty{
 		Value: PropertyValue{
 			Type:          "Float64",
@@ -206,7 +199,9 @@ func v2ProfileData() v2Model.DeviceProfile {
 		IsHidden:    true,
 		Description: TestSourceSwitchDescription,
 		Tags:        toV2Tags(TestSourceSwitchTags),
-		Attributes:  toV2Attributes(TestSourceSwitchAttributes),
+		Attributes: map[string]interface{}{
+			"primaryTable": "COILS", "startingAddress": 0,
+		},
 		Properties: v2Model.ResourceProperties{
 			ValueType:    "Bool",
 			ReadWrite:    common.ReadWrite_RW,
@@ -218,7 +213,9 @@ func v2ProfileData() v2Model.DeviceProfile {
 		IsHidden:    true,
 		Description: TestSourceOperationModeDescription,
 		Tags:        toV2Tags(TestSourceOperationModeTags),
-		Attributes:  toV2Attributes(TestSourceOperationModeAttributes),
+		Attributes: map[string]interface{}{
+			"primaryTable": "HOLDING_REGISTERS", "startingAddress": 1,
+		},
 		Properties: v2Model.ResourceProperties{
 			ValueType: "Int16",
 			ReadWrite: common.ReadWrite_RW,
@@ -229,7 +226,9 @@ func v2ProfileData() v2Model.DeviceProfile {
 		IsHidden:    true,
 		Description: TestSourceRoomTemperatureDescription,
 		Tags:        toV2Tags(TestSourceRoomTemperatureTags),
-		Attributes:  toV2Attributes(TestSourceRoomTemperatureAttributes),
+		Attributes: map[string]interface{}{
+			"primaryTable": "INPUT_REGISTERS", "startingAddress": 3,
+		},
 		Properties: v2Model.ResourceProperties{
 			ValueType: "Float32",
 			ReadWrite: common.ReadWrite_R,
@@ -241,7 +240,9 @@ func v2ProfileData() v2Model.DeviceProfile {
 		IsHidden:    true,
 		Description: TestSourceTemperatureDescription,
 		Tags:        toV2Tags(TestSourceTemperatureTags),
-		Attributes:  toV2Attributes(TestSourceTemperatureAttributes),
+		Attributes: map[string]interface{}{
+			"primaryTable": "HOLDING_REGISTERS", "startingAddress": 4,
+		},
 		Properties: v2Model.ResourceProperties{
 			ValueType: "Float64",
 			ReadWrite: common.ReadWrite_RW,
@@ -368,6 +369,8 @@ func TestTransformProfileFromV1ToV2(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			actual, err := TransformProfileFromV1ToV2(testCase.data)
 			require.NoError(t, err)
+			err = ConvertStartingAddressToZeroBased(&actual)
+			require.NoError(t, err)
 			assert.Equal(t, testCase.expected, actual)
 		})
 	}
@@ -378,6 +381,8 @@ func TestTransformProfileFromV2ToV1(t *testing.T) {
 	data := v2ProfileData()
 
 	actual, err := TransformProfileFromV2ToV1(data)
+	require.NoError(t, err)
+	err = ConvertStartingAddressToOneBased(&actual)
 	require.NoError(t, err)
 	assert.Equal(t, expected, actual)
 }
