@@ -78,3 +78,13 @@ type ProfileResult struct {
 	BaseResult `json:",inline"`
 	Profile    v1models.DeviceProfile `json:"profile"`
 }
+
+type MultiSchedulesResponse struct {
+	BaseResponse `json:",inline"`
+	Result       MultiSchedulesResult `json:"result"`
+}
+
+type MultiSchedulesResult struct {
+	BaseResult `json:",inline"`
+	Schedules  []string `json:"schedules"`
+}
