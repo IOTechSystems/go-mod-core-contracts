@@ -21,6 +21,7 @@ import (
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	commonDTO "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 
 	"github.com/google/uuid"
@@ -217,9 +218,13 @@ func sendRequest(ctx context.Context, req *http.Request, authInjector interfaces
 	}
 
 	// Handle error response
-	msg := fmt.Sprintf("request failed, status code: %d, err: %s", resp.StatusCode, string(bodyBytes))
-	errKind := errors.KindMapping(resp.StatusCode)
-	return nil, errors.NewCommonEdgeX(errKind, msg, nil)
+	var errResponse commonDTO.BaseResponse
+	e := json.Unmarshal(bodyBytes, &errResponse)
+	if e != nil {
+		return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to json decoding error response", e)
+	}
+
+	return nil, errors.NewCommonEdgeX(errors.KindMapping(errResponse.StatusCode), errResponse.Message, nil)
 }
 
 // EscapeAndJoinPath escape and join the path variables
