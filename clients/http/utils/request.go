@@ -8,11 +8,11 @@ package utils
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
+	commonDTO "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 )
 
@@ -50,21 +50,23 @@ func GetRequestAndReturnBinaryRes(ctx context.Context, baseUrl string, requestPa
 	}
 	defer resp.Body.Close()
 
-	res, edgeXerr = getBody(resp)
+	bodyBytes, edgeXerr := getBody(resp)
 	if edgeXerr != nil {
 		return nil, "", errors.NewCommonEdgeXWrapper(edgeXerr)
 	}
 
 	if resp.StatusCode <= http.StatusMultiStatus {
-		return res, resp.Header.Get(common.ContentType), nil
+		return bodyBytes, resp.Header.Get(common.ContentType), nil
 	}
 
 	// Handle error response
-	return nil,
-		"",
-		errors.NewCommonEdgeX(
-			errors.KindMapping(resp.StatusCode),
-			fmt.Sprintf("request failed, status code: %d, err: %s", resp.StatusCode, string(res)), nil)
+	var errResponse commonDTO.BaseResponse
+	e := json.Unmarshal(bodyBytes, &errResponse)
+	if e != nil {
+		return nil, "", errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to json decoding error response", e)
+	}
+
+	return nil, "", errors.NewCommonEdgeX(errors.KindMapping(errResponse.StatusCode), errResponse.Message, nil)
 }
 
 // PostRequest makes the post request with encoded data and return the body
