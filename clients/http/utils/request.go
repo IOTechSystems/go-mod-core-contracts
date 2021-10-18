@@ -9,12 +9,12 @@ package utils
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	commonDTO "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
@@ -62,11 +62,13 @@ func GetRequestAndReturnBinaryRes(ctx context.Context, baseUrl string, requestPa
 	}
 
 	// Handle error response
-	return nil,
-		"",
-		errors.NewCommonEdgeX(
-			errors.KindMapping(resp.StatusCode),
-			fmt.Sprintf("request failed, status code: %d, err: %s", resp.StatusCode, string(res)), nil)
+	var errResponse commonDTO.BaseResponse
+	e := json.Unmarshal(res, &errResponse)
+	if e != nil {
+		return nil, "", errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to json decoding error response", e)
+	}
+
+	return nil, "", errors.NewCommonEdgeX(errors.KindMapping(errResponse.StatusCode), errResponse.Message, nil)
 }
 
 // GetRequestWithBodyRawData makes the GET request with JSON raw data as request body and return the response
