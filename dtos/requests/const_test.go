@@ -48,6 +48,7 @@ const (
 	TestPublisher          = "testPublisher"
 	TestTarget             = "testTarget"
 	TestTopic              = "testTopic"
+	TestContent            = "test content"
 
 	TestServiceName = "TestService"
 	TestActionName  = "stop"
