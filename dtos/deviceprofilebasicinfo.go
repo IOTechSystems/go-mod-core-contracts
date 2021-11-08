@@ -6,12 +6,12 @@
 package dtos
 
 type DeviceProfileBasicInfo struct {
-	Id           string   `json:"id" validate:"omitempty,uuid" yaml:"id,omitempty"`
+	Id           string   `json:"id,omitempty" validate:"omitempty,uuid" yaml:"id,omitempty"`
 	Name         string   `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	Manufacturer string   `json:"manufacturer" yaml:"manufacturer,omitempty"`
-	Description  string   `json:"description" yaml:"description,omitempty"`
-	Model        string   `json:"model" yaml:"model,omitempty"`
-	Labels       []string `json:"labels" yaml:"labels,flow,omitempty"`
+	Manufacturer string   `json:"manufacturer,omitempty" yaml:"manufacturer,omitempty"`
+	Description  string   `json:"description,omitempty" yaml:"description,omitempty"`
+	Model        string   `json:"model,omitempty" yaml:"model,omitempty"`
+	Labels       []string `json:"labels,omitempty" yaml:"labels,flow,omitempty"`
 }
 
 type UpdateDeviceProfileBasicInfo struct {
