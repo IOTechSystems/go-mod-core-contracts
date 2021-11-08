@@ -5,15 +5,29 @@
 
 package dtos
 
-import "github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+import (
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+)
 
 type DeviceResource struct {
-	Description string                 `json:"description" yaml:"description,omitempty"`
+	Description string                 `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        string                 `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	IsHidden    bool                   `json:"isHidden" yaml:"isHidden"`
 	Properties  ResourceProperties     `json:"properties" yaml:"properties"`
-	Attributes  map[string]interface{} `json:"attributes" yaml:"attributes,omitempty"`
+	Attributes  map[string]interface{} `json:"attributes,omitempty" yaml:"attributes,omitempty"`
 	Tags        map[string]any         `json:"tags,omitempty" yaml:"tags,omitempty"`
+}
+
+// Validate satisfies the Validator interface
+func (dr *DeviceResource) Validate() error {
+	err := common.Validate(dr)
+	if err != nil {
+		return errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid DeviceResource.", err)
+	}
+
+	return nil
 }
 
 type UpdateDeviceResource struct {
