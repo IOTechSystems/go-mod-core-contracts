@@ -259,7 +259,11 @@ func TransformProfileFromV1ToV2(profile DeviceProfile) (models.DeviceProfile, er
 		Model:        profile.Model,
 		Labels:       profile.Labels,
 	}
-	v2dp.DeviceResources = toV2DeviceResources(profile)
+	v2dp.DeviceResources, err = toV2DeviceResources(profile)
+	if err != nil {
+		return models.DeviceProfile{}, errors.NewCommonEdgeXWrapper(err)
+	}
+
 	v2dp.DeviceCommands = toV2DeviceCommands(profile.DeviceCommands)
 	for i, r := range v2dp.DeviceResources {
 		v2dp.DeviceResources[i].IsHidden = isV2ResourceHidden(r.Name, profile.CoreCommands)
@@ -276,34 +280,51 @@ func TransformProfileFromV1ToV2(profile DeviceProfile) (models.DeviceProfile, er
 	return v2dp, nil
 }
 
-func toV2DeviceResources(profile DeviceProfile) []models.DeviceResource {
-	resources := make([]models.DeviceResource, len(profile.DeviceResources))
-	for i, r := range profile.DeviceResources {
-		resources[i] = models.DeviceResource{
-			Description: r.Description,
-			Name:        r.Name,
-			IsHidden:    true,
-			Tags:        toV2Tags(r.Tags),
-			Properties: models.ResourceProperties{
-				ValueType:    strings.Title(strings.ToLower(r.Properties.Value.Type)),
-				ReadWrite:    r.Properties.Value.ReadWrite,
-				Units:        r.Properties.Units.DefaultValue,
-				Minimum:      r.Properties.Value.Minimum,
-				Maximum:      r.Properties.Value.Maximum,
-				DefaultValue: r.Properties.Value.DefaultValue,
-				Mask:         r.Properties.Value.Mask,
-				Shift:        r.Properties.Value.Shift,
-				Scale:        r.Properties.Value.Scale,
-				Offset:       r.Properties.Value.Offset,
-				Base:         r.Properties.Value.Base,
-				Assertion:    r.Properties.Value.Assertion,
-				MediaType:    r.Properties.Value.MediaType,
-			},
-			Attributes: toV2Attributes(r.Attributes),
-		}
+func TransformResourceFromV1ToV2(r DeviceResource) (models.DeviceResource, errors.EdgeX) {
+	v2dr := models.DeviceResource{
+		Description: r.Description,
+		Name:        r.Name,
+		IsHidden:    false,
+		Tags:        toV2Tags(r.Tags),
+		Properties: models.ResourceProperties{
+			ValueType:    strings.Title(strings.ToLower(r.Properties.Value.Type)),
+			ReadWrite:    r.Properties.Value.ReadWrite,
+			Units:        r.Properties.Units.DefaultValue,
+			Minimum:      r.Properties.Value.Minimum,
+			Maximum:      r.Properties.Value.Maximum,
+			DefaultValue: r.Properties.Value.DefaultValue,
+			Mask:         r.Properties.Value.Mask,
+			Shift:        r.Properties.Value.Shift,
+			Scale:        r.Properties.Value.Scale,
+			Offset:       r.Properties.Value.Offset,
+			Base:         r.Properties.Value.Base,
+			Assertion:    r.Properties.Value.Assertion,
+			MediaType:    r.Properties.Value.MediaType,
+		},
+		Attributes: toV2Attributes(r.Attributes),
 	}
 
-	return resources
+	v2drDTO := dtos.FromDeviceResourceModelToDTO(v2dr)
+	err := v2drDTO.Validate()
+	if err != nil {
+		return v2dr, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v2 device resource after transforming from v1 to v2", err)
+	}
+
+	return v2dr, nil
+}
+
+func toV2DeviceResources(profile DeviceProfile) ([]models.DeviceResource, errors.EdgeX) {
+	resources := make([]models.DeviceResource, len(profile.DeviceResources))
+	for i, r := range profile.DeviceResources {
+		v2, err := TransformResourceFromV1ToV2(r)
+		if err != nil {
+			return nil, errors.NewCommonEdgeXWrapper(err)
+		}
+
+		resources[i] = v2
+	}
+
+	return resources, nil
 }
 
 func isV2ResourceHidden(resourceName string, v1CoreCommands []Command) bool {

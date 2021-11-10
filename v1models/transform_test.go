@@ -39,84 +39,85 @@ var testAttributes = map[string]interface{}{
 	"TestAttribute": "TestAttributeValue",
 }
 
-var testV1DeviceResources = []DeviceResource{{
-	Name:        TestSourceSwitchName,
-	Description: TestSourceSwitchDescription,
-	Tags:        TestSourceSwitchTags,
-	Attributes: map[string]string{
-		"primaryTable": "COILS", "startingAddress": "1",
-	},
-	Properties: ProfileProperty{
-		Value: PropertyValue{
-			Type:         "Bool",
-			ReadWrite:    common.ReadWrite_RW,
-			DefaultValue: "true",
+var testV1DeviceResources = []DeviceResource{
+	{
+		Name:        TestSourceSwitchName,
+		Description: TestSourceSwitchDescription,
+		Tags:        TestSourceSwitchTags,
+		Attributes: map[string]string{
+			"primaryTable": "COILS", "startingAddress": "1",
 		},
-		Units: Units{
-			Type:         "String",
-			ReadWrite:    common.ReadWrite_R,
-			DefaultValue: "On/Off",
+		Properties: ProfileProperty{
+			Value: PropertyValue{
+				Type:         "Bool",
+				ReadWrite:    common.ReadWrite_RW,
+				DefaultValue: "true",
+			},
+			Units: Units{
+				Type:         "String",
+				ReadWrite:    common.ReadWrite_R,
+				DefaultValue: "On/Off",
+			},
 		},
-	},
-}, {
-	Name:        TestSourceOperationModeName,
-	Description: TestSourceOperationModeDescription,
-	Tags:        TestSourceOperationModeTags,
-	Attributes: map[string]string{
-		"primaryTable": "HOLDING_REGISTERS", "startingAddress": "2",
-	},
-	Properties: ProfileProperty{
-		Value: PropertyValue{
-			Type:      "Int16",
-			ReadWrite: common.ReadWrite_RW,
+	}, {
+		Name:        TestSourceOperationModeName,
+		Description: TestSourceOperationModeDescription,
+		Tags:        TestSourceOperationModeTags,
+		Attributes: map[string]string{
+			"primaryTable": "HOLDING_REGISTERS", "startingAddress": "2",
 		},
-		Units: Units{
-			Type:         "String",
-			ReadWrite:    common.ReadWrite_R,
-			DefaultValue: "Operation Mode",
+		Properties: ProfileProperty{
+			Value: PropertyValue{
+				Type:      "Int16",
+				ReadWrite: common.ReadWrite_RW,
+			},
+			Units: Units{
+				Type:         "String",
+				ReadWrite:    common.ReadWrite_R,
+				DefaultValue: "Operation Mode",
+			},
 		},
-	},
-}, {
-	Name:        TestSourceRoomTemperatureName,
-	Description: TestSourceRoomTemperatureDescription,
-	Tags:        TestSourceRoomTemperatureTags,
-	Attributes: map[string]string{
-		"primaryTable": "INPUT_REGISTERS", "startingAddress": "4",
-	},
-	Properties: ProfileProperty{
-		Value: PropertyValue{
-			Type:          "Float32",
-			ReadWrite:     common.ReadWrite_R,
-			Scale:         "0.1",
-			FloatEncoding: "eNotation",
+	}, {
+		Name:        TestSourceRoomTemperatureName,
+		Description: TestSourceRoomTemperatureDescription,
+		Tags:        TestSourceRoomTemperatureTags,
+		Attributes: map[string]string{
+			"primaryTable": "INPUT_REGISTERS", "startingAddress": "4",
 		},
-		Units: Units{
-			Type:         "String",
-			ReadWrite:    common.ReadWrite_R,
-			DefaultValue: "degrees Celsius",
+		Properties: ProfileProperty{
+			Value: PropertyValue{
+				Type:          "Float32",
+				ReadWrite:     common.ReadWrite_R,
+				Scale:         "0.1",
+				FloatEncoding: "eNotation",
+			},
+			Units: Units{
+				Type:         "String",
+				ReadWrite:    common.ReadWrite_R,
+				DefaultValue: "degrees Celsius",
+			},
 		},
-	},
-}, {
-	Name:        TestSourceTemperatureName,
-	Description: TestSourceTemperatureDescription,
-	Tags:        TestSourceTemperatureTags,
-	Attributes: map[string]string{
-		"primaryTable": "HOLDING_REGISTERS", "startingAddress": "5",
-	},
-	Properties: ProfileProperty{
-		Value: PropertyValue{
-			Type:          "Float64",
-			ReadWrite:     common.ReadWrite_RW,
-			Scale:         "0.1",
-			FloatEncoding: "eNotation",
+	}, {
+		Name:        TestSourceTemperatureName,
+		Description: TestSourceTemperatureDescription,
+		Tags:        TestSourceTemperatureTags,
+		Attributes: map[string]string{
+			"primaryTable": "HOLDING_REGISTERS", "startingAddress": "5",
 		},
-		Units: Units{
-			Type:         "String",
-			ReadWrite:    common.ReadWrite_R,
-			DefaultValue: "degrees Celsius",
+		Properties: ProfileProperty{
+			Value: PropertyValue{
+				Type:          "Float64",
+				ReadWrite:     common.ReadWrite_RW,
+				Scale:         "0.1",
+				FloatEncoding: "eNotation",
+			},
+			Units: Units{
+				Type:         "String",
+				ReadWrite:    common.ReadWrite_R,
+				DefaultValue: "degrees Celsius",
+			},
 		},
-	},
-}}
+	}}
 
 func v1ProfileData() DeviceProfile {
 
@@ -385,4 +386,16 @@ func TestTransformProfileFromV2ToV1(t *testing.T) {
 	err = ConvertStartingAddressToOneBased(&actual)
 	require.NoError(t, err)
 	assert.Equal(t, expected, actual)
+}
+
+func TestTransformResourceFromV1ToV2(t *testing.T) {
+	data := v1ProfileData()
+	expected := v2ProfileData()
+
+	for i, dr := range data.DeviceResources {
+		actual, err := TransformResourceFromV1ToV2(dr)
+		require.NoError(t, err)
+		assert.Equal(t, actual.Tags, expected.DeviceResources[i].Tags)
+		assert.Equal(t, actual.Properties, expected.DeviceResources[i].Properties)
+	}
 }
