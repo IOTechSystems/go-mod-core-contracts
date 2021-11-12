@@ -34,7 +34,7 @@ func TransformProfileFromV2ToV1(profile models.DeviceProfile) (DeviceProfile, er
 		Model:           profile.Model,
 		Labels:          profile.Labels,
 	}
-	v1dp.DeviceResources = toV1DeviceResources(profile.DeviceResources)
+	v1dp.DeviceResources = ToV1DeviceResources(profile.DeviceResources)
 	v1dp.DeviceCommands = toV1DeviceCommands(profile.DeviceCommands)
 	v1dp.CoreCommands = toV1CoreCommand(profile.DeviceResources, profile.DeviceCommands)
 
@@ -45,7 +45,7 @@ func TransformProfileFromV2ToV1(profile models.DeviceProfile) (DeviceProfile, er
 	return v1dp, nil
 }
 
-func toV1DeviceResources(deviceResources []models.DeviceResource) []DeviceResource {
+func ToV1DeviceResources(deviceResources []models.DeviceResource) []DeviceResource {
 	resources := make([]DeviceResource, len(deviceResources))
 	for i, r := range deviceResources {
 		resources[i] = DeviceResource{
