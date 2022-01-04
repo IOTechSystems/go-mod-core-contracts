@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -23,6 +23,7 @@ var testAttributes = map[string]interface{}{
 var testMappings = map[string]string{"0": "off", "1": "on"}
 
 var testDeviceProfile = models.DeviceProfile{
+	ApiVersion:   common.ApiVersion,
 	Name:         TestDeviceProfileName,
 	Manufacturer: TestManufacturer,
 	Description:  TestDescription,
@@ -50,6 +51,7 @@ var testDeviceProfile = models.DeviceProfile{
 
 func profileData() DeviceProfile {
 	return DeviceProfile{
+		ApiVersion: common.ApiVersion,
 		DeviceProfileBasicInfo: DeviceProfileBasicInfo{
 			Name:         TestDeviceProfileName,
 			Manufacturer: TestManufacturer,
