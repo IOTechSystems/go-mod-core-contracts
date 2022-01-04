@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -18,6 +18,7 @@ import (
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/DeviceProfile
 type DeviceProfile struct {
 	DBTimestamp     `json:",inline" yaml:"dbTimestamp,omitempty"`
+	ApiVersion      string           `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
 	Id              string           `json:"id,omitempty" validate:"omitempty,uuid" yaml:"id,omitempty"`
 	Name            string           `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	Manufacturer    string           `json:"manufacturer,omitempty" yaml:"manufacturer,omitempty"`
@@ -41,6 +42,7 @@ func (dp *DeviceProfile) Validate() error {
 func (dp *DeviceProfile) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var alias struct {
 		DBTimestamp
+		ApiVersion      string           `yaml:"apiVersion"`
 		Id              string           `yaml:"id"`
 		Name            string           `yaml:"name"`
 		Manufacturer    string           `yaml:"manufacturer"`
@@ -74,6 +76,7 @@ func (dp *DeviceProfile) UnmarshalYAML(unmarshal func(interface{}) error) error 
 func ToDeviceProfileModel(deviceProfileDTO DeviceProfile) models.DeviceProfile {
 	return models.DeviceProfile{
 		DBTimestamp:     models.DBTimestamp(deviceProfileDTO.DBTimestamp),
+		ApiVersion:      deviceProfileDTO.ApiVersion,
 		Id:              deviceProfileDTO.Id,
 		Name:            deviceProfileDTO.Name,
 		Description:     deviceProfileDTO.Description,
@@ -89,6 +92,7 @@ func ToDeviceProfileModel(deviceProfileDTO DeviceProfile) models.DeviceProfile {
 func FromDeviceProfileModelToDTO(deviceProfile models.DeviceProfile) DeviceProfile {
 	return DeviceProfile{
 		DBTimestamp:     DBTimestamp(deviceProfile.DBTimestamp),
+		ApiVersion:      deviceProfile.ApiVersion,
 		Id:              deviceProfile.Id,
 		Name:            deviceProfile.Name,
 		Description:     deviceProfile.Description,

@@ -1,4 +1,4 @@
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2022 IOTech Ltd
 
 package v1models
 
@@ -253,6 +253,7 @@ func TransformProfileFromV1ToV2(profile DeviceProfile) (models.DeviceProfile, er
 	}
 
 	v2dp := models.DeviceProfile{
+		ApiVersion:   common.ApiVersion,
 		Description:  profile.Description,
 		Name:         profile.Name,
 		Manufacturer: profile.Manufacturer,
