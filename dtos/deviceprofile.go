@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -17,6 +17,7 @@ import (
 
 type DeviceProfile struct {
 	DBTimestamp            `json:",inline" yaml:"dbTimestamp,omitempty"`
+	ApiVersion             string `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
 	DeviceProfileBasicInfo `json:",inline" yaml:",inline"`
 	DeviceResources        []DeviceResource `json:"deviceResources" yaml:"deviceResources" validate:"dive"`
 	DeviceCommands         []DeviceCommand  `json:"deviceCommands" yaml:"deviceCommands" validate:"dive"`
@@ -38,6 +39,7 @@ func (dp *DeviceProfile) Validate() error {
 func (dp *DeviceProfile) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var alias struct {
 		DBTimestamp
+		ApiVersion             string `yaml:"apiVersion"`
 		DeviceProfileBasicInfo `yaml:",inline"`
 		DeviceResources        []DeviceResource `yaml:"deviceResources"`
 		DeviceCommands         []DeviceCommand  `yaml:"deviceCommands"`
@@ -66,6 +68,7 @@ func (dp *DeviceProfile) UnmarshalYAML(unmarshal func(interface{}) error) error 
 func ToDeviceProfileModel(deviceProfileDTO DeviceProfile) models.DeviceProfile {
 	return models.DeviceProfile{
 		DBTimestamp:     models.DBTimestamp(deviceProfileDTO.DBTimestamp),
+		ApiVersion:      deviceProfileDTO.ApiVersion,
 		Id:              deviceProfileDTO.Id,
 		Name:            deviceProfileDTO.Name,
 		Description:     deviceProfileDTO.Description,
@@ -81,6 +84,7 @@ func ToDeviceProfileModel(deviceProfileDTO DeviceProfile) models.DeviceProfile {
 func FromDeviceProfileModelToDTO(deviceProfile models.DeviceProfile) DeviceProfile {
 	return DeviceProfile{
 		DBTimestamp: DBTimestamp(deviceProfile.DBTimestamp),
+		ApiVersion:  deviceProfile.ApiVersion,
 		DeviceProfileBasicInfo: DeviceProfileBasicInfo{
 			Id:           deviceProfile.Id,
 			Name:         deviceProfile.Name,

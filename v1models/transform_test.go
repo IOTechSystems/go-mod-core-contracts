@@ -1,4 +1,4 @@
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2022 IOTech Ltd
 
 package v1models
 
@@ -270,6 +270,7 @@ func v2ProfileData() v2Model.DeviceProfile {
 		},
 	}}
 	return v2Model.DeviceProfile{
+		ApiVersion:   common.ApiVersion,
 		Name:         TestProfileName,
 		Manufacturer: TestManufacturer,
 		Model:        TestModel,
