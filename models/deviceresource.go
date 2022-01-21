@@ -12,4 +12,7 @@ type DeviceResource struct {
 	Properties  ResourceProperties
 	Attributes  map[string]interface{}
 	Tags        map[string]any
+
+	// Xpert
+	Tag         string
 }

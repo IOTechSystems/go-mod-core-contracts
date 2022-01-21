@@ -37,6 +37,8 @@ func profileData() DeviceProfileRequest {
 			ReadWrite: common.ReadWrite_RW,
 		},
 		Tags: testTags,
+
+		Tag:         TestTag1,
 	}}
 	var testDeviceCommands = []dtos.DeviceCommand{{
 		Name:      TestDeviceCommandName,
@@ -82,6 +84,8 @@ var expectedDeviceProfile = models.DeviceProfile{
 			ReadWrite: common.ReadWrite_RW,
 		},
 		Tags: testTags,
+
+		Tag:         TestTag1,
 	}},
 	DeviceCommands: []models.DeviceCommand{{
 		Name:      TestDeviceCommandName,

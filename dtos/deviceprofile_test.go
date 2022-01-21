@@ -42,6 +42,8 @@ var testDeviceProfile = models.DeviceProfile{
 			Optional:  testOptional,
 		},
 		Tags: testTags,
+
+		Tag:         TestTag1,
 	}},
 	DeviceCommands: []models.DeviceCommand{{
 		Name:      TestDeviceCommandName,
@@ -74,6 +76,8 @@ func profileData() DeviceProfile {
 				Optional:  testOptional,
 			},
 			Tags: testTags,
+
+			Tag:         TestTag1,
 		}},
 		DeviceCommands: []DeviceCommand{{
 			Name:      TestDeviceCommandName,
