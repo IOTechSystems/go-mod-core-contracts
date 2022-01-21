@@ -28,6 +28,7 @@ func profileData() DeviceProfileRequest {
 	var testDeviceResources = []dtos.DeviceResource{{
 		Name:        TestDeviceResourceName,
 		Description: TestDescription,
+		Tag:         TestTag1,
 		Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		Attributes:  testAttributes,
 		Properties: dtos.ResourceProperties{
@@ -70,6 +71,7 @@ var expectedDeviceProfile = models.DeviceProfile{
 	DeviceResources: []models.DeviceResource{{
 		Name:        TestDeviceResourceName,
 		Description: TestDescription,
+		Tag:         TestTag1,
 		Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		Attributes:  testAttributes,
 		Properties: models.ResourceProperties{
