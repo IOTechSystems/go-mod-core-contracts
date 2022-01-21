@@ -9,10 +9,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	errs "errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -58,7 +60,12 @@ func makeRequest(req *http.Request) (*http.Response, errors.EdgeX) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to send a http request", err)
+		var netErr *net.OpError
+		if errs.As(err, &netErr) {
+			return nil, errors.NewCommonEdgeX(errors.KindServiceUnavailable, fmt.Sprintf("%s cannot be reached, this service is not available.", req.URL.Host), err)
+		} else {
+			return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to send a http request", err)
+		}
 	}
 	if resp == nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "the response should not be a nil", nil)
