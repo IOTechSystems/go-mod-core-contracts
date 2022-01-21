@@ -18,6 +18,9 @@ type DeviceResource struct {
 	Properties  ResourceProperties     `json:"properties" yaml:"properties"`
 	Attributes  map[string]interface{} `json:"attributes,omitempty" yaml:"attributes,omitempty"`
 	Tags        map[string]any         `json:"tags,omitempty" yaml:"tags,omitempty"`
+
+	// Central
+	Tag         string                 `json:"tag" yaml:"tag"`
 }
 
 // Validate satisfies the Validator interface
@@ -45,6 +48,9 @@ func ToDeviceResourceModel(d DeviceResource) models.DeviceResource {
 		Properties:  ToResourcePropertiesModel(d.Properties),
 		Attributes:  d.Attributes,
 		Tags:        d.Tags,
+
+		// Central
+		Tag:         d.Tag,
 	}
 }
 
@@ -66,6 +72,9 @@ func FromDeviceResourceModelToDTO(d models.DeviceResource) DeviceResource {
 		Properties:  FromResourcePropertiesModelToDTO(d.Properties),
 		Attributes:  d.Attributes,
 		Tags:        d.Tags,
+
+		// Central
+		Tag:         d.Tag,
 	}
 }
 
