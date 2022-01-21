@@ -6,8 +6,9 @@
 package dtos
 
 import (
-	"gopkg.in/yaml.v3"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
@@ -32,6 +33,7 @@ var testDeviceProfile = models.DeviceProfile{
 	DeviceResources: []models.DeviceResource{{
 		Name:        TestDeviceResourceName,
 		Description: TestDescription,
+		Tag:         TestTag1,
 		Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		Attributes:  testAttributes,
 		Properties: models.ResourceProperties{
@@ -62,6 +64,7 @@ func profileData() DeviceProfile {
 		DeviceResources: []DeviceResource{{
 			Name:        TestDeviceResourceName,
 			Description: TestDescription,
+			Tag:         TestTag1,
 			Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 			Attributes:  testAttributes,
 			Properties: ResourceProperties{
