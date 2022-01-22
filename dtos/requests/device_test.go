@@ -34,6 +34,7 @@ var testProtocols = map[string]dtos.ProtocolProperties{
 		"UnitID":  "1",
 	},
 }
+var testProtocolName = "Modbus-IP"
 var testAddDevice = AddDeviceRequest{
 	BaseRequest: dtoCommon.BaseRequest{
 		RequestId:   ExampleUUID,
@@ -49,6 +50,8 @@ var testAddDevice = AddDeviceRequest{
 		Location:       testDeviceLocation,
 		AutoEvents:     testAutoEvents,
 		Protocols:      testProtocols,
+
+		ProtocolName:   testProtocolName,
 	},
 }
 
@@ -231,6 +234,8 @@ func Test_AddDeviceReqToDeviceModels(t *testing.T) {
 					"UnitID":  "1",
 				},
 			},
+
+			ProtocolName: "modbus-ip",
 		},
 	}
 	resultModels := AddDeviceReqToDeviceModels(requests)

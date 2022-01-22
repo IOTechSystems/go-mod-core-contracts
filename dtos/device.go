@@ -6,6 +6,8 @@
 package dtos
 
 import (
+	"strings"
+
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
@@ -24,7 +26,7 @@ type Device struct {
 	Protocols      map[string]ProtocolProperties `json:"protocols" yaml:"protocols" validate:"required,gt=0"`
 	Tags           map[string]any                `json:"tags,omitempty" yaml:"tags,omitempty"`
 	Properties     map[string]any                `json:"properties,omitempty" yaml:"properties,omitempty"`
-	
+
 	// Xpert
 	ProtocolName   string
 }
@@ -67,7 +69,7 @@ func ToDeviceModel(dto Device) models.Device {
 	d.Properties = dto.Properties
 
 	// Xpert
-	d.ProtocolName = dto.ProtocolName
+	d.ProtocolName = strings.ToLower(dto.ProtocolName)
 	return d
 }
 
