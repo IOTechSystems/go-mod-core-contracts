@@ -1,11 +1,13 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package dtos
 
 import (
+	"strings"
+
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
 )
 
@@ -66,7 +68,7 @@ func ToDeviceModel(dto Device) models.Device {
 	d.Labels = dto.Labels
 	d.Location = dto.Location
 	d.AutoEvents = ToAutoEventModels(dto.AutoEvents)
-	d.ProtocolName = dto.ProtocolName
+	d.ProtocolName = strings.ToLower(dto.ProtocolName)
 	d.Protocols = ToProtocolModels(dto.Protocols)
 	d.Properties = dto.Properties
 	return d
