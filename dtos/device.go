@@ -6,6 +6,8 @@
 package dtos
 
 import (
+	"strings"
+
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
@@ -63,7 +65,7 @@ func ToDeviceModel(dto Device) models.Device {
 	d.Properties = dto.Properties
 
 	// Central
-	d.ProtocolName = dto.ProtocolName
+	d.ProtocolName = strings.ToLower(dto.ProtocolName)
 	return d
 }
 
