@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -28,6 +28,7 @@ var testAutoEvents = []dtos.AutoEvent{
 var testAutoEventsWithInvalidFrequency = []dtos.AutoEvent{
 	{SourceName: "TestDevice", Interval: "300", OnChange: true},
 }
+var testProtocolName = "Modbus-IP"
 var testProtocols = map[string]dtos.ProtocolProperties{
 	"modbus-ip": {
 		"Address": "localhost",
@@ -49,6 +50,7 @@ var testAddDevice = AddDeviceRequest{
 		Labels:         testDeviceLabels,
 		Location:       testDeviceLocation,
 		AutoEvents:     testAutoEvents,
+		ProtocolName:   testProtocolName,
 		Protocols:      testProtocols,
 	},
 }
@@ -228,6 +230,7 @@ func Test_AddDeviceReqToDeviceModels(t *testing.T) {
 			AutoEvents: []models.AutoEvent{
 				{SourceName: "TestDevice", Interval: "300ms", OnChange: true},
 			},
+			ProtocolName: "modbus-ip",
 			Protocols: map[string]models.ProtocolProperties{
 				"modbus-ip": {
 					"Address": "localhost",
