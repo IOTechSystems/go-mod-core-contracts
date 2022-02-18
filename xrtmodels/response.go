@@ -12,6 +12,18 @@ type BaseResponse struct {
 type CommonResponse struct {
 	BaseResponse `json:",inline"`
 	Result       BaseResult `json:"result"`
+	Error        string     `json:"error"`
+}
+
+// ErrorMessage return the error message from the XRT response
+// The response format might be {"client":"...","error":"...","request_id":"...","result":{"success":false},"success":false}
+// or {"client":"...","request_id":"...","result":{"error":"...","success":false}}
+func (c CommonResponse) ErrorMessage() string {
+	if c.Error != "" {
+		return c.Error
+	} else {
+		return c.Result.Error
+	}
 }
 
 type BaseResult struct {
