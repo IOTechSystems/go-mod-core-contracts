@@ -24,6 +24,7 @@ type Device struct {
 	LastReported   int64                         `json:"lastReported,omitempty"`
 	Labels         []string                      `json:"labels,omitempty"`
 	Location       interface{}                   `json:"location,omitempty"`
+	Tags           map[string]interface{}        `json:"tags,omitempty"`
 	ServiceName    string                        `json:"serviceName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	ProfileName    string                        `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	AutoEvents     []AutoEvent                   `json:"autoEvents,omitempty" validate:"dive"`
@@ -35,18 +36,19 @@ type Device struct {
 // UpdateDevice and its properties are defined in the APIv2 specification:
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/UpdateDevice
 type UpdateDevice struct {
-	Id             *string     `json:"id" validate:"required_without=Name,edgex-dto-uuid"`
-	Name           *string     `json:"name" validate:"required_without=Id,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	Description    *string     `json:"description" validate:"omitempty"`
-	AdminState     *string     `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
-	OperatingState *string     `json:"operatingState" validate:"omitempty,oneof='UP' 'DOWN' 'UNKNOWN'"`
-	LastConnected  *int64      `json:"lastConnected"`
-	LastReported   *int64      `json:"lastReported"`
-	ServiceName    *string     `json:"serviceName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	ProfileName    *string     `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	Labels         []string    `json:"labels"`
-	Location       interface{} `json:"location"`
-	AutoEvents     []AutoEvent `json:"autoEvents" validate:"dive"`
+	Id             *string                `json:"id" validate:"required_without=Name,edgex-dto-uuid"`
+	Name           *string                `json:"name" validate:"required_without=Id,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	Description    *string                `json:"description" validate:"omitempty"`
+	AdminState     *string                `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
+	OperatingState *string                `json:"operatingState" validate:"omitempty,oneof='UP' 'DOWN' 'UNKNOWN'"`
+	LastConnected  *int64                 `json:"lastConnected"`
+	LastReported   *int64                 `json:"lastReported"`
+	ServiceName    *string                `json:"serviceName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	ProfileName    *string                `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	Labels         []string               `json:"labels"`
+	Location       interface{}            `json:"location"`
+	Tags           map[string]interface{} `json:"tags,omitempty"`
+	AutoEvents     []AutoEvent            `json:"autoEvents" validate:"dive"`
 	// we don't allow this to be updated
 	//ProtocolName   *string                       `json:"protocolName" validate:"omitempty"`
 	Protocols map[string]ProtocolProperties `json:"protocols" validate:"omitempty,gt=0"`
@@ -67,6 +69,7 @@ func ToDeviceModel(dto Device) models.Device {
 	d.LastConnected = dto.LastConnected
 	d.Labels = dto.Labels
 	d.Location = dto.Location
+	d.Tags = dto.Tags
 	d.AutoEvents = ToAutoEventModels(dto.AutoEvents)
 	d.ProtocolName = strings.ToLower(dto.ProtocolName)
 	d.Protocols = ToProtocolModels(dto.Protocols)
@@ -89,6 +92,7 @@ func FromDeviceModelToDTO(d models.Device) Device {
 	dto.LastConnected = d.LastConnected
 	dto.Labels = d.Labels
 	dto.Location = d.Location
+	dto.Tags = d.Tags
 	dto.AutoEvents = FromAutoEventModelsToDTOs(d.AutoEvents)
 	dto.ProtocolName = d.ProtocolName
 	dto.Protocols = FromProtocolModelsToDTOs(d.Protocols)
@@ -111,6 +115,7 @@ func FromDeviceModelToUpdateDTO(d models.Device) UpdateDevice {
 		ServiceName:    &d.ServiceName,
 		ProfileName:    &d.ProfileName,
 		Location:       d.Location,
+		Tags:           d.Tags,
 		AutoEvents:     FromAutoEventModelsToDTOs(d.AutoEvents),
 		Protocols:      FromProtocolModelsToDTOs(d.Protocols),
 		Labels:         d.Labels,
