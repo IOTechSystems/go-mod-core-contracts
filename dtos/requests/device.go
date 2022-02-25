@@ -109,6 +109,9 @@ func ReplaceDeviceModelFieldsWithDTO(device *models.Device, patch dtos.UpdateDev
 	if patch.Location != nil {
 		device.Location = patch.Location
 	}
+	if patch.Tags != nil {
+		device.Tags = patch.Tags
+	}
 	if patch.AutoEvents != nil {
 		device.AutoEvents = dtos.ToAutoEventModels(patch.AutoEvents)
 	}
