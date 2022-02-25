@@ -15,6 +15,7 @@ type Device struct {
 	Protocols      map[string]ProtocolProperties
 	Labels         []string
 	Location       interface{}
+	Tags           map[string]interface{}
 	ServiceName    string
 	ProfileName    string
 	AutoEvents     []AutoEvent

@@ -47,6 +47,7 @@ var testAddDevice = AddDeviceRequest{
 		OperatingState: models.Up,
 		Labels:         testDeviceLabels,
 		Location:       testDeviceLocation,
+		Tags:           map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		AutoEvents:     testAutoEvents,
 		Protocols:      testProtocols,
 	},
@@ -78,6 +79,7 @@ func mockUpdateDevice() dtos.UpdateDevice {
 	d.ProfileName = &testProfileName
 	d.Labels = testDeviceLabels
 	d.Location = testDeviceLocation
+	d.Tags = map[string]interface{}{"1": TestTag1, "2": TestTag2}
 	d.AutoEvents = testAutoEvents
 	d.Protocols = testProtocols
 	return d
@@ -221,6 +223,7 @@ func Test_AddDeviceReqToDeviceModels(t *testing.T) {
 			OperatingState: models.Up,
 			Labels:         testDeviceLabels,
 			Location:       testDeviceLocation,
+			Tags:           map[string]interface{}{"1": TestTag1, "2": TestTag2},
 			AutoEvents: []models.AutoEvent{
 				{SourceName: "TestDevice", Interval: "300ms", OnChange: true},
 			},
