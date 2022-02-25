@@ -21,6 +21,7 @@ type Device struct {
 	LastReported   int64
 	Labels         []string
 	Location       interface{}
+	Tags           map[string]interface{}
 	ServiceName    string
 	ProfileName    string
 	AutoEvents     []AutoEvent
