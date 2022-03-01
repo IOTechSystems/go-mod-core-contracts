@@ -47,7 +47,7 @@ type UpdateDevice struct {
 	ProfileName    *string                `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	Labels         []string               `json:"labels"`
 	Location       interface{}            `json:"location"`
-	Tags           map[string]interface{} `json:"tags,omitempty"`
+	Tags           map[string]interface{} `json:"tags"`
 	AutoEvents     []AutoEvent            `json:"autoEvents" validate:"dive"`
 	// we don't allow this to be updated
 	//ProtocolName   *string                       `json:"protocolName" validate:"omitempty"`
