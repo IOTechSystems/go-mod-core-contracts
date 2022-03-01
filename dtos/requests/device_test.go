@@ -49,6 +49,7 @@ var testAddDevice = AddDeviceRequest{
 		OperatingState: models.Up,
 		Labels:         testDeviceLabels,
 		Location:       testDeviceLocation,
+		Tags:           map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		AutoEvents:     testAutoEvents,
 		ProtocolName:   testProtocolName,
 		Protocols:      testProtocols,
@@ -84,6 +85,7 @@ func mockUpdateDevice() dtos.UpdateDevice {
 	d.ProfileName = &testProfileName
 	d.Labels = testDeviceLabels
 	d.Location = testDeviceLocation
+	d.Tags = map[string]interface{}{"1": TestTag1, "2": TestTag2}
 	d.AutoEvents = testAutoEvents
 	d.Protocols = testProtocols
 	return d
@@ -227,6 +229,7 @@ func Test_AddDeviceReqToDeviceModels(t *testing.T) {
 			OperatingState: models.Up,
 			Labels:         testDeviceLabels,
 			Location:       testDeviceLocation,
+			Tags:           map[string]interface{}{"1": TestTag1, "2": TestTag2},
 			AutoEvents: []models.AutoEvent{
 				{SourceName: "TestDevice", Interval: "300ms", OnChange: true},
 			},
@@ -431,6 +434,7 @@ func TestReplaceDeviceModelFieldsWithDTO(t *testing.T) {
 	assert.Equal(t, TestDeviceProfileName, device.ProfileName)
 	assert.Equal(t, testLabels, device.Labels)
 	assert.Equal(t, testDeviceLocation, device.Location)
+	assert.Equal(t, map[string]interface{}{"1": TestTag1, "2": TestTag2}, device.Tags)
 	assert.Equal(t, dtos.ToAutoEventModels(testAutoEvents), device.AutoEvents)
 	assert.Equal(t, dtos.ToProtocolModels(testProtocols), device.Protocols)
 }
