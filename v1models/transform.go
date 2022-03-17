@@ -272,7 +272,11 @@ func TransformProfileFromV1ToV2(profile DeviceProfile) (models.DeviceProfile, er
 	for i, cmd := range v2dp.DeviceCommands {
 		v2dp.DeviceCommands[i].IsHidden = isV2DeviceCommandHidden(cmd.Name, profile.CoreCommands)
 	}
-
+	// Convert StartingAddress for Modbus protocol
+	err = ConvertStartingAddressToZeroBased(&v2dp)
+	if err != nil {
+		return v2dp, errors.NewCommonEdgeX(errors.KindContractInvalid, "convert startingAddress from string to int for v2 failed", err)
+	}
 	v2dpDto := dtos.FromDeviceProfileModelToDTO(v2dp)
 	err = v2dpDto.Validate()
 	if err != nil {
