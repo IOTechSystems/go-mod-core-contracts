@@ -371,8 +371,6 @@ func TestTransformProfileFromV1ToV2(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			actual, err := TransformProfileFromV1ToV2(testCase.data)
 			require.NoError(t, err)
-			err = ConvertStartingAddressToZeroBased(&actual)
-			require.NoError(t, err)
 			assert.Equal(t, testCase.expected, actual)
 		})
 	}
