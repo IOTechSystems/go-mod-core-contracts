@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -246,6 +246,7 @@ const (
 	ReadWrite_R  = "R"
 	ReadWrite_W  = "W"
 	ReadWrite_RW = "RW"
+	ReadWrite_WR = "WR"
 )
 
 // Constants for Edgex Environment variable
