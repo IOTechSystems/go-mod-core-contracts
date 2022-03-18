@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -11,7 +11,7 @@ import "github.com/edgexfoundry/go-mod-core-contracts/v2/models"
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/ResourceProperties
 type ResourceProperties struct {
 	ValueType    string `json:"valueType" yaml:"valueType" validate:"required,edgex-dto-value-type"`
-	ReadWrite    string `json:"readWrite" yaml:"readWrite" validate:"required,oneof='R' 'W' 'RW'"`
+	ReadWrite    string `json:"readWrite" yaml:"readWrite" validate:"required,oneof='R' 'W' 'RW' 'WR'"`
 	Units        string `json:"units,omitempty" yaml:"units,omitempty"`
 	Minimum      string `json:"minimum,omitempty" yaml:"minimum,omitempty"`
 	Maximum      string `json:"maximum,omitempty" yaml:"maximum,omitempty"`
