@@ -3,23 +3,32 @@
 package xrtmodels
 
 import (
+	"fmt"
+
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
 )
 
 type DeviceInfo struct {
-	Name        string                               `json:"name"`
-	ProfileName string                               `json:"profile"`
-	Protocols   map[string]models.ProtocolProperties `json:"protocols"`
-	Properties  map[string]interface{}               `json:"properties"`
+	dtos.Device
+	Protocols map[string]map[string]interface{} `json:"protocols"`
 }
 
 func ToEdgeXV2Device(device DeviceInfo, serviceName string) models.Device {
+	// Convert all properties to string for EdgeX
+	protocols := make(map[string]models.ProtocolProperties)
+	for protocol, protocolProperties := range device.Protocols {
+		protocols[protocol] = make(map[string]string)
+		for k, v := range protocolProperties {
+			protocols[protocol][k] = fmt.Sprintf("%v", v)
+		}
+	}
 	return models.Device{
 		Name:           device.Name,
 		Description:    "",
 		AdminState:     models.Unlocked,
 		OperatingState: models.Up,
-		Protocols:      device.Protocols,
+		Protocols:      protocols,
 		LastConnected:  0,
 		LastReported:   0,
 		Labels:         nil,
