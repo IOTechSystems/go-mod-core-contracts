@@ -7,14 +7,14 @@ import (
 	"testing"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/v1models"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewRequest(t *testing.T) {
-	profile := v1models.DeviceProfile{}
-	device := models.Device{}
+	profile := models.DeviceProfile{}
+	device := DeviceInfo{}
 	clientName := "testClient"
 	addProfileRequest, err := json.Marshal(NewProfileAddRequest(profile, clientName))
 	require.NoError(t, err)
