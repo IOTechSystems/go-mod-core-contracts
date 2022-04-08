@@ -20,7 +20,7 @@ type DeviceResource struct {
 	Tags        map[string]any         `json:"tags,omitempty" yaml:"tags,omitempty"`
 
 	// Central
-	Tag         string                 `json:"tag" yaml:"tag"`
+	Tag         string                 `json:"tag,omitempty" yaml:"tag,omitempty"`
 }
 
 // Validate satisfies the Validator interface
