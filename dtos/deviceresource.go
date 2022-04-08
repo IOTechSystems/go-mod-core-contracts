@@ -17,7 +17,7 @@ type DeviceResource struct {
 	Description string                 `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        string                 `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	IsHidden    bool                   `json:"isHidden" yaml:"isHidden"`
-	Tag         string                 `json:"tag" yaml:"tag"`
+	Tag         string                 `json:"tag,omitempty" yaml:"tag,omitempty"`
 	Tags        map[string]interface{} `json:"tags,omitempty" yaml:"tags,omitempty"`
 	Properties  ResourceProperties     `json:"properties" yaml:"properties"`
 	Attributes  map[string]interface{} `json:"attributes,omitempty" yaml:"attributes,omitempty"`
