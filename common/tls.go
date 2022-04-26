@@ -13,16 +13,23 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 )
 
-// Redis TLS file settings
+// TLS file settings
 const (
+	// General settings
 	TlsCertOutputDir    = "/tmp/edgex/secrets/ca"
 	CaKeyFileName       = "ca.key"
 	CaCertFileName      = "ca.crt"
-	RedisKeyFileName    = "redis.key"
-	RedisCsrFileName    = "redis.csr"
-	RedisCertFileName   = "redis.crt"
 	OpensslConfFileName = "openssl.conf"
 	RsaKySize           = "4096"
+
+	// Redis specific settings
+	RedisKeyFileName  = "redis.key"
+	RedisCsrFileName  = "redis.csr"
+	RedisCertFileName = "redis.crt"
+
+	// MQTT specific settings
+	MqttClientKeyFileName  = "mqtt.key"
+	MqttClientCertFileName = "mqtt.crt"
 )
 
 // CreateRedisTlsConfig loads TLS certificates from specified path and creates Redis TLS config
