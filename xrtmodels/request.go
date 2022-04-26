@@ -49,7 +49,7 @@ type UpdateProfileRequest struct {
 
 type ProfileRequest struct {
 	BaseRequest `json:",inline"`
-	Profile     string `json:"profileName"`
+	Profile     string `json:"profile"`
 }
 
 type AddDeviceRequest struct {
