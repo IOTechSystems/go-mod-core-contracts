@@ -29,7 +29,7 @@ type CommonResponse struct {
 
 type BaseResult struct {
 	Status       int    `json:"status"`
-	ErrorMessage string `json:"error_message"`
+	ErrorMessage string `json:"error"`
 }
 
 func (result BaseResult) Error() errors.EdgeX {
