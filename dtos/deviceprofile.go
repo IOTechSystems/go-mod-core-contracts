@@ -16,7 +16,7 @@ import (
 )
 
 type DeviceProfile struct {
-	DBTimestamp            `json:",inline"`
+	DBTimestamp            `json:",inline" yaml:"dbTimestamp,omitempty"`
 	DeviceProfileBasicInfo `json:",inline" yaml:",inline"`
 	DeviceResources        []DeviceResource `json:"deviceResources" yaml:"deviceResources" validate:"dive"`
 	DeviceCommands         []DeviceCommand  `json:"deviceCommands" yaml:"deviceCommands" validate:"dive"`
