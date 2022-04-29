@@ -32,6 +32,8 @@ var testDeviceResource = AddDeviceResourceRequest{
 			ValueType: common.ValueTypeInt16,
 			ReadWrite: common.ReadWrite_RW,
 		},
+
+		Tag:         TestTag1,
 	},
 }
 

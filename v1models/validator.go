@@ -41,7 +41,7 @@ func validate(t interface{}) error {
 		typfield := typ.Field(f)
 		if field.Type().NumMethod() > 0 && field.CanInterface() && typfield.Tag.Get(ValidateTag) != "-" {
 			if v, ok := field.Interface().(Validator); ok {
-				cast := v.(Validator)
+				cast := v
 				_, err := cast.Validate()
 				if err != nil {
 					return NewErrContractInvalid(err.Error())
