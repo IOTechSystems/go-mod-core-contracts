@@ -8,11 +8,11 @@ package dtos
 import "github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 type DeviceResource struct {
-	Description string                 `json:"description" yaml:"description"`
+	Description string                 `json:"description" yaml:"description,omitempty"`
 	Name        string                 `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string"`
 	IsHidden    bool                   `json:"isHidden" yaml:"isHidden"`
 	Properties  ResourceProperties     `json:"properties" yaml:"properties"`
-	Attributes  map[string]interface{} `json:"attributes" yaml:"attributes"`
+	Attributes  map[string]interface{} `json:"attributes" yaml:"attributes,omitempty"`
 	Tags        map[string]any         `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
