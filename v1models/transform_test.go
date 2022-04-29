@@ -35,9 +35,6 @@ var (
 )
 
 var testLabels = []string{"HVAC", "Air conditioner"}
-var testAttributes = map[string]interface{}{
-	"TestAttribute": "TestAttributeValue",
-}
 
 var testV1DeviceResources = []DeviceResource{
 	{

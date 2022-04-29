@@ -118,12 +118,8 @@ func (c Command) String() string {
 // associated by PUT command parameters and PUT/GET command return values
 func (c *Command) AllAssociatedValueDescriptors(vdNames *map[string]string) {
 	// Check and add Get value descriptors
-	if &(c.Get) != nil {
-		c.Get.AllAssociatedValueDescriptors(vdNames)
-	}
+	c.Get.AllAssociatedValueDescriptors(vdNames)
 
 	// Check and add Put value descriptors
-	if &(c.Put) != nil {
-		c.Put.AllAssociatedValueDescriptors(vdNames)
-	}
+	c.Put.AllAssociatedValueDescriptors(vdNames)
 }
