@@ -1,13 +1,14 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package dtos
 
 import (
-	"gopkg.in/yaml.v3"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
@@ -23,6 +24,7 @@ var testAttributes = map[string]interface{}{
 var testMappings = map[string]string{"0": "off", "1": "on"}
 
 var testDeviceProfile = models.DeviceProfile{
+	ApiVersion:   common.ApiVersion,
 	Name:         TestDeviceProfileName,
 	Manufacturer: TestManufacturer,
 	Description:  TestDescription,
@@ -31,7 +33,8 @@ var testDeviceProfile = models.DeviceProfile{
 	DeviceResources: []models.DeviceResource{{
 		Name:        TestDeviceResourceName,
 		Description: TestDescription,
-		Tag:         TestTag,
+		Tag:         TestTag1,
+		Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		Attributes:  testAttributes,
 		Properties: models.ResourceProperties{
 			ValueType: common.ValueTypeInt16,
@@ -50,6 +53,7 @@ var testDeviceProfile = models.DeviceProfile{
 
 func profileData() DeviceProfile {
 	return DeviceProfile{
+		ApiVersion: common.ApiVersion,
 		DeviceProfileBasicInfo: DeviceProfileBasicInfo{
 			Name:         TestDeviceProfileName,
 			Manufacturer: TestManufacturer,
@@ -60,7 +64,8 @@ func profileData() DeviceProfile {
 		DeviceResources: []DeviceResource{{
 			Name:        TestDeviceResourceName,
 			Description: TestDescription,
-			Tag:         TestTag,
+			Tag:         TestTag1,
+			Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 			Attributes:  testAttributes,
 			Properties: ResourceProperties{
 				ValueType: common.ValueTypeInt16,

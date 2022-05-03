@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -28,7 +28,8 @@ func profileData() DeviceProfileRequest {
 	var testDeviceResources = []dtos.DeviceResource{{
 		Name:        TestDeviceResourceName,
 		Description: TestDescription,
-		Tag:         TestTag,
+		Tag:         TestTag1,
+		Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		Attributes:  testAttributes,
 		Properties: dtos.ResourceProperties{
 			ValueType: common.ValueTypeInt16,
@@ -48,6 +49,7 @@ func profileData() DeviceProfileRequest {
 			Versionable: dtoCommon.NewVersionable(),
 		},
 		Profile: dtos.DeviceProfile{
+			ApiVersion: common.ApiVersion,
 			DeviceProfileBasicInfo: dtos.DeviceProfileBasicInfo{
 				Name:         TestDeviceProfileName,
 				Manufacturer: TestManufacturer,
@@ -62,6 +64,7 @@ func profileData() DeviceProfileRequest {
 }
 
 var expectedDeviceProfile = models.DeviceProfile{
+	ApiVersion:   common.ApiVersion,
 	Name:         TestDeviceProfileName,
 	Manufacturer: TestManufacturer,
 	Description:  TestDescription,
@@ -70,7 +73,8 @@ var expectedDeviceProfile = models.DeviceProfile{
 	DeviceResources: []models.DeviceResource{{
 		Name:        TestDeviceResourceName,
 		Description: TestDescription,
-		Tag:         TestTag,
+		Tag:         TestTag1,
+		Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		Attributes:  testAttributes,
 		Properties: models.ResourceProperties{
 			ValueType: common.ValueTypeInt16,

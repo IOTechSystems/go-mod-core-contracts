@@ -27,7 +27,7 @@ var testDeviceResource = AddDeviceResourceRequest{
 	Resource: dtos.DeviceResource{
 		Name:        TestDeviceCommandName,
 		Description: TestDescription,
-		Tag:         TestTag,
+		Tag:         TestTag1,
 		Attributes:  testAttributes,
 		Properties: dtos.ResourceProperties{
 			ValueType: common.ValueTypeInt16,

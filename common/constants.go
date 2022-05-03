@@ -234,9 +234,12 @@ const (
 // Constants for Address
 const (
 	// Type
-	REST  = "REST"
-	MQTT  = "MQTT"
-	EMAIL = "EMAIL"
+	REST   = "REST"
+	MQTT   = "MQTT"
+	EMAIL  = "EMAIL"
+	ZeroMQ = "ZeroMQ"
+	HTTP   = "http"
+	TCP    = "tcp"
 )
 
 // Constants for SMA Operation Action
@@ -272,6 +275,7 @@ const (
 	CoreMetaDataServiceKey              = "core-metadata"
 	SupportLoggingServiceKey            = "support-logging"
 	SupportNotificationsServiceKey      = "support-notifications"
+	SupportProvisionServiceKey          = "support-provision"
 	SystemManagementAgentServiceKey     = "sys-mgmt-agent"
 	SupportSchedulerServiceKey          = "support-scheduler"
 	SecuritySecretStoreSetupServiceKey  = "security-secretstore-setup"

@@ -9,15 +9,18 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	errs "errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"net/url"
 	"path/filepath"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
+	commonDTO "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 
 	"github.com/google/uuid"
@@ -57,7 +60,12 @@ func makeRequest(req *http.Request) (*http.Response, errors.EdgeX) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, errors.NewCommonEdgeX(errors.KindServiceUnavailable, "failed to send a http request", err)
+		var netErr *net.OpError
+		if errs.As(err, &netErr) {
+			return nil, errors.NewCommonEdgeX(errors.KindServiceUnavailable, fmt.Sprintf("%s cannot be reached, this service is not available.", req.URL.Host), err)
+		} else {
+			return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to send a http request", err)
+		}
 	}
 	if resp == nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "the response should not be a nil", nil)
@@ -213,7 +221,11 @@ func sendRequest(ctx context.Context, req *http.Request) ([]byte, errors.EdgeX) 
 	}
 
 	// Handle error response
-	msg := fmt.Sprintf("request failed, status code: %d, err: %s", resp.StatusCode, string(bodyBytes))
-	errKind := errors.KindMapping(resp.StatusCode)
-	return nil, errors.NewCommonEdgeX(errKind, msg, nil)
+	var errResponse commonDTO.BaseResponse
+	e := json.Unmarshal(bodyBytes, &errResponse)
+	if e != nil {
+		return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to json decoding error response", e)
+	}
+
+	return nil, errors.NewCommonEdgeX(errors.KindMapping(errResponse.StatusCode), errResponse.Message, nil)
 }

@@ -8,12 +8,12 @@ package dtos
 // DeviceProfileBasicInfo and its properties are defined in the APIv2 specification:
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceProfileBasicInfo
 type DeviceProfileBasicInfo struct {
-	Id           string   `json:"id" validate:"omitempty,uuid"`
+	Id           string   `json:"id,omitempty" validate:"omitempty,uuid" yaml:"id,omitempty"`
 	Name         string   `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	Manufacturer string   `json:"manufacturer" yaml:"manufacturer"`
-	Description  string   `json:"description" yaml:"description"`
-	Model        string   `json:"model" yaml:"model"`
-	Labels       []string `json:"labels" yaml:"labels,flow"`
+	Manufacturer string   `json:"manufacturer,omitempty" yaml:"manufacturer,omitempty"`
+	Description  string   `json:"description,omitempty" yaml:"description,omitempty"`
+	Model        string   `json:"model,omitempty" yaml:"model,omitempty"`
+	Labels       []string `json:"labels,omitempty" yaml:"labels,flow,omitempty"`
 }
 
 // UpdateDeviceProfileBasicInfo and its properties are defined in the APIv2 specification:

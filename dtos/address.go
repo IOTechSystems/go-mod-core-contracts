@@ -12,14 +12,18 @@ import (
 )
 
 type Address struct {
-	Type string `json:"type" validate:"oneof='REST' 'MQTT' 'EMAIL'"`
+	Type string `json:"type" validate:"oneof='REST' 'MQTT' 'EMAIL' 'ZeroMQ'"`
 
-	Host string `json:"host" validate:"required_unless=Type EMAIL"`
-	Port int    `json:"port" validate:"required_unless=Type EMAIL"`
+	Scheme string `json:"scheme,omitempty"`
+	Host   string `json:"host,omitempty" validate:"required_unless=Type EMAIL"`
+	Port   int    `json:"port,omitempty" validate:"required_unless=Type EMAIL"`
 
 	RESTAddress    `json:",inline" validate:"-"`
 	MQTTPubAddress `json:",inline" validate:"-"`
 	EmailAddress   `json:",inline" validate:"-"`
+	ZeroMQAddress  `json:",inline" validate:"-"`
+	MessageBus     `json:",inline" validate:"-"`
+	Security       `json:",inline" validate:"-"`
 }
 
 // Validate satisfies the Validator interface
@@ -38,6 +42,15 @@ func (a *Address) Validate() error {
 		err = common.Validate(a.MQTTPubAddress)
 		if err != nil {
 			return errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid MQTTPubAddress.", err)
+		}
+		err = common.Validate(a.MessageBus)
+		if err != nil {
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid MQTTPubAddress.", err)
+		}
+	case common.ZeroMQ:
+		err = common.Validate(a.MessageBus)
+		if err != nil {
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid ZeroMQAddress.", err)
 		}
 	case common.EMAIL:
 		err = common.Validate(a.EmailAddress)
@@ -67,7 +80,6 @@ func NewRESTAddress(host string, port int, httpMethod string) Address {
 
 type MQTTPubAddress struct {
 	Publisher      string `json:"publisher,omitempty" validate:"required"`
-	Topic          string `json:"topic,omitempty" validate:"required"`
 	QoS            int    `json:"qos,omitempty"`
 	KeepAlive      int    `json:"keepAlive,omitempty"`
 	Retained       bool   `json:"retained,omitempty"`
@@ -82,8 +94,8 @@ func NewMQTTAddress(host string, port int, publisher string, topic string) Addre
 		Port: port,
 		MQTTPubAddress: MQTTPubAddress{
 			Publisher: publisher,
-			Topic:     topic,
 		},
+		MessageBus: MessageBus{Topic: topic},
 	}
 }
 
@@ -97,6 +109,26 @@ func NewEmailAddress(recipients []string) Address {
 		EmailAddress: EmailAddress{
 			Recipients: recipients,
 		},
+	}
+}
+
+type MessageBus struct {
+	Topic string `json:"topic,omitempty" validate:"required"`
+}
+
+type Security struct {
+	SecretPath     string `json:"secretPath,omitempty" validate:"required"`
+	AuthMode       string `json:"authMode,omitempty" validate:"required,oneof='none' 'usernamepassword' 'cacert' 'clientcert'"`
+	SkipCertVerify bool   `json:"skipCertVerify,omitempty"`
+}
+
+type ZeroMQAddress struct {
+}
+
+func NewZeroMQAddress(topic string) Address {
+	return Address{
+		Type:       common.ZeroMQ,
+		MessageBus: MessageBus{Topic: topic},
 	}
 }
 
@@ -115,15 +147,27 @@ func ToAddressModel(a Address) models.Address {
 	case common.MQTT:
 		address = models.MQTTPubAddress{
 			BaseAddress: models.BaseAddress{
-				Type: a.Type, Host: a.Host, Port: a.Port,
+				Type: a.Type, Scheme: a.Scheme, Host: a.Host, Port: a.Port,
 			},
+			Security: models.Security{
+				SecretPath:     a.SecretPath,
+				AuthMode:       a.AuthMode,
+				SkipCertVerify: a.SkipCertVerify,
+			},
+			MessageBus:     models.MessageBus{Topic: a.Topic},
 			Publisher:      a.MQTTPubAddress.Publisher,
-			Topic:          a.MQTTPubAddress.Topic,
 			QoS:            a.QoS,
 			KeepAlive:      a.KeepAlive,
 			Retained:       a.Retained,
 			AutoReconnect:  a.AutoReconnect,
 			ConnectTimeout: a.ConnectTimeout,
+		}
+	case common.ZeroMQ:
+		address = models.ZeroMQAddress{
+			BaseAddress: models.BaseAddress{
+				Type: a.Type, Host: a.Host, Port: a.Port,
+			},
+			MessageBus: models.MessageBus{Topic: a.Topic},
 		}
 	case common.EMAIL:
 		address = models.EmailAddress{
@@ -138,9 +182,10 @@ func ToAddressModel(a Address) models.Address {
 
 func FromAddressModelToDTO(address models.Address) Address {
 	dto := Address{
-		Type: address.GetBaseAddress().Type,
-		Host: address.GetBaseAddress().Host,
-		Port: address.GetBaseAddress().Port,
+		Type:   address.GetBaseAddress().Type,
+		Scheme: address.GetBaseAddress().Scheme,
+		Host:   address.GetBaseAddress().Host,
+		Port:   address.GetBaseAddress().Port,
 	}
 
 	switch a := address.(type) {
@@ -152,13 +197,20 @@ func FromAddressModelToDTO(address models.Address) Address {
 	case models.MQTTPubAddress:
 		dto.MQTTPubAddress = MQTTPubAddress{
 			Publisher:      a.Publisher,
-			Topic:          a.Topic,
 			QoS:            a.QoS,
 			KeepAlive:      a.KeepAlive,
 			Retained:       a.Retained,
 			AutoReconnect:  a.AutoReconnect,
 			ConnectTimeout: a.ConnectTimeout,
 		}
+		dto.MessageBus = MessageBus{Topic: a.Topic}
+		dto.Security = Security{
+			SecretPath:     a.SecretPath,
+			AuthMode:       a.AuthMode,
+			SkipCertVerify: a.SkipCertVerify,
+		}
+	case models.ZeroMQAddress:
+		dto.MessageBus = MessageBus{Topic: a.Topic}
 	case models.EmailAddress:
 		dto.EmailAddress = EmailAddress{
 			Recipients: a.Recipients,
