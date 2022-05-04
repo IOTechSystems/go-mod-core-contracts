@@ -30,6 +30,7 @@ const (
 	// MQTT specific settings
 	MqttClientKeyFileName  = "mqtt.key"
 	MqttClientCertFileName = "mqtt.crt"
+	EnvMessageBusMqttTls   = "MESSAGEBUS_MQTT_TLS"
 )
 
 // CreateRedisTlsConfig loads TLS certificates from specified path and creates Redis TLS config
