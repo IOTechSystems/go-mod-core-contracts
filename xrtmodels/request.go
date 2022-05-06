@@ -3,8 +3,8 @@
 package xrtmodels
 
 import (
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/v1models"
 
 	"github.com/google/uuid"
 )
@@ -39,12 +39,12 @@ type BaseRequest struct {
 
 type AddProfileRequest struct {
 	BaseRequest `json:",inline"`
-	Profile     v1models.DeviceProfile `json:"profile"`
+	Profile     dtos.DeviceProfile `json:"profile"`
 }
 
 type UpdateProfileRequest struct {
 	BaseRequest `json:",inline"`
-	Profile     v1models.DeviceProfile `json:"profile"`
+	Profile     dtos.DeviceProfile `json:"profile"`
 }
 
 type ProfileRequest struct {
@@ -99,29 +99,29 @@ func NewBaseRequest(op string, clientName string) BaseRequest {
 	}
 }
 
-// NewProfileAddRequest creates request with v1 device profile
-func NewProfileAddRequest(profile v1models.DeviceProfile, clientName string) AddProfileRequest {
+// NewProfileAddRequest creates request with device profile
+func NewProfileAddRequest(profile models.DeviceProfile, clientName string) AddProfileRequest {
 	req := AddProfileRequest{
 		BaseRequest: BaseRequest{
 			Client:    clientName,
 			RequestId: uuid.New().String(),
 			Op:        ProfileAddOperation,
 		},
-		Profile: profile,
+		Profile: dtos.FromDeviceProfileModelToDTO(profile),
 	}
 
 	return req
 }
 
 // NewProfileUpdateRequest creates request with v1 device profile
-func NewProfileUpdateRequest(profile v1models.DeviceProfile, clientName string) UpdateProfileRequest {
+func NewProfileUpdateRequest(profile models.DeviceProfile, clientName string) UpdateProfileRequest {
 	req := UpdateProfileRequest{
 		BaseRequest: BaseRequest{
 			Client:    clientName,
 			RequestId: uuid.New().String(),
 			Op:        ProfileUpdateOperation,
 		},
-		Profile: profile,
+		Profile: dtos.FromDeviceProfileModelToDTO(profile),
 	}
 
 	return req
@@ -150,7 +150,7 @@ func NewProfileDeleteRequest(profileName string, clientName string) ProfileReque
 	return req
 }
 
-func NewDeviceAddRequest(device models.Device, clientName string) AddDeviceRequest {
+func NewDeviceAddRequest(device DeviceInfo, clientName string) AddDeviceRequest {
 	deviceRequest := AddDeviceRequest{
 		BaseRequest: BaseRequest{
 			Client:    clientName,
@@ -158,16 +158,12 @@ func NewDeviceAddRequest(device models.Device, clientName string) AddDeviceReque
 			Op:        DeviceAddOperation,
 		},
 		DeviceName: device.Name,
-		DeviceInfo: DeviceInfo{
-			ProfileName: device.ProfileName,
-			Protocols:   device.Protocols,
-			Properties:  device.Properties,
-		},
+		DeviceInfo: device,
 	}
 	return deviceRequest
 }
 
-func NewDeviceUpdateRequest(device models.Device, clientName string) UpdateDeviceRequest {
+func NewDeviceUpdateRequest(device DeviceInfo, clientName string) UpdateDeviceRequest {
 	deviceRequest := UpdateDeviceRequest{
 		BaseRequest: BaseRequest{
 			Client:    clientName,
@@ -175,10 +171,7 @@ func NewDeviceUpdateRequest(device models.Device, clientName string) UpdateDevic
 			Op:        DeviceUpdateOperation,
 		},
 		DeviceName: device.Name,
-		DeviceInfo: DeviceInfo{
-			ProfileName: device.ProfileName,
-			Protocols:   device.Protocols,
-		},
+		DeviceInfo: device,
 	}
 	return deviceRequest
 }
