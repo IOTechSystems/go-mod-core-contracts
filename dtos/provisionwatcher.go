@@ -19,6 +19,9 @@ type ProvisionWatcher struct {
 	BlockingIdentifiers map[string][]string `json:"blockingIdentifiers,omitempty" yaml:"blockingIdentifiers,omitempty"`
 	AdminState          string              `json:"adminState" yaml:"adminState" validate:"oneof='LOCKED' 'UNLOCKED'"`
 	DiscoveredDevice    DiscoveredDevice    `json:"discoveredDevice" yaml:"discoveredDevice"`
+	
+	// Central
+	ProfileName         string              `json:"profileName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
 }
 
 type UpdateProvisionWatcher struct {
@@ -30,6 +33,9 @@ type UpdateProvisionWatcher struct {
 	BlockingIdentifiers map[string][]string    `json:"blockingIdentifiers"`
 	AdminState          *string                `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
 	DiscoveredDevice    UpdateDiscoveredDevice `json:"discoveredDevice"`
+	
+	// Central
+	ProfileName         *string             `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 }
 
 // ToProvisionWatcherModel transforms the ProvisionWatcher DTO to the ProvisionWatcher model
@@ -44,6 +50,9 @@ func ToProvisionWatcherModel(dto ProvisionWatcher) models.ProvisionWatcher {
 		BlockingIdentifiers: dto.BlockingIdentifiers,
 		AdminState:          models.AdminState(dto.AdminState),
 		DiscoveredDevice:    ToDiscoveredDeviceModel(dto.DiscoveredDevice),
+		
+		// Central
+		ProfileName:         dto.ProfileName,
 	}
 }
 
@@ -59,6 +68,9 @@ func FromProvisionWatcherModelToDTO(pw models.ProvisionWatcher) ProvisionWatcher
 		BlockingIdentifiers: pw.BlockingIdentifiers,
 		AdminState:          string(pw.AdminState),
 		DiscoveredDevice:    FromDiscoveredDeviceModelToDTO(pw.DiscoveredDevice),
+		
+		// Central
+		ProfileName:         pw.ProfileName,
 	}
 }
 
@@ -74,6 +86,9 @@ func FromProvisionWatcherModelToUpdateDTO(pw models.ProvisionWatcher) UpdateProv
 		BlockingIdentifiers: pw.BlockingIdentifiers,
 		AdminState:          &adminState,
 		DiscoveredDevice:    FromDiscoveredDeviceModelToUpdateDTO(pw.DiscoveredDevice),
+		
+		// Central
+		ProfileName:         &pw.ProfileName,
 	}
 	return dto
 }
