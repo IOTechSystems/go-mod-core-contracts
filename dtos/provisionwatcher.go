@@ -19,6 +19,10 @@ type ProvisionWatcher struct {
 	BlockingIdentifiers map[string][]string `json:"blockingIdentifiers,omitempty" yaml:"blockingIdentifiers,omitempty"`
 	AdminState          string              `json:"adminState" yaml:"adminState" validate:"oneof='LOCKED' 'UNLOCKED'"`
 	DiscoveredDevice    DiscoveredDevice    `json:"discoveredDevice" yaml:"discoveredDevice" validate:"dive"`
+
+	// Xpert
+	ProfileName         string              `json:"profileName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
+	AutoEvents          []AutoEvent         `json:"autoEvents,omitempty" validate:"dive"`
 }
 
 type UpdateProvisionWatcher struct {
