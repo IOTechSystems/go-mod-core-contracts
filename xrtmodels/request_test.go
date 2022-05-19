@@ -34,7 +34,7 @@ func TestNewRequest(t *testing.T) {
 	require.NoError(t, err)
 	getDeviceResourceRequest, err := json.Marshal(NewDeviceResourceGetRequest(device.Name, clientName, []string{}))
 	require.NoError(t, err)
-	setDeviceResourceRequest, err := json.Marshal(NewDeviceResourceSetRequest(device.Name, clientName, map[string]interface{}{}))
+	setDeviceResourceRequest, err := json.Marshal(NewDeviceResourceSetRequest(device.Name, clientName, map[string]interface{}{}, map[string]interface{}{}))
 	require.NoError(t, err)
 
 	var tests = []struct {
