@@ -79,6 +79,7 @@ type PutResourceRequest struct {
 	BaseRequest `json:",inline"`
 	DeviceName  string                 `json:"device"`
 	Values      map[string]interface{} `json:"values"`
+	Options     map[string]interface{} `json:"options"`
 }
 
 type ScheduleRequest struct {
@@ -221,7 +222,7 @@ func NewDeviceResourceGetRequest(deviceName string, clientName string, resources
 	return req
 }
 
-func NewDeviceResourceSetRequest(deviceName string, clientName string, values map[string]interface{}) PutResourceRequest {
+func NewDeviceResourceSetRequest(deviceName string, clientName string, values map[string]interface{}, options map[string]interface{}) PutResourceRequest {
 	req := PutResourceRequest{
 		BaseRequest: BaseRequest{
 			Client:    clientName,
@@ -229,9 +230,9 @@ func NewDeviceResourceSetRequest(deviceName string, clientName string, values ma
 			Op:        DeviceResourceSetOperation,
 		},
 		DeviceName: deviceName,
-		Values:     nil,
+		Values:     values,
+		Options:    options,
 	}
-	req.Values = values
 	return req
 }
 
