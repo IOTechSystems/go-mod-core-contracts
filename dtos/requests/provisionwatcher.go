@@ -113,6 +113,9 @@ func ReplaceProvisionWatcherModelFieldsWithDTO(pw *models.ProvisionWatcher, patc
 	if patch.AutoEvents != nil {
 		pw.AutoEvents = dtos.ToAutoEventModels(patch.AutoEvents)
 	}
+	if patch.ProtocolName != nil {
+		pw.ProtocolName = *patch.ProtocolName
+	}
 }
 
 func NewAddProvisionWatcherRequest(dto dtos.ProvisionWatcher) AddProvisionWatcherRequest {
