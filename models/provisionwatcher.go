@@ -15,4 +15,10 @@ type ProvisionWatcher struct {
 	BlockingIdentifiers map[string][]string
 	AdminState          AdminState
 	DiscoveredDevice    DiscoveredDevice
+
+	// Xpert
+	ProtocolName        string
+	ProfileName         string
+	AutoEvents          []AutoEvent
+
 }

@@ -72,6 +72,10 @@ func mockUpdateProvisionWatcher() dtos.UpdateProvisionWatcher {
 	d.DiscoveredDevice.ProfileName = &testProfileName
 	d.DiscoveredDevice.AdminState = &testAdminState
 	d.DiscoveredDevice.AutoEvents = testAutoEvents
+
+	d.ProfileName = &testProfileName
+	d.AutoEvents = testAutoEvents
+	d.ProtocolName = &testProtocolName
 	return d
 }
 
@@ -357,4 +361,9 @@ func TestReplaceProvisionWatcherModelFieldsWithDTO(t *testing.T) {
 	assert.Equal(t, TestDeviceProfileName, provisionWatcher.DiscoveredDevice.ProfileName)
 	assert.Equal(t, models.AdminState(models.Locked), provisionWatcher.AdminState)
 	assert.Equal(t, dtos.ToAutoEventModels(testAutoEvents), provisionWatcher.DiscoveredDevice.AutoEvents)
+
+	// Xpert
+	assert.Equal(t, testProtocolName, provisionWatcher.ProtocolName)
+	assert.Equal(t, TestDeviceProfileName, provisionWatcher.ProfileName)
+	assert.Equal(t, dtos.ToAutoEventModels(testAutoEvents), provisionWatcher.AutoEvents)
 }
