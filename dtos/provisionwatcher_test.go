@@ -25,4 +25,5 @@ func TestFromProvisionWatcherModelToUpdateDTO(t *testing.T) {
 	assert.Equal(t, model.ServiceName, *dto.ServiceName)
 	assert.EqualValues(t, model.AdminState, *dto.AdminState)
 	assert.EqualValues(t, model.ProtocolName, *dto.ProtocolName)
+	assert.EqualValues(t, model.DeviceDescription, *dto.DeviceDescription)
 }
