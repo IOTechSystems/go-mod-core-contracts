@@ -24,6 +24,7 @@ type ProvisionWatcher struct {
 	ProtocolName        string              `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
 	ProfileName         string              `json:"profileName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
 	AutoEvents          []AutoEvent         `json:"autoEvents,omitempty" validate:"dive"`
+	DeviceDescription   string              `json:"deviceDescription"`
 }
 
 type UpdateProvisionWatcher struct {
@@ -40,6 +41,7 @@ type UpdateProvisionWatcher struct {
 	ProtocolName        *string             `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
 	ProfileName         *string             `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	AutoEvents          []AutoEvent         `json:"autoEvents" validate:"dive"`
+	DeviceDescription   *string             `json:"deviceDescription"`
 }
 
 // ToProvisionWatcherModel transforms the ProvisionWatcher DTO to the ProvisionWatcher model
@@ -59,6 +61,7 @@ func ToProvisionWatcherModel(dto ProvisionWatcher) models.ProvisionWatcher {
 		ProtocolName:        dto.ProtocolName,
 		ProfileName:         dto.ProfileName,
 		AutoEvents:          ToAutoEventModels(dto.AutoEvents),
+		DeviceDescription:   dto.DeviceDescription,
 	}
 }
 
@@ -79,6 +82,7 @@ func FromProvisionWatcherModelToDTO(pw models.ProvisionWatcher) ProvisionWatcher
 		ProtocolName:        pw.ProtocolName,
 		ProfileName:         pw.ProfileName,
 		AutoEvents:          FromAutoEventModelsToDTOs(pw.AutoEvents),
+		DeviceDescription:   pw.DeviceDescription,
 	}
 }
 
@@ -99,6 +103,7 @@ func FromProvisionWatcherModelToUpdateDTO(pw models.ProvisionWatcher) UpdateProv
 		ProtocolName:        &pw.ProtocolName,
 		ProfileName:         &pw.ProfileName,
 		AutoEvents:          FromAutoEventModelsToDTOs(pw.AutoEvents),
+		DeviceDescription:   &pw.DeviceDescription,
 	}
 	return dto
 }

@@ -31,4 +31,5 @@ func TestFromProvisionWatcherModelToUpdateDTO(t *testing.T) {
 	// Xpert
 	assert.EqualValues(t, model.ProtocolName, *dto.ProtocolName)
 	assert.Equal(t, model.ProfileName, *dto.ProfileName)
+	assert.EqualValues(t, model.DeviceDescription, *dto.DeviceDescription)
 }

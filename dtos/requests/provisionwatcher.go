@@ -118,6 +118,9 @@ func ReplaceProvisionWatcherModelFieldsWithDTO(pw *models.ProvisionWatcher, patc
 	if patch.ProtocolName != nil {
 		pw.ProtocolName = *patch.ProtocolName
 	}
+	if patch.DeviceDescription != nil {
+		pw.DeviceDescription = *patch.DeviceDescription
+	}
 }
 
 func NewAddProvisionWatcherRequest(dto dtos.ProvisionWatcher) AddProvisionWatcherRequest {

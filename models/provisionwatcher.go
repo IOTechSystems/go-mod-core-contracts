@@ -20,5 +20,5 @@ type ProvisionWatcher struct {
 	ProtocolName        string
 	ProfileName         string
 	AutoEvents          []AutoEvent
-
+	DeviceDescription   string
 }
