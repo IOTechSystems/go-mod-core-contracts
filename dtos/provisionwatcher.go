@@ -19,8 +19,9 @@ type ProvisionWatcher struct {
 	BlockingIdentifiers map[string][]string `json:"blockingIdentifiers,omitempty" yaml:"blockingIdentifiers,omitempty"`
 	AdminState          string              `json:"adminState" yaml:"adminState" validate:"oneof='LOCKED' 'UNLOCKED'"`
 	DiscoveredDevice    DiscoveredDevice    `json:"discoveredDevice" yaml:"discoveredDevice"`
-	
+
 	// Central
+	DeviceDescription   string              `json:"deviceDescription"`
 	ProtocolName        string              `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
 	ProfileName         string              `json:"profileName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
 	AutoEvents          []AutoEvent         `json:"autoEvents,omitempty" validate:"dive"`
@@ -37,6 +38,7 @@ type UpdateProvisionWatcher struct {
 	DiscoveredDevice    UpdateDiscoveredDevice `json:"discoveredDevice"`
 
 	// Central
+	DeviceDescription   *string             `json:"deviceDescription"`
 	ProtocolName        *string             `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
 	ProfileName         *string             `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	AutoEvents          []AutoEvent         `json:"autoEvents" validate:"dive"`
@@ -54,8 +56,9 @@ func ToProvisionWatcherModel(dto ProvisionWatcher) models.ProvisionWatcher {
 		BlockingIdentifiers: dto.BlockingIdentifiers,
 		AdminState:          models.AdminState(dto.AdminState),
 		DiscoveredDevice:    ToDiscoveredDeviceModel(dto.DiscoveredDevice),
-		
+
 		// Central
+		DeviceDescription:   dto.DeviceDescription,
 		ProtocolName:        dto.ProtocolName,
 		ProfileName:         dto.ProfileName,
 		AutoEvents:          ToAutoEventModels(dto.AutoEvents),
@@ -76,6 +79,7 @@ func FromProvisionWatcherModelToDTO(pw models.ProvisionWatcher) ProvisionWatcher
 		DiscoveredDevice:    FromDiscoveredDeviceModelToDTO(pw.DiscoveredDevice),
 
 		// Central
+		DeviceDescription:   pw.DeviceDescription,
 		ProtocolName:        pw.ProtocolName,
 		ProfileName:         pw.ProfileName,
 		AutoEvents:          FromAutoEventModelsToDTOs(pw.AutoEvents),
@@ -96,6 +100,7 @@ func FromProvisionWatcherModelToUpdateDTO(pw models.ProvisionWatcher) UpdateProv
 		DiscoveredDevice:    FromDiscoveredDeviceModelToUpdateDTO(pw.DiscoveredDevice),
 
 		// Central
+		DeviceDescription:   &pw.DeviceDescription,
 		ProtocolName:        &pw.ProtocolName,
 		ProfileName:         &pw.ProfileName,
 		AutoEvents:          FromAutoEventModelsToDTOs(pw.AutoEvents),
