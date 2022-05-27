@@ -27,6 +27,7 @@ var testIdentifiers = map[string]string{
 var testBlockingIdentifiers = map[string][]string{
 	"port": {"397", "398", "399"},
 }
+var testDeviceDescription = "test device description"
 var testAddProvisionWatcher = AddProvisionWatcherRequest{
 	BaseRequest: common.BaseRequest{
 		RequestId:   ExampleUUID,
@@ -69,6 +70,7 @@ func mockUpdateProvisionWatcher() dtos.UpdateProvisionWatcher {
 	d.AdminState = &testAdminState
 	d.AutoEvents = testAutoEvents
 	d.ProtocolName = &testProtocolName
+	d.DeviceDescription = &testDeviceDescription
 	return d
 }
 
@@ -342,4 +344,5 @@ func TestReplaceProvisionWatcherModelFieldsWithDTO(t *testing.T) {
 	assert.Equal(t, models.AdminState(models.Locked), provisionWatcher.AdminState)
 	assert.Equal(t, dtos.ToAutoEventModels(testAutoEvents), provisionWatcher.AutoEvents)
 	assert.Equal(t, testProtocolName, provisionWatcher.ProtocolName)
+	assert.Equal(t, testDeviceDescription, provisionWatcher.DeviceDescription)
 }

@@ -20,4 +20,5 @@ type ProvisionWatcher struct {
 	AdminState          AdminState
 	AutoEvents          []AutoEvent
 	ProtocolName        string
+	DeviceDescription   string
 }
