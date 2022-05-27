@@ -16,26 +16,28 @@ import (
 // TLS file settings
 const (
 	// General settings
-	TlsCertOutputDir    = "/tmp/edgex/secrets/ca"
+	BaseOutputDir       = "/tmp/edgex/secrets"
 	CaKeyFileName       = "ca.key"
 	CaCertFileName      = "ca.crt"
 	OpensslConfFileName = "openssl.conf"
 	RsaKySize           = "4096"
 
 	// Redis specific settings
-	RedisKeyFileName  = "redis.key"
-	RedisCsrFileName  = "redis.csr"
-	RedisCertFileName = "redis.crt"
+	RedisTlsCertOutputDir = BaseOutputDir + "/redis"
+	RedisKeyFileName      = "redis.key"
+	RedisCsrFileName      = "redis.csr"
+	RedisCertFileName     = "redis.crt"
 
 	// MQTT specific settings
 	MqttClientKeyFileName  = "mqtt.key"
 	MqttClientCertFileName = "mqtt.crt"
+	EnvMessageBusMqttTls   = "EDGEXPERT_MESSAGEBUS_MQTT_TLS"
 )
 
 // CreateRedisTlsConfig loads TLS certificates from specified path and creates Redis TLS config
 func CreateRedisTlsConfig() (tlsConfig *tls.Config, err error) {
-	redisKeyFilePath := filepath.Join(TlsCertOutputDir, RedisKeyFileName)
-	redisCertFilePath := filepath.Join(TlsCertOutputDir, RedisCertFileName)
+	redisKeyFilePath := filepath.Join(RedisTlsCertOutputDir, RedisKeyFileName)
+	redisCertFilePath := filepath.Join(RedisTlsCertOutputDir, RedisCertFileName)
 	cert, err := tls.LoadX509KeyPair(redisCertFilePath, redisKeyFilePath)
 	if err != nil {
 		return tlsConfig, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse the Redis TLS key pair", err)
