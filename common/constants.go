@@ -222,6 +222,7 @@ const (
 	ValueTypeFloat32Array = "Float32Array"
 	ValueTypeFloat64Array = "Float64Array"
 	ValueTypeObject       = "Object"
+	ValueTypeObjectArray  = "ObjectArray"
 )
 
 // Constants related to configuration file's map key
