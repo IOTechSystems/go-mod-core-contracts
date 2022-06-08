@@ -370,3 +370,8 @@ const (
 	// App Service Topics
 	// App Service topics remain configurable inorder to filter by subscription.
 )
+
+// Constants for Notification Category
+const (
+	DisconnectAlert = "Disconnection"
+)
