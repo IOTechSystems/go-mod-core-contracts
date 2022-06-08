@@ -297,3 +297,8 @@ const (
 	ContentTypeText = "text/plain"
 	ContentTypeXML  = "application/xml"
 )
+
+// Constants for Notification Category
+const (
+	DisconnectAlert = "Disconnection"
+)
