@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -176,6 +176,9 @@ const (
 	Sender        = "sender"
 	Severity      = "severity"
 	Interval      = "interval"
+	User          = "user"
+	Group         = "group"
+	PublicKey     = "rsa_public_key"
 
 	Offset      = "offset"         //query string to specify the number of items to skip before starting to collect the result set.
 	Limit       = "limit"          //query string to specify the numbers of items to return
@@ -296,6 +299,7 @@ const (
 	ContentTypeYAML = "application/x-yaml"
 	ContentTypeText = "text/plain"
 	ContentTypeXML  = "application/xml"
+	ContentTypeForm = "application/x-www-form-urlencoded"
 )
 
 // Constants for Notification Category
