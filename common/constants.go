@@ -183,6 +183,11 @@ const (
 	PushEvent    = "ds-pushevent"   //query string to specify if an event should be pushed to the EdgeX system
 	ReturnEvent  = "ds-returnevent" //query string to specify if an event should be returned from device service
 	RegexCommand = "ds-regexcmd"    //query string to specify if the command name is in regular expression format
+
+	// Xpert
+	User          = "user"
+	Group         = "group"
+	PublicKey     = "rsa_public_key"
 )
 
 // Constants related to the default value of query strings in the v3 service APIs
@@ -299,6 +304,9 @@ const (
 	ContentTypeYAML = "application/x-yaml"
 	ContentTypeText = "text/plain"
 	ContentTypeXML  = "application/xml"
+
+	// Xpert
+	ContentTypeForm = "application/x-www-form-urlencoded"
 )
 
 // Constants related to System Events
