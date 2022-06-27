@@ -112,6 +112,10 @@ func TestDeviceProfileRequest_Validate(t *testing.T) {
 	validDeviceResourceReadWrite.Profile.DeviceResources[0].Properties.ReadWrite = common.ReadWrite_WR
 	dismatchDeviceCommand := profileData()
 	dismatchDeviceCommand.Profile.DeviceResources = []dtos.DeviceResource{}
+	variedSignAndSpaceResourceName := profileData()
+	testResourceName := "test resource ~!@#$%^&*()_+{}[]`"
+	variedSignAndSpaceResourceName.Profile.DeviceResources[0].Name = testResourceName
+	variedSignAndSpaceResourceName.Profile.DeviceCommands[0].ResourceOperations[0].DeviceResource = testResourceName
 
 	tests := []struct {
 		name          string
@@ -128,6 +132,7 @@ func TestDeviceProfileRequest_Validate(t *testing.T) {
 		{"invalid DeviceProfileRequest, invalid deviceResource property readWrite", invalidDeviceResourcePropertyType, true},
 		{"valid DeviceProfileRequest, valid deviceResource property readWrite with value WR", validDeviceResourceReadWrite, false},
 		{"invalid DeviceProfileRequest, dismatch deviceCommand", dismatchDeviceCommand, true},
+		{"valid DeviceProfileRequest, the resource name contains varied sign and space", variedSignAndSpaceResourceName, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
