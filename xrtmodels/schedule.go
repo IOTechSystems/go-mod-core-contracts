@@ -1,8 +1,14 @@
 package xrtmodels
 
+// Schedule is used to register timed, polled reads of device resources
+// The definition can refer to https://github.com/IOTechSystems/xrt-docs/blob/v2.0-branch/docs/mqtt-management/mqtt-management.md#schedule-format
 type Schedule struct {
-	Name     string   `json:"name"`
-	Device   string   `json:"device"`
-	Resource []string `json:"resource"`
-	Interval uint64   `json:"interval"`
+	Name     string      `json:"name"`
+	Device   string      `json:"device"`
+	Resource []string    `json:"resource"`
+	Interval uint64      `json:"interval"`
+	OnChange bool        `json:"on_change,omitempty"`
+	Publish  bool        `json:"publish,omitempty"`
+	Units    bool        `json:"units,omitempty"`
+	Options  interface{} `json:"options,omitempty"`
 }
