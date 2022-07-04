@@ -7,8 +7,8 @@ type Schedule struct {
 	Device   string      `json:"device"`
 	Resource []string    `json:"resource"`
 	Interval uint64      `json:"interval"`
-	OnChange bool        `json:"on_change,omitempty"`
-	Publish  bool        `json:"publish,omitempty"`
-	Units    bool        `json:"units,omitempty"`
+	OnChange bool        `json:"on_change"`
+	Publish  bool        `json:"publish"`
+	Units    bool        `json:"units"`
 	Options  interface{} `json:"options,omitempty"`
 }
