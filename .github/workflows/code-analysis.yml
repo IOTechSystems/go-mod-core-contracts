@@ -15,12 +15,12 @@ on:
       - v[0-9]+.[0-9]+-branch
 
 jobs:
-    call-go-lint:
-      uses: IOTechSystems/github-action-workflow/.github/workflows/reusable-golangci-lint.yml@main
-      with:
-        GO_LINT_CONFIG_PATH: .golangci.yml
-    call-sonar-scan:
-      uses: IOTechSystems/github-action-workflow/.github/workflows/reusable-sonarqube-scan.yml@main
-      with:
-        PROJECT_NAME: go-mod-core-contracts
-      secrets: inherit
+  call-go-lint:
+    uses: IOTechSystems/github-action-workflow/.github/workflows/reusable-golangci-lint.yml@main
+    with:
+      GO_LINT_CONFIG_PATH: .golangci.yml
+  call-sonar-scan:
+    uses: IOTechSystems/github-action-workflow/.github/workflows/reusable-sonarqube-scan.yml@main
+    with:
+      PROJECT_NAME: go-mod-core-contracts
+    secrets: inherit
