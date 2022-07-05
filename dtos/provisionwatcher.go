@@ -25,6 +25,11 @@ type ProvisionWatcher struct {
 	ProtocolName        string              `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
 	ProfileName         string              `json:"profileName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
 	AutoEvents          []AutoEvent         `json:"autoEvents,omitempty" validate:"dive"`
+	DeviceNameTemplate string      `json:"deviceNameTemplate"`
+	DeviceLabels       []string    `json:"deviceLabels"`
+	ProfileNameTemplate string   `json:"profileNameTemplate"`
+	ProfileLabels       []string `json:"profileLabels"`
+	ProfileDescription  string   `json:"profileDescription"`
 }
 
 type UpdateProvisionWatcher struct {
@@ -42,6 +47,11 @@ type UpdateProvisionWatcher struct {
 	ProtocolName        *string             `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
 	ProfileName         *string             `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	AutoEvents          []AutoEvent         `json:"autoEvents" validate:"dive"`
+	DeviceNameTemplate *string     `json:"deviceNameTemplate"`
+	DeviceLabels       []string    `json:"deviceLabels"`
+	ProfileNameTemplate *string  `json:"profileNameTemplate"`
+	ProfileLabels       []string `json:"profileLabels"`
+	ProfileDescription  *string  `json:"profileDescription"`
 }
 
 // ToProvisionWatcherModel transforms the ProvisionWatcher DTO to the ProvisionWatcher model
@@ -62,6 +72,11 @@ func ToProvisionWatcherModel(dto ProvisionWatcher) models.ProvisionWatcher {
 		ProtocolName:        dto.ProtocolName,
 		ProfileName:         dto.ProfileName,
 		AutoEvents:          ToAutoEventModels(dto.AutoEvents),
+		DeviceNameTemplate: dto.DeviceNameTemplate,
+		DeviceLabels:       dto.DeviceLabels,
+		ProfileNameTemplate: dto.ProfileNameTemplate,
+		ProfileLabels:       dto.ProfileLabels,
+		ProfileDescription:  dto.ProfileDescription,
 	}
 }
 
@@ -83,6 +98,11 @@ func FromProvisionWatcherModelToDTO(pw models.ProvisionWatcher) ProvisionWatcher
 		ProtocolName:        pw.ProtocolName,
 		ProfileName:         pw.ProfileName,
 		AutoEvents:          FromAutoEventModelsToDTOs(pw.AutoEvents),
+		DeviceNameTemplate: pw.DeviceNameTemplate,
+		DeviceLabels:       pw.DeviceLabels,
+		ProfileNameTemplate: pw.ProfileNameTemplate,
+		ProfileLabels:       pw.ProfileLabels,
+		ProfileDescription:  pw.ProfileDescription,
 	}
 }
 
@@ -104,6 +124,11 @@ func FromProvisionWatcherModelToUpdateDTO(pw models.ProvisionWatcher) UpdateProv
 		ProtocolName:        &pw.ProtocolName,
 		ProfileName:         &pw.ProfileName,
 		AutoEvents:          FromAutoEventModelsToDTOs(pw.AutoEvents),
+		DeviceNameTemplate: &pw.DeviceNameTemplate,
+		DeviceLabels:       pw.DeviceLabels,
+		ProfileNameTemplate: &pw.ProfileNameTemplate,
+		ProfileLabels:       pw.ProfileLabels,
+		ProfileDescription:  &pw.ProfileDescription,
 	}
 	return dto
 }
