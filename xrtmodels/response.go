@@ -86,6 +86,11 @@ type DeviceResult struct {
 	Device     DeviceInfo `json:"device"`
 }
 
+type DiscoveredDevicesResult struct {
+	BaseResult `json:",inline"`
+	Devices    map[string]DeviceInfo `json:"devices"`
+}
+
 type MultiProfilesResponse struct {
 	BaseResponse `json:",inline"`
 	Result       MultiProfilesResult `json:"result"`
