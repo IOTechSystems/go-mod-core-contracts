@@ -115,11 +115,32 @@ func ReplaceProvisionWatcherModelFieldsWithDTO(pw *models.ProvisionWatcher, patc
 	if patch.DiscoveredDevice.Properties != nil {
 		pw.DiscoveredDevice.Properties = patch.DiscoveredDevice.Properties
 	}
+
+	// Xpert
+	if patch.DeviceNameTemplate != nil {
+		pw.DeviceNameTemplate = *patch.DeviceNameTemplate
+	}
+	if patch.ProfileName != nil {
+		pw.ProfileName = *patch.ProfileName
+	}
 	if patch.ProtocolName != nil {
 		pw.ProtocolName = *patch.ProtocolName
 	}
 	if patch.DeviceDescription != nil {
 		pw.DeviceDescription = *patch.DeviceDescription
+	}
+	if patch.DeviceLabels != nil {
+		pw.DeviceLabels = patch.DeviceLabels
+	}
+
+	if patch.ProfileNameTemplate != nil {
+		pw.ProfileNameTemplate = *patch.ProfileNameTemplate
+	}
+	if patch.ProfileLabels != nil {
+		pw.ProfileLabels = patch.ProfileLabels
+	}
+	if patch.ProfileDescription != nil {
+		pw.ProfileDescription = *patch.ProfileDescription
 	}
 }
 

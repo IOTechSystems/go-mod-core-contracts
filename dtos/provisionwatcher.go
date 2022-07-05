@@ -21,10 +21,17 @@ type ProvisionWatcher struct {
 	DiscoveredDevice    DiscoveredDevice    `json:"discoveredDevice" yaml:"discoveredDevice" validate:"dive"`
 
 	// Xpert
-	ProtocolName        string              `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
-	ProfileName         string              `json:"profileName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
-	AutoEvents          []AutoEvent         `json:"autoEvents,omitempty" validate:"dive"`
-	DeviceDescription   string              `json:"deviceDescription"`
+	DeviceNameTemplate string      `json:"deviceNameTemplate"`
+	ProfileName        string      `json:"profileName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
+	AdminState         string      `json:"adminState" validate:"oneof='LOCKED' 'UNLOCKED'"`
+	AutoEvents         []AutoEvent `json:"autoEvents,omitempty" validate:"dive"`
+	ProtocolName       string      `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
+	DeviceDescription  string      `json:"deviceDescription"`
+	DeviceLabels       []string    `json:"deviceLabels"`
+
+	ProfileNameTemplate string   `json:"profileNameTemplate"`
+	ProfileLabels       []string `json:"profileLabels"`
+	ProfileDescription  string   `json:"profileDescription"`
 }
 
 type UpdateProvisionWatcher struct {
@@ -38,10 +45,17 @@ type UpdateProvisionWatcher struct {
 	DiscoveredDevice    UpdateDiscoveredDevice `json:"discoveredDevice"`
 
 	// Xpert
-	ProtocolName        *string             `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
-	ProfileName         *string             `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	AutoEvents          []AutoEvent         `json:"autoEvents" validate:"dive"`
-	DeviceDescription   *string             `json:"deviceDescription"`
+	DeviceNameTemplate *string     `json:"deviceNameTemplate"`
+	ProfileName        *string     `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	AdminState         *string     `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
+	AutoEvents         []AutoEvent `json:"autoEvents" validate:"dive"`
+	ProtocolName       *string     `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
+	DeviceDescription  *string     `json:"deviceDescription"`
+	DeviceLabels       []string    `json:"deviceLabels"`
+
+	ProfileNameTemplate *string  `json:"profileNameTemplate"`
+	ProfileLabels       []string `json:"profileLabels"`
+	ProfileDescription  *string  `json:"profileDescription"`
 }
 
 // ToProvisionWatcherModel transforms the ProvisionWatcher DTO to the ProvisionWatcher model
@@ -58,10 +72,17 @@ func ToProvisionWatcherModel(dto ProvisionWatcher) models.ProvisionWatcher {
 		DiscoveredDevice:    ToDiscoveredDeviceModel(dto.DiscoveredDevice),
 
 		// Xpert
-		ProtocolName:        dto.ProtocolName,
-		ProfileName:         dto.ProfileName,
-		AutoEvents:          ToAutoEventModels(dto.AutoEvents),
-		DeviceDescription:   dto.DeviceDescription,
+		DeviceNameTemplate: dto.DeviceNameTemplate,
+		ProfileName:        dto.ProfileName,
+		AdminState:         models.AdminState(dto.AdminState),
+		AutoEvents:         ToAutoEventModels(dto.AutoEvents),
+		ProtocolName:       dto.ProtocolName,
+		DeviceDescription:  dto.DeviceDescription,
+		DeviceLabels:       dto.DeviceLabels,
+
+		ProfileNameTemplate: dto.ProfileNameTemplate,
+		ProfileLabels:       dto.ProfileLabels,
+		ProfileDescription:  dto.ProfileDescription,
 	}
 }
 
@@ -79,10 +100,17 @@ func FromProvisionWatcherModelToDTO(pw models.ProvisionWatcher) ProvisionWatcher
 		DiscoveredDevice:    FromDiscoveredDeviceModelToDTO(pw.DiscoveredDevice),
 
 		// Xpert
-		ProtocolName:        pw.ProtocolName,
-		ProfileName:         pw.ProfileName,
-		AutoEvents:          FromAutoEventModelsToDTOs(pw.AutoEvents),
-		DeviceDescription:   pw.DeviceDescription,
+		DeviceNameTemplate: pw.DeviceNameTemplate,
+		ProfileName:        pw.ProfileName,
+		AdminState:         string(pw.AdminState),
+		AutoEvents:         FromAutoEventModelsToDTOs(pw.AutoEvents),
+		ProtocolName:       pw.ProtocolName,
+		DeviceDescription:  pw.DeviceDescription,
+		DeviceLabels:       pw.DeviceLabels,
+
+		ProfileNameTemplate: pw.ProfileNameTemplate,
+		ProfileLabels:       pw.ProfileLabels,
+		ProfileDescription:  pw.ProfileDescription,
 	}
 }
 
@@ -100,10 +128,17 @@ func FromProvisionWatcherModelToUpdateDTO(pw models.ProvisionWatcher) UpdateProv
 		DiscoveredDevice:    FromDiscoveredDeviceModelToUpdateDTO(pw.DiscoveredDevice),
 
 		// Xpert
-		ProtocolName:        &pw.ProtocolName,
-		ProfileName:         &pw.ProfileName,
-		AutoEvents:          FromAutoEventModelsToDTOs(pw.AutoEvents),
-		DeviceDescription:   &pw.DeviceDescription,
+		DeviceNameTemplate: &pw.DeviceNameTemplate,
+		ProfileName:        &pw.ProfileName,
+		AdminState:         &adminState,
+		AutoEvents:         FromAutoEventModelsToDTOs(pw.AutoEvents),
+		ProtocolName:       &pw.ProtocolName,
+		DeviceDescription:  &pw.DeviceDescription,
+		DeviceLabels:       pw.DeviceLabels,
+
+		ProfileNameTemplate: &pw.ProfileNameTemplate,
+		ProfileLabels:       pw.ProfileLabels,
+		ProfileDescription:  &pw.ProfileDescription,
 	}
 	return dto
 }
