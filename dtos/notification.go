@@ -14,16 +14,17 @@ import (
 // Notification and its properties are defined in the APIv2 specification:
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/support-notifications/2.1.0#/Notification
 type Notification struct {
-	DBTimestamp `json:",inline"`
-	Id          string   `json:"id,omitempty" validate:"omitempty,uuid"`
-	Category    string   `json:"category,omitempty" validate:"required_without=Labels,omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	Labels      []string `json:"labels,omitempty" validate:"required_without=Category,omitempty,gt=0,dive,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	Content     string   `json:"content" validate:"required,edgex-dto-none-empty-string"`
-	ContentType string   `json:"contentType,omitempty"`
-	Description string   `json:"description,omitempty"`
-	Sender      string   `json:"sender" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	Severity    string   `json:"severity" validate:"required,oneof='MINOR' 'NORMAL' 'CRITICAL'"`
-	Status      string   `json:"status,omitempty" validate:"omitempty,oneof='NEW' 'PROCESSED' 'ESCALATED'"`
+	DBTimestamp  `json:",inline"`
+	Id           string   `json:"id,omitempty" validate:"omitempty,uuid"`
+	Category     string   `json:"category,omitempty" validate:"required_without=Labels,omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	Labels       []string `json:"labels,omitempty" validate:"required_without=Category,omitempty,gt=0,dive,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	Content      string   `json:"content" validate:"required,edgex-dto-none-empty-string"`
+	ContentType  string   `json:"contentType,omitempty"`
+	Description  string   `json:"description,omitempty"`
+	Sender       string   `json:"sender" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	Severity     string   `json:"severity" validate:"required,oneof='MINOR' 'NORMAL' 'CRITICAL'"`
+	Status       string   `json:"status,omitempty" validate:"omitempty,oneof='NEW' 'PROCESSED' 'ESCALATED'"`
+	Acknowledged bool     `json:"acknowledged"`
 }
 
 // NewNotification creates and returns a Notification DTO
@@ -51,6 +52,7 @@ func ToNotificationModel(n Notification) models.Notification {
 	m.Sender = n.Sender
 	m.Severity = models.NotificationSeverity(n.Severity)
 	m.Status = models.NotificationStatus(n.Status)
+	m.Acknowledged = n.Acknowledged
 	return m
 }
 
@@ -66,16 +68,17 @@ func ToNotificationModels(notifications []Notification) []models.Notification {
 // FromNotificationModelToDTO transforms the Notification Model to the Notification DTO
 func FromNotificationModelToDTO(n models.Notification) Notification {
 	return Notification{
-		DBTimestamp: DBTimestamp(n.DBTimestamp),
-		Id:          n.Id,
-		Category:    string(n.Category),
-		Labels:      n.Labels,
-		Content:     n.Content,
-		ContentType: n.ContentType,
-		Description: n.Description,
-		Sender:      n.Sender,
-		Severity:    string(n.Severity),
-		Status:      string(n.Status),
+		DBTimestamp:  DBTimestamp(n.DBTimestamp),
+		Id:           n.Id,
+		Category:     string(n.Category),
+		Labels:       n.Labels,
+		Content:      n.Content,
+		ContentType:  n.ContentType,
+		Description:  n.Description,
+		Sender:       n.Sender,
+		Severity:     string(n.Severity),
+		Status:       string(n.Status),
+		Acknowledged: n.Acknowledged,
 	}
 }
 
