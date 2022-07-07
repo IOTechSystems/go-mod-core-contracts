@@ -89,6 +89,7 @@ const (
 	ApiNotificationByCategoryRoute         = ApiNotificationRoute + "/" + Category + "/{" + Category + "}"
 	ApiNotificationByLabelRoute            = ApiNotificationRoute + "/" + Label + "/{" + Label + "}"
 	ApiNotificationByIdRoute               = ApiNotificationRoute + "/" + Id + "/{" + Id + "}"
+	ApiNotificationByIdsRoute              = ApiNotificationRoute + "/" + Ids + "/{" + Ids + "}"
 	ApiNotificationByStatusRoute           = ApiNotificationRoute + "/" + Status + "/{" + Status + "}"
 	ApiNotificationBySubscriptionNameRoute = ApiNotificationRoute + "/" + Subscription + "/" + Name + "/{" + Name + "}"
 
@@ -135,6 +136,7 @@ const (
 const (
 	All           = "all"
 	Id            = "id"
+	Ids           = "ids"
 	Created       = "created"
 	Modified      = "modified"
 	Pushed        = "pushed"
