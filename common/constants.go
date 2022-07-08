@@ -89,9 +89,13 @@ const (
 	ApiNotificationByCategoryRoute         = ApiNotificationRoute + "/" + Category + "/{" + Category + "}"
 	ApiNotificationByLabelRoute            = ApiNotificationRoute + "/" + Label + "/{" + Label + "}"
 	ApiNotificationByIdRoute               = ApiNotificationRoute + "/" + Id + "/{" + Id + "}"
-	ApiNotificationByIdsRoute              = ApiNotificationRoute + "/" + Ids + "/{" + Ids + "}"
 	ApiNotificationByStatusRoute           = ApiNotificationRoute + "/" + Status + "/{" + Status + "}"
 	ApiNotificationBySubscriptionNameRoute = ApiNotificationRoute + "/" + Subscription + "/" + Name + "/{" + Name + "}"
+	// Xpert
+	ApiNotificationByIdsRoute              = ApiNotificationRoute + "/" + Ids + "/{" + Ids + "}"
+	ApiNotificationAcknowledgeByIdsRoute   = ApiNotificationRoute + "/" + Acknowledge + "/" + Ids + "/{" + Ids + "}"
+	ApiNotificationUnacknowledgeByIdsRoute = ApiNotificationRoute + "/" + Unacknowledge + "/" + Ids + "/{" + Ids + "}"
+
 
 	ApiTransmissionRoute                   = ApiBase + "/transmission"
 	ApiTransmissionByIdRoute               = ApiTransmissionRoute + "/" + Id + "/{" + Id + "}"
@@ -190,6 +194,8 @@ const (
 	User          = "user"
 	Group         = "group"
 	PublicKey     = "rsa_public_key"
+	Acknowledge   = "acknowledge"
+	Unacknowledge = "unacknowledge"
 )
 
 // Constants related to the default value of query strings in the v3 service APIs
