@@ -91,6 +91,8 @@ const (
 	ApiNotificationByIdsRoute              = ApiNotificationRoute + "/" + Ids + "/{" + Ids + "}"
 	ApiNotificationByStatusRoute           = ApiNotificationRoute + "/" + Status + "/{" + Status + "}"
 	ApiNotificationBySubscriptionNameRoute = ApiNotificationRoute + "/" + Subscription + "/" + Name + "/{" + Name + "}"
+	ApiNotificationAcknowledgeByIdsRoute   = ApiNotificationRoute + "/" + Acknowledge + "/" + Ids + "/{" + Ids + "}"
+	ApiNotificationUnacknowledgeByIdsRoute = ApiNotificationRoute + "/" + Unacknowledge + "/" + Ids + "/{" + Ids + "}"
 
 	ApiTransmissionRoute                   = ApiBase + "/transmission"
 	ApiTransmissionByIdRoute               = ApiTransmissionRoute + "/" + Id + "/{" + Id + "}"
@@ -181,6 +183,8 @@ const (
 	User          = "user"
 	Group         = "group"
 	PublicKey     = "rsa_public_key"
+	Acknowledge   = "acknowledge"
+	Unacknowledge = "unacknowledge"
 
 	Offset      = "offset"         //query string to specify the number of items to skip before starting to collect the result set.
 	Limit       = "limit"          //query string to specify the numbers of items to return
