@@ -183,6 +183,7 @@ const (
 	User          = "user"
 	Group         = "group"
 	PublicKey     = "rsa_public_key"
+	Ack           = "ack"
 	Acknowledge   = "acknowledge"
 	Unacknowledge = "unacknowledge"
 
