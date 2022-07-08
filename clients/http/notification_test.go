@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"path"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
@@ -61,7 +62,7 @@ func TestNotificationClient_NotificationsByCategory(t *testing.T) {
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiNotificationsResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL, NewNullAuthenticationInjector())
-	res, err := client.NotificationsByCategory(context.Background(), category, 0, 10)
+	res, err := client.NotificationsByCategory(context.Background(), category, 0, 10, "")
 	require.NoError(t, err)
 	require.IsType(t, responses.MultiNotificationsResponse{}, res)
 }
@@ -72,7 +73,7 @@ func TestNotificationClient_NotificationsByLabel(t *testing.T) {
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiNotificationsResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL, NewNullAuthenticationInjector())
-	res, err := client.NotificationsByLabel(context.Background(), label, 0, 10)
+	res, err := client.NotificationsByLabel(context.Background(), label, 0, 10, "")
 	require.NoError(t, err)
 	require.IsType(t, responses.MultiNotificationsResponse{}, res)
 }
@@ -83,7 +84,7 @@ func TestNotificationClient_NotificationsByStatus(t *testing.T) {
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiNotificationsResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL, NewNullAuthenticationInjector())
-	res, err := client.NotificationsByStatus(context.Background(), status, 0, 10)
+	res, err := client.NotificationsByStatus(context.Background(), status, 0, 10, "")
 	require.NoError(t, err)
 	require.IsType(t, responses.MultiNotificationsResponse{}, res)
 }
@@ -94,7 +95,7 @@ func TestNotificationClient_NotificationsBySubscriptionName(t *testing.T) {
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiNotificationsResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL, NewNullAuthenticationInjector())
-	res, err := client.NotificationsBySubscriptionName(context.Background(), subscriptionName, 0, 10)
+	res, err := client.NotificationsBySubscriptionName(context.Background(), subscriptionName, 0, 10, "")
 	require.NoError(t, err)
 	require.IsType(t, responses.MultiNotificationsResponse{}, res)
 }
@@ -106,7 +107,7 @@ func TestNotificationClient_NotificationsByTimeRange(t *testing.T) {
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiNotificationsResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL, NewNullAuthenticationInjector())
-	res, err := client.NotificationsByTimeRange(context.Background(), start, end, 0, 10)
+	res, err := client.NotificationsByTimeRange(context.Background(), start, end, 0, 10, "")
 	require.NoError(t, err)
 	require.IsType(t, responses.MultiNotificationsResponse{}, res)
 }
@@ -149,6 +150,37 @@ func TestNotificationClient_DeleteProcessedNotificationsByAge(t *testing.T) {
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL, NewNullAuthenticationInjector())
 	res, err := client.DeleteProcessedNotificationsByAge(context.Background(), age)
+	require.NoError(t, err)
+	require.IsType(t, dtoCommon.BaseResponse{}, res)
+}
+
+func TestNotificationClient_NotificationsByQueryConditions(t *testing.T) {
+	ts := newTestServer(http.MethodGet, common.ApiNotificationRoute, responses.MultiNotificationsResponse{})
+	defer ts.Close()
+	client := NewNotificationClient(ts.URL)
+	res, err := client.NotificationsByQueryConditions(context.Background(), 0, 10, "", requests.GetNotificationRequest{})
+	require.NoError(t, err)
+	require.IsType(t, responses.MultiNotificationsResponse{}, res)
+}
+
+func TestNotificationClient_DeleteNotificationByIds(t *testing.T) {
+	ids := []string{ExampleUUID}
+	path := path.Join(common.ApiNotificationRoute, common.Ids, strings.Join(ids, common.CommaSeparator))
+	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
+	defer ts.Close()
+	client := NewNotificationClient(ts.URL)
+	res, err := client.DeleteNotificationByIds(context.Background(), ids)
+	require.NoError(t, err)
+	require.IsType(t, dtoCommon.BaseResponse{}, res)
+}
+
+func TestNotificationClient_UpdateNotificationAckStatusByIds(t *testing.T) {
+	ids := []string{ExampleUUID}
+	path := path.Join(common.ApiNotificationRoute, common.Acknowledge, common.Ids, strings.Join(ids, common.CommaSeparator))
+	ts := newTestServer(http.MethodPut, path, dtoCommon.BaseResponse{})
+	defer ts.Close()
+	client := NewNotificationClient(ts.URL)
+	res, err := client.UpdateNotificationAckStatusByIds(context.Background(), true, ids)
 	require.NoError(t, err)
 	require.IsType(t, dtoCommon.BaseResponse{}, res)
 }
