@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -87,7 +87,7 @@ type MQTTPubAddress struct {
 	ConnectTimeout int    `json:"connectTimeout,omitempty"`
 }
 
-func NewMQTTAddress(host string, port int, publisher string, topic string) Address {
+func NewMQTTAddress(host string, port int, publisher string, topic string, authMode string, secretPath string, skipCertVerify bool) Address {
 	return Address{
 		Type: common.MQTT,
 		Host: host,
@@ -96,6 +96,11 @@ func NewMQTTAddress(host string, port int, publisher string, topic string) Addre
 			Publisher: publisher,
 		},
 		MessageBus: MessageBus{Topic: topic},
+		Security: Security{
+			AuthMode:       authMode,
+			SecretPath:     secretPath,
+			SkipCertVerify: skipCertVerify,
+		},
 	}
 }
 
