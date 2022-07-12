@@ -289,6 +289,7 @@ const (
 	SupportProvisionServiceKey          = "support-provision"
 	SystemManagementAgentServiceKey     = "sys-mgmt-agent"
 	SupportSchedulerServiceKey          = "support-scheduler"
+	SupportSparkplugServiceKey          = "support-sparkplug"
 	SecuritySecretStoreSetupServiceKey  = "security-secretstore-setup"
 	SecurityProxySetupServiceKey        = "security-proxy-setup"
 	SecurityFileTokenProviderServiceKey = "security-file-token-provider"
@@ -312,4 +313,13 @@ const (
 // Constants for Notification Category
 const (
 	DisconnectAlert = "Disconnection"
+)
+
+// Constants for DeviceChangedNotification
+const (
+	DeviceCreateAction = "Device creation"
+	DeviceUpdateAction = "Device update"
+	DeviceRemoveAction = "Device removal"
+
+	DeviceChangedNotificationCategory = "DEVICE_CHANGED"
 )
