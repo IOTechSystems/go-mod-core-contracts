@@ -87,7 +87,19 @@ type MQTTPubAddress struct {
 	ConnectTimeout int    `json:"connectTimeout,omitempty"`
 }
 
-func NewMQTTAddress(host string, port int, publisher string, topic string, authMode string, secretPath string, skipCertVerify bool) Address {
+func NewMQTTAddress(host string, port int, publisher string, topic string) Address {
+	return Address{
+		Type: common.MQTT,
+		Host: host,
+		Port: port,
+		MQTTPubAddress: MQTTPubAddress{
+			Publisher: publisher,
+		},
+		MessageBus: MessageBus{Topic: topic},
+	}
+}
+
+func NewMQTTAddressWithSecurity(host string, port int, publisher string, topic string, authMode string, secretPath string, skipCertVerify bool) Address {
 	return Address{
 		Type: common.MQTT,
 		Host: host,
