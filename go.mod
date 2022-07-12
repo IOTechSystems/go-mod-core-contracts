@@ -2,6 +2,8 @@ module github.com/edgexfoundry/go-mod-core-contracts/v3
 
 go 1.21
 
+go 1.18
+
 require (
 	github.com/fxamacker/cbor/v2 v2.5.0
 	github.com/go-kit/log v0.2.1
