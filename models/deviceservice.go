@@ -13,4 +13,7 @@ type DeviceService struct {
 	Labels      []string
 	BaseAddress string
 	AdminState  AdminState
+
+	// Xpert
+	TransformScript string
 }

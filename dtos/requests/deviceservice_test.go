@@ -45,12 +45,14 @@ func mockDeviceServiceDTO() dtos.UpdateDeviceService {
 	testName := TestDeviceServiceName
 	testBaseAddress := TestBaseAddress
 	testAdminState := models.Locked
+	TestTransformScriptValue := TestTransformScript
 	ds := dtos.UpdateDeviceService{}
 	ds.Id = &testUUID
 	ds.Name = &testName
 	ds.BaseAddress = &testBaseAddress
 	ds.AdminState = &testAdminState
 	ds.Labels = testLabels
+	ds.TransformScript = &TestTransformScriptValue
 	return ds
 }
 
@@ -302,8 +304,9 @@ func TestUpdateDeviceServiceRequest_UnmarshalJSON_EmptySlice(t *testing.T) {
 
 func TestReplaceDeviceServiceModelFieldsWithDTO(t *testing.T) {
 	ds := models.DeviceService{
-		Id:   "7a1707f0-166f-4c4b-bc9d-1d54c74e0137",
-		Name: "test device service",
+		Id:              "7a1707f0-166f-4c4b-bc9d-1d54c74e0137",
+		Name:            "test device service",
+		TransformScript: "test",
 	}
 	patch := mockDeviceServiceDTO()
 
@@ -312,6 +315,7 @@ func TestReplaceDeviceServiceModelFieldsWithDTO(t *testing.T) {
 	assert.Equal(t, TestBaseAddress, ds.BaseAddress)
 	assert.Equal(t, models.Locked, string(ds.AdminState))
 	assert.Equal(t, testLabels, ds.Labels)
+	assert.Equal(t, TestTransformScript, ds.TransformScript)
 }
 
 func TestNewAddDeviceServiceRequest(t *testing.T) {
