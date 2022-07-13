@@ -21,4 +21,6 @@ type DeviceServiceCommandClient interface {
 	SetCommand(ctx context.Context, baseUrl string, deviceName string, commandName string, queryParams string, settings map[string]string) (common.BaseResponse, errors.EdgeX)
 	// SetCommandWithObject invokes device service's set command API and the settings supports object value type
 	SetCommandWithObject(ctx context.Context, baseUrl string, deviceName string, commandName string, queryParams string, settings map[string]interface{}) (common.BaseResponse, errors.EdgeX)
+	// Discovery invokes device service's discovery API
+	Discovery(ctx context.Context, baseUrl string) (common.BaseResponse, errors.EdgeX)
 }
