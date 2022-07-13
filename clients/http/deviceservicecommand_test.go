@@ -86,3 +86,16 @@ func TestSetCommandWithObject(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, requestId, res.RequestId)
 }
+
+func TestDiscovery(t *testing.T) {
+	requestId := uuid.New().String()
+	expectedResponse := dtoCommon.NewBaseResponse(requestId, "", http.StatusAccepted)
+	ts := newTestServer(http.MethodPost, common.ApiDiscoveryRoute, expectedResponse)
+	defer ts.Close()
+
+	client := NewDeviceServiceCommandClient()
+	res, err := client.Discovery(context.Background(), ts.URL)
+
+	require.NoError(t, err)
+	assert.Equal(t, requestId, res.RequestId)
+}
