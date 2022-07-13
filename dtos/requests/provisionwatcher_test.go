@@ -28,6 +28,9 @@ var testBlockingIdentifiers = map[string][]string{
 	"port": {"397", "398", "399"},
 }
 var testDeviceDescription = "test device description"
+var testDeviceNameTemplate = "device-name-{{Address}}-{{Port}}"
+var testProfileNameTemplate = "profile-name-{{Address}}-{{Port}}"
+var testProfileDescription = "test profile description"
 var testAddProvisionWatcher = AddProvisionWatcherRequest{
 	BaseRequest: common.BaseRequest{
 		RequestId:   ExampleUUID,
@@ -65,12 +68,17 @@ func mockUpdateProvisionWatcher() dtos.UpdateProvisionWatcher {
 	d.Labels = testProvisionWatcherLabels
 	d.Identifiers = testIdentifiers
 	d.BlockingIdentifiers = testBlockingIdentifiers
+	d.DeviceNameTemplate = &testDeviceNameTemplate
 	d.ServiceName = &testDeviceServiceName
 	d.ProfileName = &testProfileName
 	d.AdminState = &testAdminState
 	d.AutoEvents = testAutoEvents
 	d.ProtocolName = &testProtocolName
 	d.DeviceDescription = &testDeviceDescription
+	d.DeviceLabels = testDeviceLabels
+	d.ProfileNameTemplate = &testProfileNameTemplate
+	d.ProfileLabels = testLabels
+	d.ProfileDescription = &testProfileDescription
 	return d
 }
 
@@ -345,4 +353,9 @@ func TestReplaceProvisionWatcherModelFieldsWithDTO(t *testing.T) {
 	assert.Equal(t, dtos.ToAutoEventModels(testAutoEvents), provisionWatcher.AutoEvents)
 	assert.Equal(t, testProtocolName, provisionWatcher.ProtocolName)
 	assert.Equal(t, testDeviceDescription, provisionWatcher.DeviceDescription)
+	assert.Equal(t, testDeviceNameTemplate, provisionWatcher.DeviceNameTemplate)
+	assert.Equal(t, testDeviceLabels, provisionWatcher.DeviceLabels)
+	assert.Equal(t, testProfileNameTemplate, provisionWatcher.ProfileNameTemplate)
+	assert.Equal(t, testLabels, provisionWatcher.ProfileLabels)
+	assert.Equal(t, testProfileDescription, provisionWatcher.ProfileDescription)
 }

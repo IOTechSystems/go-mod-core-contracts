@@ -15,10 +15,17 @@ type ProvisionWatcher struct {
 	Labels              []string
 	Identifiers         map[string]string
 	BlockingIdentifiers map[string][]string
-	ProfileName         string
-	ServiceName         string
-	AdminState          AdminState
-	AutoEvents          []AutoEvent
-	ProtocolName        string
-	DeviceDescription   string
+
+	DeviceNameTemplate string
+	ProfileName        string
+	ServiceName        string
+	AdminState         AdminState
+	AutoEvents         []AutoEvent
+	ProtocolName       string
+	DeviceDescription  string
+	DeviceLabels       []string
+
+	ProfileNameTemplate string
+	ProfileLabels       []string
+	ProfileDescription  string
 }
