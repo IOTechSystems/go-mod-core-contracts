@@ -10,12 +10,13 @@ package models
 // Model fields are same as the DTOs documented by this swagger. Exceptions, if any, are noted below.
 type DeviceService struct {
 	DBTimestamp
-	Id            string
-	Name          string
-	Description   string
-	LastConnected int64
-	LastReported  int64
-	Labels        []string
-	BaseAddress   string
-	AdminState    AdminState
+	Id              string
+	Name            string
+	Description     string
+	LastConnected   int64
+	LastReported    int64
+	Labels          []string
+	BaseAddress     string
+	AdminState      AdminState
+	TransformScript string
 }
