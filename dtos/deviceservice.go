@@ -17,6 +17,9 @@ type DeviceService struct {
 	Labels      []string `json:"labels,omitempty"`
 	BaseAddress string   `json:"baseAddress" validate:"required,uri"`
 	AdminState  string   `json:"adminState" validate:"oneof='LOCKED' 'UNLOCKED'"`
+
+	// Central
+	TransformScript string   `json:"transformScript,omitempty"`
 }
 
 type UpdateDeviceService struct {
@@ -26,6 +29,9 @@ type UpdateDeviceService struct {
 	BaseAddress *string  `json:"baseAddress" validate:"omitempty,uri"`
 	Labels      []string `json:"labels"`
 	AdminState  *string  `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
+
+	// Central
+	TransformScript *string  `json:"transformScript"`
 }
 
 // ToDeviceServiceModel transforms the DeviceService DTO to the DeviceService Model
@@ -37,6 +43,9 @@ func ToDeviceServiceModel(dto DeviceService) models.DeviceService {
 	ds.BaseAddress = dto.BaseAddress
 	ds.Labels = dto.Labels
 	ds.AdminState = models.AdminState(dto.AdminState)
+
+	// Central
+	ds.TransformScript = dto.TransformScript
 	return ds
 }
 
@@ -50,6 +59,9 @@ func FromDeviceServiceModelToDTO(ds models.DeviceService) DeviceService {
 	dto.BaseAddress = ds.BaseAddress
 	dto.Labels = ds.Labels
 	dto.AdminState = string(ds.AdminState)
+
+	// Central
+	dto.TransformScript = ds.TransformScript
 	return dto
 }
 
@@ -63,6 +75,9 @@ func FromDeviceServiceModelToUpdateDTO(ds models.DeviceService) UpdateDeviceServ
 		Labels:      ds.Labels,
 		BaseAddress: &ds.BaseAddress,
 		AdminState:  &adminState,
+
+		// Central
+		TransformScript: &ds.TransformScript,
 	}
 	return dto
 }

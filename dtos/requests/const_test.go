@@ -12,6 +12,7 @@ const (
 
 	TestDeviceServiceName = "TestDeviceServiceName"
 	TestBaseAddress       = "http://0.0.0.0:49991/api/v1/callback"
+	TestTransformScript   = "print(123)"
 
 	TestDeviceProfileName = "TestDeviceProfileName"
 	TestManufacturer      = "TestManufacturer"

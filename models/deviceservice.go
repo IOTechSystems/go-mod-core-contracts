@@ -13,4 +13,7 @@ type DeviceService struct {
 	Labels      []string
 	BaseAddress string
 	AdminState  AdminState
+
+	// Central
+	TransformScript string
 }
