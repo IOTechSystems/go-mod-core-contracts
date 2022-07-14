@@ -19,6 +19,29 @@ type DeviceServiceCommandClient struct {
 	mock.Mock
 }
 
+// Discovery provides a mock function with given fields: ctx, baseUrl
+func (_m *DeviceServiceCommandClient) Discovery(ctx context.Context, baseUrl string) (common.BaseResponse, errors.EdgeX) {
+	ret := _m.Called(ctx, baseUrl)
+
+	var r0 common.BaseResponse
+	if rf, ok := ret.Get(0).(func(context.Context, string) common.BaseResponse); ok {
+		r0 = rf(ctx, baseUrl)
+	} else {
+		r0 = ret.Get(0).(common.BaseResponse)
+	}
+
+	var r1 errors.EdgeX
+	if rf, ok := ret.Get(1).(func(context.Context, string) errors.EdgeX); ok {
+		r1 = rf(ctx, baseUrl)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(errors.EdgeX)
+		}
+	}
+
+	return r0, r1
+}
+
 // GetCommand provides a mock function with given fields: ctx, baseUrl, deviceName, commandName, queryParams
 func (_m *DeviceServiceCommandClient) GetCommand(ctx context.Context, baseUrl string, deviceName string, commandName string, queryParams string) (*responses.EventResponse, errors.EdgeX) {
 	ret := _m.Called(ctx, baseUrl, deviceName, commandName, queryParams)
