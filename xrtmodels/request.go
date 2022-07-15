@@ -29,6 +29,8 @@ const (
 	ScheduleDeleteOperation = "schedule:delete"
 
 	DiscoveryTriggerOperation = "discovery:trigger"
+
+	ComponentUpdateOperation = "component:update"
 )
 
 type BaseRequest struct {
@@ -90,6 +92,12 @@ type ScheduleRequest struct {
 type AddScheduleRequest struct {
 	BaseRequest `json:",inline"`
 	Schedule    Schedule `json:"schedule"`
+}
+
+type UpdateComponentRequest struct {
+	BaseRequest `json:",inline"`
+	Component   string                 `json:"component"`
+	Config      map[string]interface{} `json:"config"`
 }
 
 type DiscoveryRequest struct {
@@ -254,6 +262,19 @@ func NewScheduleDeleteRequest(scheduleName string, clientName string) ScheduleRe
 			Op:        ScheduleDeleteOperation,
 		},
 		Schedule: scheduleName,
+	}
+	return req
+}
+
+func NewComponentUpdateRequest(Component string, clientName string, config map[string]interface{}) UpdateComponentRequest {
+	req := UpdateComponentRequest{
+		BaseRequest: BaseRequest{
+			Client:    clientName,
+			RequestId: uuid.New().String(),
+			Op:        ComponentUpdateOperation,
+		},
+		Component: Component,
+		Config:    config,
 	}
 	return req
 }
