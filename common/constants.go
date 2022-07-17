@@ -251,6 +251,7 @@ const (
 	ZeroMQ = "ZeroMQ"
 	HTTP   = "http"
 	TCP    = "tcp"
+	TCPS   = "tcps"
 )
 
 // Constants for SMA Operation Action
