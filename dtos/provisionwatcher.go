@@ -19,18 +19,18 @@ type ProvisionWatcher struct {
 	Identifiers         map[string]string   `json:"identifiers" validate:"gt=0,dive,keys,required,endkeys,required"`
 	BlockingIdentifiers map[string][]string `json:"blockingIdentifiers,omitempty"`
 
-	DeviceNameTemplate string      `json:"deviceNameTemplate"`
-	ProfileName        string      `json:"profileName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
+	DeviceNameTemplate string      `json:"deviceNameTemplate,omitempty" validate:"omitempty,edgex-dto-no-reserved-chars"`
+	ProfileName        string      `json:"profileName" validate:"omitempty,edgex-dto-no-reserved-chars"`
 	ServiceName        string      `json:"serviceName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	AdminState         string      `json:"adminState" validate:"oneof='LOCKED' 'UNLOCKED'"`
 	AutoEvents         []AutoEvent `json:"autoEvents,omitempty" validate:"dive"`
-	ProtocolName       string      `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
-	DeviceDescription  string      `json:"deviceDescription"`
-	DeviceLabels       []string    `json:"deviceLabels"`
+	ProtocolName       string      `json:"protocolName,omitempty" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
+	DeviceDescription  string      `json:"deviceDescription,omitempty"`
+	DeviceLabels       []string    `json:"deviceLabels,omitempty"`
 
-	ProfileNameTemplate string   `json:"profileNameTemplate"`
-	ProfileLabels       []string `json:"profileLabels"`
-	ProfileDescription  string   `json:"profileDescription"`
+	ProfileNameTemplate string   `json:"profileNameTemplate,omitempty" validate:"omitempty,edgex-dto-no-reserved-chars"`
+	ProfileLabels       []string `json:"profileLabels,omitempty"`
+	ProfileDescription  string   `json:"profileDescription,omitempty"`
 }
 
 // UpdateProvisionWatcher and its properties are defined in the APIv2 specification:
@@ -42,8 +42,8 @@ type UpdateProvisionWatcher struct {
 	Identifiers         map[string]string   `json:"identifiers" validate:"omitempty,gt=0,dive,keys,required,endkeys,required"`
 	BlockingIdentifiers map[string][]string `json:"blockingIdentifiers"`
 
-	DeviceNameTemplate *string     `json:"deviceNameTemplate"`
-	ProfileName        *string     `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	DeviceNameTemplate *string     `json:"deviceNameTemplate" validate:"omitempty,edgex-dto-no-reserved-chars"`
+	ProfileName        *string     `json:"profileName" validate:"omitempty,edgex-dto-no-reserved-chars"`
 	ServiceName        *string     `json:"serviceName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	AdminState         *string     `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
 	AutoEvents         []AutoEvent `json:"autoEvents" validate:"dive"`
@@ -51,7 +51,7 @@ type UpdateProvisionWatcher struct {
 	DeviceDescription  *string     `json:"deviceDescription"`
 	DeviceLabels       []string    `json:"deviceLabels"`
 
-	ProfileNameTemplate *string  `json:"profileNameTemplate"`
+	ProfileNameTemplate *string  `json:"profileNameTemplate" validate:"omitempty,edgex-dto-no-reserved-chars"`
 	ProfileLabels       []string `json:"profileLabels"`
 	ProfileDescription  *string  `json:"profileDescription"`
 }

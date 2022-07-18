@@ -113,7 +113,7 @@ func TestDeviceProfileRequest_Validate(t *testing.T) {
 	dismatchDeviceCommand := profileData()
 	dismatchDeviceCommand.Profile.DeviceResources = []dtos.DeviceResource{}
 	variedSignAndSpaceResourceName := profileData()
-	testResourceName := "test resource ~!@#$%^&*()_+{}[]`"
+	testResourceName := "test resource ~!@%^&()_{}[]`"
 	variedSignAndSpaceResourceName.Profile.DeviceResources[0].Name = testResourceName
 	variedSignAndSpaceResourceName.Profile.DeviceCommands[0].ResourceOperations[0].DeviceResource = testResourceName
 
@@ -152,7 +152,7 @@ func TestDeviceProfileRequest_Validate(t *testing.T) {
 	assert.NoError(t, err, fmt.Sprintf("DeviceProfileRequest with profile name containing unreserved chars %s should pass validation", nameWithUnreservedChars))
 
 	// Following tests verify if profile name containing reserved characters should be detected with an error
-	for _, n := range namesWithReservedChar {
+	for _, n := range namesWithReservedCharEdgeX {
 		profileNameWithReservedChar := profileData()
 		profileNameWithReservedChar.Profile.Name = n
 

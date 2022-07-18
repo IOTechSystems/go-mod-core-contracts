@@ -128,6 +128,7 @@ func TestAddProvisionWatcherRequest_Validate(t *testing.T) {
 	}{
 		{"valid AddProvisionWatcherRequest", valid, false},
 		{"valid AddProvisionWatcherRequest, no Request Id", noReqId, false},
+		{"valid AddProvisionWatcherRequest, empty ProfileName", noProfileName, false},
 		{"invalid AddProvisionWatcherRequest, Request Id is not an uuid", invalidReqId, true},
 		{"invalid AddProvisionWatcherRequest, no ProvisionWatcherName", noProvisionWatcherName, true},
 		{"invalid AddProvisionWatcherRequest, ProvisionWatcherName with reserved chars", provisionWatcherNameWithReservedChar, true},
@@ -135,7 +136,6 @@ func TestAddProvisionWatcherRequest_Validate(t *testing.T) {
 		{"invalid AddProvisionWatcherRequest, missing Identifiers key", missingIdentifiersKey, true},
 		{"invalid AddProvisionWatcherRequest, missing Identifiers value", missingIdentifiersValue, true},
 		{"invalid AddProvisionWatcherRequest, no ServiceName", noServiceName, true},
-		{"invalid AddProvisionWatcherRequest, no ProfileName", noProfileName, true},
 		{"invalid AddProvisionWatcherRequest, invalid autoEvent frequency", invalidFrequency, true},
 		{"invalid AddProvisionWatcherRequest, no AutoEvent frequency", noAutoEventFrequency, true},
 		{"invalid AddProvisionWatcherRequest, no AutoEvent resource", noAutoEventResource, true},
@@ -246,8 +246,8 @@ func TestUpdateProvisionWatcherRequest_Validate(t *testing.T) {
 	// ProfileName
 	validNilProfileName := valid
 	validNilProfileName.ProvisionWatcher.ProfileName = nil
-	invalidEmptyProfileName := valid
-	invalidEmptyProfileName.ProvisionWatcher.ProfileName = &emptyString
+	validEmptyProfileName := valid
+	validEmptyProfileName.ProvisionWatcher.ProfileName = &emptyString
 
 	invalidState := "invalid state"
 	invalidAdminState := valid
@@ -280,7 +280,7 @@ func TestUpdateProvisionWatcherRequest_Validate(t *testing.T) {
 		{"invalid, empty service name", invalidEmptyServiceName, true},
 
 		{"valid, nil profile name", validNilProfileName, false},
-		{"invalid, empty profile name", invalidEmptyProfileName, true},
+		{"valid, empty profile name", validEmptyProfileName, false},
 
 		{"invalid, invalid admin state", invalidAdminState, true},
 		{"invalid, invalid autoEvent frequency", invalidFrequency, true},

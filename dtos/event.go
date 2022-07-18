@@ -22,9 +22,9 @@ import (
 type Event struct {
 	common.Versionable `json:",inline"`
 	Id                 string                 `json:"id" validate:"required,uuid"`
-	DeviceName         string                 `json:"deviceName" validate:"required,edgex-dto-rfc3986-unreserved-chars"`
-	ProfileName        string                 `json:"profileName" validate:"required,edgex-dto-rfc3986-unreserved-chars"`
-	SourceName         string                 `json:"sourceName" validate:"required,edgex-dto-rfc3986-unreserved-chars"`
+	DeviceName         string                 `json:"deviceName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
+	ProfileName        string                 `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
+	SourceName         string                 `json:"sourceName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	Origin             int64                  `json:"origin" validate:"required"`
 	Readings           []BaseReading          `json:"readings" validate:"gt=0,dive,required"`
 	Tags               map[string]interface{} `json:"tags,omitempty" xml:"-"` // Have to ignore since map not supported for XML

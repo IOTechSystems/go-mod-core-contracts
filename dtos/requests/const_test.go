@@ -78,4 +78,13 @@ var namesWithReservedChar = []string{
 	"name .~_001",
 }
 
+var namesWithReservedCharEdgeX = []string{
+	"name/001",
+	"name#001",
+	"name.001",
+	"name*001",
+	"name+001",
+	"name$001",
+}
+
 var nameWithUnreservedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_~"
