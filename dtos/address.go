@@ -99,11 +99,12 @@ func NewMQTTAddress(host string, port int, publisher string, topic string) Addre
 	}
 }
 
-func NewMQTTAddressWithSecurity(host string, port int, publisher string, topic string, authMode string, secretPath string, skipCertVerify bool) Address {
+func NewMQTTAddressWithSecurity(scheme string, host string, port int, publisher string, topic string, authMode string, secretPath string, skipCertVerify bool) Address {
 	return Address{
-		Type: common.MQTT,
-		Host: host,
-		Port: port,
+		Type:   common.MQTT,
+		Scheme: scheme,
+		Host:   host,
+		Port:   port,
 		MQTTPubAddress: MQTTPubAddress{
 			Publisher: publisher,
 		},
