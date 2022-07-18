@@ -138,6 +138,7 @@ func TestAddProvisionWatcherRequest_Validate(t *testing.T) {
 	}{
 		{"valid AddProvisionWatcherRequest", valid, false},
 		{"valid AddProvisionWatcherRequest, no Request Id", noReqId, false},
+		{"valid AddProvisionWatcherRequest, empty ProfileName", noProfileName, false},
 		{"invalid AddProvisionWatcherRequest, Request Id is not an uuid", invalidReqId, true},
 		{"invalid AddProvisionWatcherRequest, no ProvisionWatcherName", noProvisionWatcherName, true},
 		{"invalid AddProvisionWatcherRequest, ProvisionWatcherName with reserved chars", provisionWatcherNameWithReservedChar, true},

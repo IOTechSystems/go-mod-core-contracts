@@ -13,7 +13,7 @@ import (
 
 type DeviceResource struct {
 	Description string                 `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        string                 `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string"`
+	Name        string                 `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	IsHidden    bool                   `json:"isHidden" yaml:"isHidden"`
 	Properties  ResourceProperties     `json:"properties" yaml:"properties"`
 	Attributes  map[string]interface{} `json:"attributes,omitempty" yaml:"attributes,omitempty"`
@@ -35,7 +35,7 @@ func (dr *DeviceResource) Validate() error {
 
 type UpdateDeviceResource struct {
 	Description *string `json:"description"`
-	Name        *string `json:"name" validate:"required,edgex-dto-none-empty-string"`
+	Name        *string `json:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	IsHidden    *bool   `json:"isHidden"`
 }
 

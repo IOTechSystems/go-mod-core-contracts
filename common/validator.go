@@ -30,6 +30,7 @@ const (
 	dtoRFC3986UnreservedCharTag        = "edgex-dto-rfc3986-unreserved-chars"
 	emptyOrDtoRFC3986UnreservedCharTag = "len=0|" + dtoRFC3986UnreservedCharTag
 	dtoInterDatetimeTag                = "edgex-dto-interval-datetime"
+	dtoNoReservedCharTag        = "edgex-dto-no-reserved-chars"
 )
 
 const (
@@ -38,10 +39,12 @@ const (
 	rFC3986UnreservedCharsRegexString = "^[a-zA-Z0-9-_~:;=]+$"
 	intervalDatetimeLayout            = "20060102T150405"
 	name                              = "Name"
+	reservedCharsRegexString          = "^[^/#.*+$]+$"
 )
 
 var (
 	rFC3986UnreservedCharsRegex = regexp.MustCompile(rFC3986UnreservedCharsRegexString)
+	reservedCharsRegex          = regexp.MustCompile(reservedCharsRegexString)
 )
 
 func init() {
@@ -52,6 +55,7 @@ func init() {
 	_ = val.RegisterValidation(dtoValueType, ValidateValueType)
 	_ = val.RegisterValidation(dtoRFC3986UnreservedCharTag, ValidateDtoRFC3986UnreservedChars)
 	_ = val.RegisterValidation(dtoInterDatetimeTag, ValidateIntervalDatetime)
+	_ = val.RegisterValidation(dtoNoReservedCharTag, ValidateDtoNoReservedChars)
 }
 
 // Validate function will use the validator package to validate the struct annotation
@@ -97,6 +101,8 @@ func getErrorMessage(e validator.FieldError) string {
 		msg = fmt.Sprintf("%s field should not be empty string", fieldName)
 	case dtoRFC3986UnreservedCharTag, emptyOrDtoRFC3986UnreservedCharTag:
 		msg = fmt.Sprintf("%s field only allows unreserved characters which are ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_~:;=", fieldName)
+	case dtoNoReservedCharTag:
+		msg = fmt.Sprintf("%s field does not allow reserved characters which are /#.*+$", fieldName)
 	default:
 		msg = fmt.Sprintf("%s field validation failed on the %s tag", fieldName, tag)
 	}
@@ -175,4 +181,15 @@ func ValidateIntervalDatetime(fl validator.FieldLevel) bool {
 
 func isNilPointer(value reflect.Value) bool {
 	return value.Kind() == reflect.Ptr && value.IsNil()
+}
+
+// ValidateDtoNoReservedChars used to check if DTO's name pointer value excludes reserved characters= / "/" / "#" / "." / "*" / "+" / "$"
+func ValidateDtoNoReservedChars(fl validator.FieldLevel) bool {
+	val := fl.Field()
+	// Skip the validation if the pointer value is nil
+	if isNilPointer(val) {
+		return true
+	} else {
+		return reservedCharsRegex.MatchString(val.String())
+	}
 }

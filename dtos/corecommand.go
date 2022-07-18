@@ -6,13 +6,13 @@
 package dtos
 
 type DeviceCoreCommand struct {
-	DeviceName   string        `json:"deviceName" validate:"required,edgex-dto-rfc3986-unreserved-chars"`
-	ProfileName  string        `json:"profileName" validate:"required,edgex-dto-rfc3986-unreserved-chars"`
+	DeviceName   string        `json:"deviceName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
+	ProfileName  string        `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	CoreCommands []CoreCommand `json:"coreCommands,omitempty" validate:"dive"`
 }
 
 type CoreCommand struct {
-	Name       string                 `json:"name" validate:"required,edgex-dto-none-empty-string"`
+	Name       string                 `json:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	Get        bool                   `json:"get,omitempty" validate:"required_without=Set"`
 	Set        bool                   `json:"set,omitempty" validate:"required_without=Get"`
 	Path       string                 `json:"path,omitempty"`

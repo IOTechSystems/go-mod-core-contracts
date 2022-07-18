@@ -13,7 +13,7 @@ type ProvisionWatcher struct {
 	DBTimestamp         `json:",inline"`
 	Id                  string              `json:"id,omitempty" yaml:"id,omitempty" validate:"omitempty,uuid"`
 	Name                string              `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	ServiceName         string              `json:"serviceName" yaml:"serviceName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	ServiceName         string               `json:"serviceName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	Labels              []string            `json:"labels,omitempty" yaml:"labels,omitempty"`
 	Identifiers         map[string]string   `json:"identifiers" yaml:"identifiers" validate:"gt=0,dive,keys,required,endkeys,required"`
 	BlockingIdentifiers map[string][]string `json:"blockingIdentifiers,omitempty" yaml:"blockingIdentifiers,omitempty"`
@@ -21,17 +21,17 @@ type ProvisionWatcher struct {
 	DiscoveredDevice    DiscoveredDevice    `json:"discoveredDevice" yaml:"discoveredDevice" validate:"dive"`
 
 	// Xpert
-	DeviceNameTemplate string      `json:"deviceNameTemplate"`
-	ProfileName        string      `json:"profileName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
+	DeviceNameTemplate string      `json:"deviceNameTemplate,omitempty" validate:"omitempty,edgex-dto-no-reserved-chars"`
+	ProfileName        string      `json:"profileName" validate:"omitempty,edgex-dto-no-reserved-chars"`
 	AdminState         string      `json:"adminState" validate:"oneof='LOCKED' 'UNLOCKED'"`
 	AutoEvents         []AutoEvent `json:"autoEvents,omitempty" validate:"dive"`
-	ProtocolName       string      `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
-	DeviceDescription  string      `json:"deviceDescription"`
-	DeviceLabels       []string    `json:"deviceLabels"`
+	ProtocolName       string      `json:"protocolName,omitempty" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
+	DeviceDescription  string      `json:"deviceDescription,omitempty"`
+	DeviceLabels       []string    `json:"deviceLabels,omitempty"`
 
-	ProfileNameTemplate string   `json:"profileNameTemplate"`
-	ProfileLabels       []string `json:"profileLabels"`
-	ProfileDescription  string   `json:"profileDescription"`
+	ProfileNameTemplate string   `json:"profileNameTemplate,omitempty" validate:"omitempty,edgex-dto-no-reserved-chars"`
+	ProfileLabels       []string `json:"profileLabels,omitempty"`
+	ProfileDescription  string   `json:"profileDescription,omitempty"`
 }
 
 type UpdateProvisionWatcher struct {
@@ -45,15 +45,15 @@ type UpdateProvisionWatcher struct {
 	DiscoveredDevice    UpdateDiscoveredDevice `json:"discoveredDevice"`
 
 	// Xpert
-	DeviceNameTemplate *string     `json:"deviceNameTemplate"`
-	ProfileName        *string     `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	DeviceNameTemplate *string     `json:"deviceNameTemplate" validate:"omitempty,edgex-dto-no-reserved-chars"`
+	ProfileName        *string     `json:"profileName" validate:"omitempty,edgex-dto-no-reserved-chars"`
 	AdminState         *string     `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
 	AutoEvents         []AutoEvent `json:"autoEvents" validate:"dive"`
 	ProtocolName       *string     `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
 	DeviceDescription  *string     `json:"deviceDescription"`
 	DeviceLabels       []string    `json:"deviceLabels"`
 
-	ProfileNameTemplate *string  `json:"profileNameTemplate"`
+	ProfileNameTemplate *string  `json:"profileNameTemplate" validate:"omitempty,edgex-dto-no-reserved-chars"`
 	ProfileLabels       []string `json:"profileLabels"`
 	ProfileDescription  *string  `json:"profileDescription"`
 }
