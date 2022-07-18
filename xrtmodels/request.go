@@ -92,6 +92,11 @@ type AddScheduleRequest struct {
 	Schedule    Schedule `json:"schedule"`
 }
 
+type DiscoveryRequest struct {
+	BaseRequest `json:",inline"`
+	Options     map[string]interface{} `json:"options"`
+}
+
 func NewBaseRequest(op string, clientName string) BaseRequest {
 	return BaseRequest{
 		Client:    clientName,
@@ -249,6 +254,18 @@ func NewScheduleDeleteRequest(scheduleName string, clientName string) ScheduleRe
 			Op:        ScheduleDeleteOperation,
 		},
 		Schedule: scheduleName,
+	}
+	return req
+}
+
+func NewDiscoveryRequest(clientName string, options map[string]interface{}) DiscoveryRequest {
+	req := DiscoveryRequest{
+		BaseRequest: BaseRequest{
+			Client:    clientName,
+			RequestId: uuid.New().String(),
+			Op:        DiscoveryTriggerOperation,
+		},
+		Options: options,
 	}
 	return req
 }
