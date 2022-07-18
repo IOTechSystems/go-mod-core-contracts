@@ -8,7 +8,7 @@ package dtos
 import "github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 type DeviceCommand struct {
-	Name               string              `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string"`
+	Name               string              `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	IsHidden           bool                `json:"isHidden" yaml:"isHidden"`
 	ReadWrite          string              `json:"readWrite" yaml:"readWrite" validate:"required,oneof='R' 'W' 'RW' 'WR'"`
 	ResourceOperations []ResourceOperation `json:"resourceOperations" yaml:"resourceOperations" validate:"gt=0,dive"`
@@ -16,7 +16,7 @@ type DeviceCommand struct {
 }
 
 type UpdateDeviceCommand struct {
-	Name     *string `json:"name" validate:"required,edgex-dto-none-empty-string"`
+	Name     *string `json:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	IsHidden *bool   `json:"isHidden"`
 }
 

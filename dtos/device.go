@@ -20,8 +20,8 @@ type Device struct {
 	OperatingState string                        `json:"operatingState" yaml:"operatingState" validate:"oneof='UP' 'DOWN' 'UNKNOWN'"`
 	Labels         []string                      `json:"labels,omitempty" yaml:"labels,omitempty"`
 	Location       interface{}                   `json:"location,omitempty" yaml:"location,omitempty"`
-	ServiceName    string                        `json:"serviceName" yaml:"serviceName" validate:"required,edgex-dto-none-empty-string"`
-	ProfileName    string                        `json:"profileName" yaml:"profileName" validate:"required,edgex-dto-none-empty-string"`
+	ServiceName    string                        `json:"serviceName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	ProfileName    string                        `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	AutoEvents     []AutoEvent                   `json:"autoEvents,omitempty" yaml:"autoEvents,omitempty" validate:"dive"`
 	Protocols      map[string]ProtocolProperties `json:"protocols" yaml:"protocols" validate:"required,gt=0"`
 	Tags           map[string]any                `json:"tags,omitempty" yaml:"tags,omitempty"`
@@ -37,8 +37,8 @@ type UpdateDevice struct {
 	Description    *string                       `json:"description" validate:"omitempty"`
 	AdminState     *string                       `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
 	OperatingState *string                       `json:"operatingState" validate:"omitempty,oneof='UP' 'DOWN' 'UNKNOWN'"`
-	ServiceName    *string                       `json:"serviceName" validate:"omitempty,edgex-dto-none-empty-string"`
-	ProfileName    *string                       `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string"`
+	ServiceName    *string                `json:"serviceName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	ProfileName    *string                `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	Labels         []string                      `json:"labels"`
 	Location       interface{}                   `json:"location"`
 	AutoEvents     []AutoEvent                   `json:"autoEvents" validate:"dive"`

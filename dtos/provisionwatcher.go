@@ -21,15 +21,15 @@ type ProvisionWatcher struct {
 	DiscoveredDevice    DiscoveredDevice    `json:"discoveredDevice" yaml:"discoveredDevice"`
 
 	// Central
-	DeviceDescription   string              `json:"deviceDescription"`
-	ProtocolName        string              `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
-	ProfileName         string              `json:"profileName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
+	DeviceDescription   string              `json:"deviceDescription,omitempty"`
+	ProtocolName        string              `json:"protocolName,omitempty" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
+	ProfileName         string              `json:"profileName" validate:"omitempty,edgex-dto-no-reserved-chars"`
 	AutoEvents          []AutoEvent         `json:"autoEvents,omitempty" validate:"dive"`
-	DeviceNameTemplate string      `json:"deviceNameTemplate"`
-	DeviceLabels       []string    `json:"deviceLabels"`
-	ProfileNameTemplate string   `json:"profileNameTemplate"`
-	ProfileLabels       []string `json:"profileLabels"`
-	ProfileDescription  string   `json:"profileDescription"`
+	DeviceNameTemplate string      `json:"deviceNameTemplate,omitempty" validate:"omitempty"`
+	DeviceLabels       []string    `json:"deviceLabels,omitempty"`
+	ProfileNameTemplate string   `json:"profileNameTemplate,omitempty" validate:"omitempty,edgex-dto-no-reserved-chars"`
+	ProfileLabels       []string `json:"profileLabels,omitempty"`
+	ProfileDescription  string   `json:"profileDescription,omitempty"`
 }
 
 type UpdateProvisionWatcher struct {
@@ -44,12 +44,12 @@ type UpdateProvisionWatcher struct {
 
 	// Central
 	DeviceDescription   *string             `json:"deviceDescription"`
-	ProtocolName        *string             `json:"protocolName" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
-	ProfileName         *string             `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	ProtocolName        *string             `json:"protocolName" validate:"omitempty,len=0|edgex-dto-rfc3986-unreserved-chars"`
+	ProfileName         *string             `json:"profileName" validate:"omitempty,len=0|edgex-dto-no-reserved-chars"`
 	AutoEvents          []AutoEvent         `json:"autoEvents" validate:"dive"`
-	DeviceNameTemplate *string     `json:"deviceNameTemplate"`
+	DeviceNameTemplate *string     `json:"deviceNameTemplate" validate:"omitempty"`
 	DeviceLabels       []string    `json:"deviceLabels"`
-	ProfileNameTemplate *string  `json:"profileNameTemplate"`
+	ProfileNameTemplate *string  `json:"profileNameTemplate" validate:"omitempty,len=0|edgex-dto-no-reserved-chars"`
 	ProfileLabels       []string `json:"profileLabels"`
 	ProfileDescription  *string  `json:"profileDescription"`
 }

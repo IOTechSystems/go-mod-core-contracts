@@ -155,7 +155,7 @@ func TestAddEventRequest_Validate(t *testing.T) {
 	}
 
 	// Following tests verify if name fields containing reserved characters should be detected with an error
-	for _, n := range namesWithReservedChar {
+	for _, n := range namesWithReservedCharEdgeX {
 		deviceNameWithReservedChar := eventRequestData()
 		deviceNameWithReservedChar.Event.DeviceName = n
 		profileNameWithReservedChar := eventRequestData()
