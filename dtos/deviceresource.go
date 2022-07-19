@@ -15,7 +15,7 @@ import (
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/DeviceResource
 type DeviceResource struct {
 	Description string                 `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        string                 `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string"`
+	Name        string                 `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	IsHidden    bool                   `json:"isHidden" yaml:"isHidden"`
 	Tag         string                 `json:"tag,omitempty" yaml:"tag,omitempty"`
 	Tags        map[string]interface{} `json:"tags,omitempty" yaml:"tags,omitempty"`
@@ -37,7 +37,7 @@ func (dr *DeviceResource) Validate() error {
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceResource
 type UpdateDeviceResource struct {
 	Description *string `json:"description"`
-	Name        *string `json:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	Name        *string `json:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	IsHidden    *bool   `json:"isHidden"`
 }
 

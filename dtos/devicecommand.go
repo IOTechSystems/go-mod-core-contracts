@@ -10,7 +10,7 @@ import "github.com/edgexfoundry/go-mod-core-contracts/v2/models"
 // DeviceCommand and its properties are defined in the APIv2 specification:
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/DeviceCommand
 type DeviceCommand struct {
-	Name               string              `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	Name               string              `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	IsHidden           bool                `json:"isHidden" yaml:"isHidden"`
 	ReadWrite          string              `json:"readWrite" yaml:"readWrite" validate:"required,oneof='R' 'W' 'RW' 'WR'"`
 	ResourceOperations []ResourceOperation `json:"resourceOperations" yaml:"resourceOperations" validate:"gt=0,dive"`
@@ -19,7 +19,7 @@ type DeviceCommand struct {
 // UpdateDeviceComman and its properties are defined in the APIv2 specification:
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceCommand
 type UpdateDeviceCommand struct {
-	Name     *string `json:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	Name     *string `json:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	IsHidden *bool   `json:"isHidden"`
 }
 

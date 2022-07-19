@@ -20,7 +20,7 @@ import (
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceCommandRequest
 type AddDeviceCommandRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
-	ProfileName           string             `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	ProfileName           string             `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	DeviceCommand         dtos.DeviceCommand `json:"deviceCommand"`
 }
 
@@ -55,7 +55,7 @@ func (dc *AddDeviceCommandRequest) UnmarshalJSON(b []byte) error {
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceCommandRequest
 type UpdateDeviceCommandRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
-	ProfileName           string                   `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	ProfileName           string                   `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	DeviceCommand         dtos.UpdateDeviceCommand `json:"deviceCommand"`
 }
 

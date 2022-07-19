@@ -20,7 +20,7 @@ import (
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceResourceRequest
 type AddDeviceResourceRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
-	ProfileName           string              `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	ProfileName           string              `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	Resource              dtos.DeviceResource `json:"resource"`
 }
 
@@ -54,7 +54,7 @@ func (dr *AddDeviceResourceRequest) UnmarshalJSON(b []byte) error {
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceResourceRequest
 type UpdateDeviceResourceRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
-	ProfileName           string                    `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	ProfileName           string                    `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	Resource              dtos.UpdateDeviceResource `json:"resource"`
 }
 
