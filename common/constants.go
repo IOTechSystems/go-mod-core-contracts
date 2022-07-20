@@ -411,3 +411,11 @@ const (
 
 	DeviceChangedNotificationCategory = "DEVICE_CHANGED"
 )
+
+// Constants related to System Events
+const (
+	DeviceSystemEventType         = "device"
+	DeviceSystemEventActionAdd    = "add"
+	DeviceSystemEventActionUpdate = "update"
+	DeviceSystemEventActionDelete = "delete"
+)
