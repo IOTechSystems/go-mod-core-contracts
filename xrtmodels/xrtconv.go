@@ -11,9 +11,9 @@ import (
 )
 
 func toXrtProperties(protocol string, protocolProperties map[string]interface{}) errors.EdgeX {
-	propertyToInt, propertyToFloat := propertyConversionList(protocol)
+	intProperties, floatProperties := propertyConversionList(protocol)
 
-	for _, p := range propertyToInt {
+	for _, p := range intProperties {
 		propertyValue, ok := protocolProperties[p]
 		if ok {
 			// convert property value from interface{} to string, then to int
@@ -25,7 +25,7 @@ func toXrtProperties(protocol string, protocolProperties map[string]interface{})
 		}
 	}
 
-	for _, p := range propertyToFloat {
+	for _, p := range floatProperties {
 		propertyValue, ok := protocolProperties[p]
 		if ok {
 			// convert property value from interface{} to string, then to float
@@ -40,14 +40,14 @@ func toXrtProperties(protocol string, protocolProperties map[string]interface{})
 }
 
 func toEdgeXProperties(protocol string, protocolProperties map[string]interface{}) map[string]string {
-	propertyToInt, propertyToFloat := propertyConversionList(protocol)
+	intProperties, floatProperties := propertyConversionList(protocol)
 
 	edgexProperties := make(map[string]string)
 	for k, v := range protocolProperties {
 		edgexProperties[k] = fmt.Sprintf("%v", v)
 	}
 
-	for _, p := range propertyToInt {
+	for _, p := range intProperties {
 		propertyValue, ok := protocolProperties[p]
 		if ok {
 			// if we use fmt.fmt.Sprintf("%v", propertyValue) to convert the float to string,
@@ -57,7 +57,7 @@ func toEdgeXProperties(protocol string, protocolProperties map[string]interface{
 		}
 	}
 
-	for _, p := range propertyToFloat {
+	for _, p := range floatProperties {
 		propertyValue, ok := protocolProperties[p]
 		if ok {
 			switch val := propertyValue.(type) {
@@ -74,22 +74,22 @@ func toEdgeXProperties(protocol string, protocolProperties map[string]interface{
 }
 
 func propertyConversionList(protocol string) ([]string, []string) {
-	var propertyToInt []string
-	var propertyToFloat []string
+	var intProperties []string
+	var floatProperties []string
 	switch protocol {
 	case common.BacnetIP, common.BacnetMSTP:
-		propertyToInt = []string{common.BacnetDeviceInstance}
+		intProperties = []string{common.BacnetDeviceInstance}
 	case common.Gps:
-		propertyToInt = []string{common.GpsGpsdPort, common.GpsGpsdRetries, common.GpsGpsdConnTimeout, common.GpsGpsdRequestTimeout}
+		intProperties = []string{common.GpsGpsdPort, common.GpsGpsdRetries, common.GpsGpsdConnTimeout, common.GpsGpsdRequestTimeout}
 	case common.ModbusTcp:
-		propertyToInt = []string{common.ModbusUnitID, common.ModbusPort}
+		intProperties = []string{common.ModbusUnitID, common.ModbusPort}
 	case common.ModbusRtu:
-		propertyToInt = []string{common.ModbusUnitID, common.ModbusBaudRate, common.ModbusDataBits, common.ModbusStopBits}
+		intProperties = []string{common.ModbusUnitID, common.ModbusBaudRate, common.ModbusDataBits, common.ModbusStopBits}
 	case common.Opcua:
-		propertyToInt = []string{common.OpcuaRequestedSessionTimeout, common.OpcuaBrowseDepth, common.OpcuaConnectionReadingPostDelay}
-		propertyToFloat = []string{common.OpcuaBrowsePublishInterval}
+		intProperties = []string{common.OpcuaRequestedSessionTimeout, common.OpcuaBrowseDepth, common.OpcuaConnectionReadingPostDelay}
+		floatProperties = []string{common.OpcuaBrowsePublishInterval}
 	case common.S7:
-		propertyToInt = []string{common.S7Rack, common.S7Slot}
+		intProperties = []string{common.S7Rack, common.S7Slot}
 	}
-	return propertyToInt, propertyToFloat
+	return intProperties, floatProperties
 }
