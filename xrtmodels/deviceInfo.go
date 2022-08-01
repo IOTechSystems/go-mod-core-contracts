@@ -3,10 +3,11 @@
 package xrtmodels
 
 import (
-	"fmt"
+	"encoding/json"
 	"strings"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
 )
 
@@ -15,16 +16,14 @@ type DeviceInfo struct {
 	Protocols map[string]map[string]interface{} `json:"protocols"`
 }
 
+// ToEdgeXV2Device converts the XRT model to EdgeX model
 func ToEdgeXV2Device(device DeviceInfo, serviceName string) models.Device {
 	// Convert all properties to string for EdgeX
 	protocols := make(map[string]models.ProtocolProperties)
 	protocolName := ""
 	for protocol, protocolProperties := range device.Protocols {
-		protocols[protocol] = make(map[string]string)
+		protocols[protocol] = toEdgeXProperties(protocol, protocolProperties)
 		protocolName = strings.ToLower(protocol)
-		for k, v := range protocolProperties {
-			protocols[protocol][k] = fmt.Sprintf("%v", v)
-		}
 	}
 	return models.Device{
 		Name:           device.Name,
@@ -43,4 +42,26 @@ func ToEdgeXV2Device(device DeviceInfo, serviceName string) models.Device {
 		Notify:         false,
 		Properties:     device.Properties,
 	}
+}
+
+// ToXrtDevice converts the EdgeX model to XRT model
+func ToXrtDevice(device models.Device) (deviceInfo DeviceInfo, edgexErr errors.EdgeX) {
+	deviceData, err := json.Marshal(device)
+	if err != nil {
+		return deviceInfo, errors.NewCommonEdgeXWrapper(err)
+	}
+	err = json.Unmarshal(deviceData, &deviceInfo)
+	if err != nil {
+		return deviceInfo, errors.NewCommonEdgeXWrapper(err)
+	}
+
+	// Convert the EdgeX protocol properties to xrt protocol properties
+	for protocol, v := range deviceInfo.Protocols {
+		err = toXrtProperties(protocol, v)
+		if err != nil {
+			return deviceInfo, errors.NewCommonEdgeXWrapper(err)
+		}
+	}
+
+	return deviceInfo, nil
 }
