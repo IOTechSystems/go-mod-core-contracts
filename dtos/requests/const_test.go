@@ -81,8 +81,6 @@ var namesWithReservedChar = []string{
 var namesWithReservedCharEdgeX = []string{
 	"name/001",
 	"name#001",
-	"name.001",
-	"name*001",
 	"name+001",
 	"name$001",
 }

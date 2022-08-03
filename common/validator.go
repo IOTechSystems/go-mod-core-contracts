@@ -44,7 +44,7 @@ const (
 	name                              = "Name"
 
 	// Central
-	reservedCharsRegexString          = "^[^/#.*+$]+$"
+	reservedCharsRegexString          = "^[^/#+$]+$"
 )
 
 var (
@@ -111,7 +111,7 @@ func getErrorMessage(e validator.FieldError) string {
 	case dtoRFC3986UnreservedCharTag, emptyOrDtoRFC3986UnreservedCharTag:
 		msg = fmt.Sprintf("%s field only allows unreserved characters which are ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_~:;=", fieldName)
 	case dtoNoReservedCharTag:
-		msg = fmt.Sprintf("%s field does not allow reserved characters which are /#.*+$", fieldName)
+		msg = fmt.Sprintf("%s field does not allow reserved characters which are /#+$", fieldName)
 	default:
 		msg = fmt.Sprintf("%s field validation failed on the %s tag", fieldName, tag)
 	}
