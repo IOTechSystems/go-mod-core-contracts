@@ -228,7 +228,7 @@ func sendRequest(ctx context.Context, req *http.Request, authInjector interfaces
 	var errResponse commonDTO.BaseResponse
 	e := json.Unmarshal(bodyBytes, &errResponse)
 	if e != nil {
-		return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to json decoding error response", e)
+		return nil, errors.NewCommonEdgeX(errors.KindMapping(resp.StatusCode), string(bodyBytes), e)
 	}
 
 	return nil, errors.NewCommonEdgeX(errors.KindMapping(errResponse.StatusCode), errResponse.Message, nil)

@@ -65,7 +65,7 @@ func GetRequestAndReturnBinaryRes(ctx context.Context, baseUrl string, requestPa
 	var errResponse commonDTO.BaseResponse
 	e := json.Unmarshal(res, &errResponse)
 	if e != nil {
-		return nil, "", errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to json decoding error response", e)
+		return nil, "", errors.NewCommonEdgeX(errors.KindMapping(resp.StatusCode), string(bodyBytes), e)
 	}
 
 	return nil, "", errors.NewCommonEdgeX(errors.KindMapping(errResponse.StatusCode), errResponse.Message, nil)
