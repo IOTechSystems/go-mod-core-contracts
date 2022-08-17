@@ -133,6 +133,8 @@ const (
 	ApiHealthRoute      = ApiSystemRoute + "/health"
 	ApiMultiConfigRoute = ApiSystemRoute + "/config"
 
+	// Central
+	ApiMetricsRoute        = ApiBase + "/metrics"
 	ApiMultiMetricsRoute = ApiSystemRoute + "/metrics"
 	ApiRuleRoute       = ApiBase + "/rule"
 	ApiAllRulesRoute   = ApiRuleRoute + "/" + All
