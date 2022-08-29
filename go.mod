@@ -6,6 +6,7 @@ require (
 	github.com/go-playground/validator/v10 v10.10.1
 	github.com/google/uuid v1.3.0
 	github.com/stretchr/testify v1.7.1
+	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v3 v3.0.1
 )
 
