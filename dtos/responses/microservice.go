@@ -9,7 +9,7 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
 )
 
-// MultiMicroServicesResponse defines the Response Content for GET multiple Device DTOs.
+// MultiMicroServicesResponse defines the Response Content for GET multiple MicroService DTOs.
 type MultiMicroServicesResponse struct {
 	common.BaseResponse `json:",inline"`
 	MicroServices       []dtos.MicroService `json:"microservices"`
