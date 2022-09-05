@@ -108,6 +108,68 @@ func TestToXrtProperties(t *testing.T) {
 				common.ModbusStopBits: 1,
 			},
 		},
+		{
+			protocol: common.EtherNetIPExplicitConnected,
+			properties: map[string]interface{}{
+				common.EtherNetIPDeviceResource: "VendorID",
+				common.EtherNetIPRPI:            "3000",
+				common.EtherNetIPSaveValue:      "true",
+			},
+			expected: map[string]interface{}{
+				common.EtherNetIPDeviceResource: "VendorID",
+				common.EtherNetIPRPI:            3000,
+				common.EtherNetIPSaveValue:      true,
+			},
+		},
+		{
+			protocol: common.EtherNetIPO2T,
+			properties: map[string]interface{}{
+				common.EtherNetIPConnectionType: "p2p",
+				common.EtherNetIPRPI:            "10",
+				common.EtherNetIPPriority:       "low",
+				common.EtherNetIPOwnership:      "exclusive",
+			},
+			expected: map[string]interface{}{
+				common.EtherNetIPConnectionType: "p2p",
+				common.EtherNetIPRPI:            10,
+				common.EtherNetIPPriority:       "low",
+				common.EtherNetIPOwnership:      "exclusive",
+			},
+		},
+		{
+			protocol: common.EtherNetIPT2O,
+			properties: map[string]interface{}{
+				common.EtherNetIPConnectionType: "p2p",
+				common.EtherNetIPRPI:            "10",
+				common.EtherNetIPPriority:       "low",
+				common.EtherNetIPOwnership:      "exclusive",
+			},
+			expected: map[string]interface{}{
+				common.EtherNetIPConnectionType: "p2p",
+				common.EtherNetIPRPI:            10,
+				common.EtherNetIPPriority:       "low",
+				common.EtherNetIPOwnership:      "exclusive",
+			},
+		},
+		{
+			protocol: common.EtherNetIPKey,
+			properties: map[string]interface{}{
+				common.EtherNetIPMethod:        "exact",
+				common.EtherNetIPVendorID:      "10",
+				common.EtherNetIPDeviceType:    "72",
+				common.EtherNetIPProductCode:   "50",
+				common.EtherNetIPMajorRevision: "12",
+				common.EtherNetIPMinorRevision: "2",
+			},
+			expected: map[string]interface{}{
+				common.EtherNetIPMethod:        "exact",
+				common.EtherNetIPVendorID:      10,
+				common.EtherNetIPDeviceType:    72,
+				common.EtherNetIPProductCode:   50,
+				common.EtherNetIPMajorRevision: 12,
+				common.EtherNetIPMinorRevision: 2,
+			},
+		},
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.protocol, func(t *testing.T) {
