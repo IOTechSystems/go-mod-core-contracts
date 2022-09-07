@@ -11,7 +11,7 @@ import (
 )
 
 func toXrtProperties(protocol string, protocolProperties map[string]interface{}) errors.EdgeX {
-	intProperties, floatProperties := propertyConversionList(protocol)
+	intProperties, floatProperties, boolProperties := propertyConversionList(protocol)
 
 	for _, p := range intProperties {
 		propertyValue, ok := protocolProperties[p]
@@ -36,11 +36,23 @@ func toXrtProperties(protocol string, protocolProperties map[string]interface{})
 			protocolProperties[p] = val
 		}
 	}
+
+	for _, p := range boolProperties {
+		propertyValue, ok := protocolProperties[p]
+		if ok {
+			// convert property value from interface{} to string, then to bool
+			val, err := strconv.ParseBool(fmt.Sprintf("%v", propertyValue))
+			if err != nil {
+				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("fail to convert %v to bool", p), err)
+			}
+			protocolProperties[p] = val
+		}
+	}
 	return nil
 }
 
 func toEdgeXProperties(protocol string, protocolProperties map[string]interface{}) map[string]string {
-	intProperties, floatProperties := propertyConversionList(protocol)
+	intProperties, floatProperties, boolProperties := propertyConversionList(protocol)
 
 	edgexProperties := make(map[string]string)
 	for k, v := range protocolProperties {
@@ -70,12 +82,20 @@ func toEdgeXProperties(protocol string, protocolProperties map[string]interface{
 			}
 		}
 	}
+
+	for _, p := range boolProperties {
+		propertyValue, ok := protocolProperties[p]
+		if ok {
+			edgexProperties[p] = fmt.Sprintf("%v", propertyValue)
+		}
+	}
 	return edgexProperties
 }
 
-func propertyConversionList(protocol string) ([]string, []string) {
+func propertyConversionList(protocol string) ([]string, []string, []string) {
 	var intProperties []string
 	var floatProperties []string
+	var boolProperties []string
 	switch protocol {
 	case common.BacnetIP, common.BacnetMSTP:
 		intProperties = []string{common.BacnetDeviceInstance}
@@ -90,6 +110,14 @@ func propertyConversionList(protocol string) ([]string, []string) {
 		floatProperties = []string{common.OpcuaBrowsePublishInterval}
 	case common.S7:
 		intProperties = []string{common.S7Rack, common.S7Slot}
+	case common.EtherNetIPExplicitConnected:
+		intProperties = []string{common.EtherNetIPRPI}
+		boolProperties = []string{common.EtherNetIPSaveValue}
+	case common.EtherNetIPO2T, common.EtherNetIPT2O:
+		intProperties = []string{common.EtherNetIPRPI}
+	case common.EtherNetIPKey:
+		intProperties = []string{common.EtherNetIPVendorID, common.EtherNetIPDeviceType, common.EtherNetIPProductCode,
+			common.EtherNetIPMajorRevision, common.EtherNetIPMinorRevision}
 	}
-	return intProperties, floatProperties
+	return intProperties, floatProperties, boolProperties
 }

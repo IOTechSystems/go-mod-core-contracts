@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"strings"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
@@ -63,5 +64,37 @@ func ToXrtDevice(device models.Device) (deviceInfo DeviceInfo, edgexErr errors.E
 		}
 	}
 
+	// Process the specified protocol for XRT
+	for protocol := range deviceInfo.Protocols {
+		switch protocol {
+		case common.EtherNetIP:
+			processEtherNetIP(deviceInfo.Protocols)
+		}
+	}
+
 	return deviceInfo, nil
+}
+
+func processEtherNetIP(protocolProperties map[string]map[string]interface{}) {
+	// Combine ExplicitConnected, O2T, T2O and Key into EtherNet-IP
+	if v, ok := protocolProperties[common.EtherNetIP]; ok {
+		protocolProperties[common.EtherNetIPXRT] = v
+		delete(protocolProperties, common.EtherNetIP)
+	}
+	if v, ok := protocolProperties[common.EtherNetIPExplicitConnected]; ok {
+		protocolProperties[common.EtherNetIPXRT][common.EtherNetIPExplicitConnected] = v
+		delete(protocolProperties, common.EtherNetIPExplicitConnected)
+	}
+	if v, ok := protocolProperties[common.EtherNetIPO2T]; ok {
+		protocolProperties[common.EtherNetIPXRT][common.EtherNetIPO2T] = v
+		delete(protocolProperties, common.EtherNetIPO2T)
+	}
+	if v, ok := protocolProperties[common.EtherNetIPT2O]; ok {
+		protocolProperties[common.EtherNetIPXRT][common.EtherNetIPT2O] = v
+		delete(protocolProperties, common.EtherNetIPT2O)
+	}
+	if v, ok := protocolProperties[common.EtherNetIPKey]; ok {
+		protocolProperties[common.EtherNetIPXRT][common.EtherNetIPKey] = v
+		delete(protocolProperties, common.EtherNetIPKey)
+	}
 }
