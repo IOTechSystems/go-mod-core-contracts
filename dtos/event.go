@@ -7,6 +7,8 @@ package dtos
 
 import (
 	"encoding/xml"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
@@ -87,6 +89,20 @@ func (e *Event) ToXML() (string, error) {
 	eventXml, err := xml.Marshal(e)
 	if err != nil {
 		return "", err
+	}
+
+	// The Tags field is being ignore from XML Marshaling since maps are not supported.
+	// We have to provide our own marshaling of the Tags field if it is non-empty
+	if len(e.Tags) > 0 {
+		tagsXmlElements := []string{"<Tags>"}
+		// Since we change the tags value from string to interface{}, we need to write more complex func or use third-party lib to handle the marshaling
+		for key, value := range e.Tags {
+			tag := fmt.Sprintf("<%s>%s</%s>", key, value, key)
+			tagsXmlElements = append(tagsXmlElements, tag)
+		}
+		tagsXmlElements = append(tagsXmlElements, "</Tags>")
+		tagsXml := strings.Join(tagsXmlElements, "")
+		eventXml = []byte(strings.Replace(string(eventXml), "</Event>", tagsXml+"</Event>", 1))
 	}
 
 	return string(eventXml), nil
