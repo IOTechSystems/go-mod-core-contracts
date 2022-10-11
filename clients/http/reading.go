@@ -9,7 +9,6 @@ package http
 import (
 	"context"
 	"net/url"
-	"path"
 	"strconv"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/http/utils"
@@ -55,7 +54,7 @@ func (rc readingClient) ReadingCount(ctx context.Context) (dtoCommon.CountRespon
 }
 
 func (rc readingClient) ReadingCountByDeviceName(ctx context.Context, name string) (dtoCommon.CountResponse, errors.EdgeX) {
-	requestPath := path.Join(common.ApiReadingCountRoute, common.Device, common.Name, name)
+	requestPath := utils.EscapeAndJoinPath(common.ApiReadingCountRoute, common.Device, common.Name, name)
 	res := dtoCommon.CountResponse{}
 	err := utils.GetRequest(ctx, &res, rc.baseUrl, requestPath, nil, rc.authInjector)
 	if err != nil {
@@ -65,7 +64,7 @@ func (rc readingClient) ReadingCountByDeviceName(ctx context.Context, name strin
 }
 
 func (rc readingClient) ReadingsByDeviceName(ctx context.Context, name string, offset, limit int) (responses.MultiReadingsResponse, errors.EdgeX) {
-	requestPath := path.Join(common.ApiReadingRoute, common.Device, common.Name, name)
+	requestPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.Device, common.Name, name)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
@@ -91,7 +90,7 @@ func (rc readingClient) ReadingsByResourceName(ctx context.Context, name string,
 }
 
 func (rc readingClient) ReadingsByTimeRange(ctx context.Context, start, end, offset, limit int) (responses.MultiReadingsResponse, errors.EdgeX) {
-	requestPath := path.Join(common.ApiReadingRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
+	requestPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))

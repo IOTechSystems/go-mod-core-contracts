@@ -158,15 +158,12 @@ func TestAddDeviceRequest_Validate(t *testing.T) {
 
 	// Following tests verify if name fields containing reserved characters should be detected with an error
 	for _, n := range namesWithReservedCharEdgeX {
-		deviceNameWithReservedChar := testAddDevice
-		deviceNameWithReservedChar.Device.Name = n
 		profileNameWithReservedChar := testAddDevice
 		profileNameWithReservedChar.Device.ProfileName = n
 		serviceNameWithReservedChar := testAddDevice
 		serviceNameWithReservedChar.Device.ServiceName = n
 
 		testsForNameFields = append(testsForNameFields,
-			testForNameField{"Invalid AddDeviceRequest with device name containing reserved char", deviceNameWithReservedChar, true},
 			testForNameField{"Invalid AddDeviceRequest with device name containing reserved char", profileNameWithReservedChar, true},
 			testForNameField{"Invalid AddDeviceRequest with device name containing reserved char", serviceNameWithReservedChar, true},
 		)
