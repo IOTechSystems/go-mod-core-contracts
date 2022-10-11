@@ -3,9 +3,9 @@ package http
 import (
 	"context"
 	"net/http"
-	"path"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
@@ -48,7 +48,7 @@ func TestQueryAllDeviceServices(t *testing.T) {
 
 func TestQueryDeviceServiceByName(t *testing.T) {
 	deviceServiceName := "deviceService"
-	path := path.Join(common.ApiDeviceServiceRoute, common.Name, deviceServiceName)
+	path := utils.EscapeAndJoinPath(common.ApiDeviceServiceRoute, common.Name, deviceServiceName)
 
 	ts := newTestServer(http.MethodGet, path, responses.DeviceResponse{})
 	defer ts.Close()
@@ -61,7 +61,7 @@ func TestQueryDeviceServiceByName(t *testing.T) {
 
 func TestDeleteDeviceServiceByName(t *testing.T) {
 	deviceServiceName := "deviceService"
-	path := path.Join(common.ApiDeviceServiceRoute, common.Name, deviceServiceName)
+	path := utils.EscapeAndJoinPath(common.ApiDeviceServiceRoute, common.Name, deviceServiceName)
 
 	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
 	defer ts.Close()

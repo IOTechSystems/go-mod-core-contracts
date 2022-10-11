@@ -8,7 +8,6 @@ package http
 import (
 	"context"
 	"net/url"
-	"path"
 	"strconv"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
@@ -46,7 +45,7 @@ func (client *CommandClient) AllDeviceCoreCommands(ctx context.Context, offset i
 // DeviceCoreCommandsByDeviceName returns all commands associated with the specified device name.
 func (client *CommandClient) DeviceCoreCommandsByDeviceName(ctx context.Context, name string) (
 	res responses.DeviceCoreCommandResponse, err errors.EdgeX) {
-	path := path.Join(common.ApiDeviceRoute, common.Name, name)
+	path := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, name)
 	err = utils.GetRequest(ctx, &res, client.baseUrl, path, nil)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -59,7 +58,7 @@ func (client *CommandClient) IssueGetCommandByName(ctx context.Context, deviceNa
 	requestParams := url.Values{}
 	requestParams.Set(common.PushEvent, dsPushEvent)
 	requestParams.Set(common.ReturnEvent, dsReturnEvent)
-	requestPath := path.Join(common.ApiDeviceRoute, common.Name, deviceName, commandName)
+	requestPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, commandName)
 	err = utils.GetRequest(ctx, &res, client.baseUrl, requestPath, requestParams)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -73,7 +72,7 @@ func (client *CommandClient) IssueGetCommandByNameWithQueryParams(ctx context.Co
 		requestParams.Set(k, v)
 	}
 
-	requestPath := path.Join(common.ApiDeviceRoute, common.Name, url.QueryEscape(deviceName), url.QueryEscape(commandName))
+	requestPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, commandName)
 	err = utils.GetRequest(ctx, &res, client.baseUrl, requestPath, requestParams)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -83,7 +82,7 @@ func (client *CommandClient) IssueGetCommandByNameWithQueryParams(ctx context.Co
 
 // IssueSetCommandByName issues the specified write command referenced by the command name to the device/sensor that is also referenced by name.
 func (client *CommandClient) IssueSetCommandByName(ctx context.Context, deviceName string, commandName string, settings map[string]string) (res dtoCommon.BaseResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiDeviceRoute, common.Name, deviceName, commandName)
+	requestPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, commandName)
 	err = utils.PutRequest(ctx, &res, client.baseUrl, requestPath, nil, settings)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -93,7 +92,7 @@ func (client *CommandClient) IssueSetCommandByName(ctx context.Context, deviceNa
 
 // IssueSetCommandByNameWithObject issues the specified write command and the settings supports object value type
 func (client *CommandClient) IssueSetCommandByNameWithObject(ctx context.Context, deviceName string, commandName string, settings map[string]interface{}) (res dtoCommon.BaseResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiDeviceRoute, common.Name, deviceName, commandName)
+	requestPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, commandName)
 	err = utils.PutRequest(ctx, &res, client.baseUrl, requestPath, nil, settings)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)

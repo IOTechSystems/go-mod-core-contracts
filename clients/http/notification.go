@@ -8,7 +8,6 @@ package http
 import (
 	"context"
 	"net/url"
-	"path"
 	"strconv"
 	"strings"
 
@@ -43,7 +42,7 @@ func (client *NotificationClient) SendNotification(ctx context.Context, reqs []r
 
 // NotificationById query notification by id.
 func (client *NotificationClient) NotificationById(ctx context.Context, id string) (res responses.NotificationResponse, err errors.EdgeX) {
-	path := path.Join(common.ApiNotificationRoute, common.Id, id)
+	path := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Id, id)
 	err = utils.GetRequest(ctx, &res, client.baseUrl, path, nil)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -53,7 +52,7 @@ func (client *NotificationClient) NotificationById(ctx context.Context, id strin
 
 // DeleteNotificationById deletes a notification by id.
 func (client *NotificationClient) DeleteNotificationById(ctx context.Context, id string) (res dtoCommon.BaseResponse, err errors.EdgeX) {
-	path := path.Join(common.ApiNotificationRoute, common.Id, id)
+	path := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Id, id)
 	err = utils.DeleteRequest(ctx, &res, client.baseUrl, path)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -63,7 +62,7 @@ func (client *NotificationClient) DeleteNotificationById(ctx context.Context, id
 
 // NotificationsByCategory queries notifications with category, offset and limit
 func (client *NotificationClient) NotificationsByCategory(ctx context.Context, category string, offset int, limit int, ack string) (res responses.MultiNotificationsResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiNotificationRoute, common.Category, category)
+	requestPath := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Category, category)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
@@ -77,7 +76,7 @@ func (client *NotificationClient) NotificationsByCategory(ctx context.Context, c
 
 // NotificationsByLabel queries notifications with label, offset and limit
 func (client *NotificationClient) NotificationsByLabel(ctx context.Context, label string, offset int, limit int, ack string) (res responses.MultiNotificationsResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiNotificationRoute, common.Label, label)
+	requestPath := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Label, label)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
@@ -91,7 +90,7 @@ func (client *NotificationClient) NotificationsByLabel(ctx context.Context, labe
 
 // NotificationsByStatus queries notifications with status, offset and limit
 func (client *NotificationClient) NotificationsByStatus(ctx context.Context, status string, offset int, limit int, ack string) (res responses.MultiNotificationsResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiNotificationRoute, common.Status, status)
+	requestPath := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Status, status)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
@@ -105,7 +104,7 @@ func (client *NotificationClient) NotificationsByStatus(ctx context.Context, sta
 
 // NotificationsByTimeRange query notifications with time range, offset and limit
 func (client *NotificationClient) NotificationsByTimeRange(ctx context.Context, start int, end int, offset int, limit int, ack string) (res responses.MultiNotificationsResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiNotificationRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
+	requestPath := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
@@ -119,7 +118,7 @@ func (client *NotificationClient) NotificationsByTimeRange(ctx context.Context, 
 
 // NotificationsBySubscriptionName query notifications with subscriptionName, offset and limit
 func (client *NotificationClient) NotificationsBySubscriptionName(ctx context.Context, subscriptionName string, offset int, limit int, ack string) (res responses.MultiNotificationsResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiNotificationRoute, common.Subscription, common.Name, subscriptionName)
+	requestPath := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Subscription, common.Name, subscriptionName)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
@@ -134,7 +133,7 @@ func (client *NotificationClient) NotificationsBySubscriptionName(ctx context.Co
 // CleanupNotificationsByAge removes notifications that are older than age. And the corresponding transmissions will also be deleted.
 // Age is supposed in milliseconds since modified timestamp
 func (client *NotificationClient) CleanupNotificationsByAge(ctx context.Context, age int) (res dtoCommon.BaseResponse, err errors.EdgeX) {
-	path := path.Join(common.ApiNotificationCleanupRoute, common.Age, strconv.Itoa(age))
+	path := utils.EscapeAndJoinPath(common.ApiNotificationCleanupRoute, common.Age, strconv.Itoa(age))
 	err = utils.DeleteRequest(ctx, &res, client.baseUrl, path)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -155,7 +154,7 @@ func (client *NotificationClient) CleanupNotifications(ctx context.Context) (res
 // Age is supposed in milliseconds since modified timestamp
 // Please notice that this API is only for processed notifications (status = PROCESSED). If the deletion purpose includes each kind of notifications, please refer to cleanup API.
 func (client *NotificationClient) DeleteProcessedNotificationsByAge(ctx context.Context, age int) (res dtoCommon.BaseResponse, err errors.EdgeX) {
-	path := path.Join(common.ApiNotificationRoute, common.Age, strconv.Itoa(age))
+	path := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Age, strconv.Itoa(age))
 	err = utils.DeleteRequest(ctx, &res, client.baseUrl, path)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -178,7 +177,7 @@ func (client *NotificationClient) NotificationsByQueryConditions(ctx context.Con
 
 // DeleteNotificationByIds deletes notifications by ids
 func (client *NotificationClient) DeleteNotificationByIds(ctx context.Context, ids []string) (res dtoCommon.BaseResponse, err errors.EdgeX) {
-	path := path.Join(common.ApiNotificationRoute, common.Ids, strings.Join(ids, common.CommaSeparator))
+	path := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Ids, strings.Join(ids, common.CommaSeparator))
 	err = utils.DeleteRequest(ctx, &res, client.baseUrl, path)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -192,7 +191,7 @@ func (client *NotificationClient) UpdateNotificationAckStatusByIds(ctx context.C
 	if ack {
 		pathAck = common.Acknowledge
 	}
-	path := path.Join(common.ApiNotificationRoute, pathAck, common.Ids, strings.Join(ids, common.CommaSeparator))
+	path := utils.EscapeAndJoinPath(common.ApiNotificationRoute, pathAck, common.Ids, strings.Join(ids, common.CommaSeparator))
 	err = utils.PutRequest(ctx, &res, client.baseUrl, path, nil, nil)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)

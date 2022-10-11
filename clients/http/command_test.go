@@ -10,9 +10,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"path"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
@@ -31,7 +31,7 @@ func TestQueryDeviceCoreCommands(t *testing.T) {
 
 func TestQueryDeviceCoreCommandsByDeviceName(t *testing.T) {
 	deviceName := "Simple-Device01"
-	path := path.Join(common.ApiDeviceRoute, common.Name, deviceName)
+	path := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName)
 	ts := newTestServer(http.MethodGet, path, responses.DeviceCoreCommandResponse{})
 	defer ts.Close()
 	client := NewCommandClient(ts.URL)
@@ -43,7 +43,7 @@ func TestQueryDeviceCoreCommandsByDeviceName(t *testing.T) {
 func TestIssueGetCommandByName(t *testing.T) {
 	deviceName := "Simple-Device01"
 	cmdName := "SwitchButton"
-	path := path.Join(common.ApiDeviceRoute, common.Name, deviceName, cmdName)
+	path := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, cmdName)
 	ts := newTestServer(http.MethodGet, path, &responses.EventResponse{})
 	defer ts.Close()
 	client := NewCommandClient(ts.URL)
@@ -82,7 +82,7 @@ func TestIssueIssueSetCommandByName(t *testing.T) {
 	settings := map[string]string{
 		"SwitchButton": "true",
 	}
-	path := path.Join(common.ApiDeviceRoute, common.Name, deviceName, cmdName)
+	path := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, cmdName)
 	ts := newTestServer(http.MethodPut, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewCommandClient(ts.URL)
@@ -100,7 +100,7 @@ func TestIssueIssueSetCommandByNameWithObject(t *testing.T) {
 			"value": "on",
 		},
 	}
-	path := path.Join(common.ApiDeviceRoute, common.Name, deviceName, cmdName)
+	path := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, cmdName)
 	ts := newTestServer(http.MethodPut, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewCommandClient(ts.URL)

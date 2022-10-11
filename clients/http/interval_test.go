@@ -8,9 +8,9 @@ package http
 import (
 	"context"
 	"net/http"
-	"path"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
@@ -59,7 +59,7 @@ func TestQueryAllIntervals(t *testing.T) {
 }
 
 func TestQueryIntervalByName(t *testing.T) {
-	path := path.Join(common.ApiIntervalRoute, common.Name, TestIntervalName)
+	path := utils.EscapeAndJoinPath(common.ApiIntervalRoute, common.Name, TestIntervalName)
 	ts := newTestServer(http.MethodGet, path, responses.DeviceResponse{})
 	defer ts.Close()
 
@@ -71,7 +71,7 @@ func TestQueryIntervalByName(t *testing.T) {
 }
 
 func TestDeleteIntervalByName(t *testing.T) {
-	path := path.Join(common.ApiIntervalRoute, common.Name, TestIntervalName)
+	path := utils.EscapeAndJoinPath(common.ApiIntervalRoute, common.Name, TestIntervalName)
 	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewIntervalClient(ts.URL)

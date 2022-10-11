@@ -8,9 +8,9 @@ package http
 import (
 	"context"
 	"net/http"
-	"path"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
@@ -74,7 +74,7 @@ func TestSubscriptionClient_AllSubscriptions(t *testing.T) {
 
 func TestSubscriptionClient_DeleteSubscriptionByName(t *testing.T) {
 	subscriptionName := TestSubscriptionName
-	path := path.Join(common.ApiSubscriptionRoute, common.Name, subscriptionName)
+	path := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Name, subscriptionName)
 	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewSubscriptionClient(ts.URL)
@@ -85,7 +85,7 @@ func TestSubscriptionClient_DeleteSubscriptionByName(t *testing.T) {
 
 func TestSubscriptionClient_SubscriptionByName(t *testing.T) {
 	subscriptionName := TestSubscriptionName
-	path := path.Join(common.ApiSubscriptionRoute, common.Name, subscriptionName)
+	path := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Name, subscriptionName)
 	ts := newTestServer(http.MethodGet, path, responses.SubscriptionResponse{})
 	defer ts.Close()
 	client := NewSubscriptionClient(ts.URL)
@@ -96,7 +96,7 @@ func TestSubscriptionClient_SubscriptionByName(t *testing.T) {
 
 func TestSubscriptionClient_SubscriptionsByCategory(t *testing.T) {
 	category := TestCategory
-	urlPath := path.Join(common.ApiSubscriptionRoute, common.Category, category)
+	urlPath := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Category, category)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiSubscriptionsResponse{})
 	defer ts.Close()
 	client := NewSubscriptionClient(ts.URL)
@@ -107,7 +107,7 @@ func TestSubscriptionClient_SubscriptionsByCategory(t *testing.T) {
 
 func TestSubscriptionClient_SubscriptionsByLabel(t *testing.T) {
 	label := TestLabel
-	urlPath := path.Join(common.ApiSubscriptionRoute, common.Label, label)
+	urlPath := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Label, label)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiSubscriptionsResponse{})
 	defer ts.Close()
 	client := NewSubscriptionClient(ts.URL)
@@ -118,7 +118,7 @@ func TestSubscriptionClient_SubscriptionsByLabel(t *testing.T) {
 
 func TestSubscriptionClient_SubscriptionsByReceiver(t *testing.T) {
 	receiver := TestReceiver
-	urlPath := path.Join(common.ApiSubscriptionRoute, common.Receiver, receiver)
+	urlPath := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Receiver, receiver)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiSubscriptionsResponse{})
 	defer ts.Close()
 	client := NewSubscriptionClient(ts.URL)

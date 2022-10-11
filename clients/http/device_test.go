@@ -3,9 +3,9 @@ package http
 import (
 	"context"
 	"net/http"
-	"path"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
@@ -43,7 +43,7 @@ func TestQueryAllDevices(t *testing.T) {
 
 func TestDeviceNameExists(t *testing.T) {
 	deviceName := "device"
-	path := path.Join(common.ApiDeviceRoute, common.Check, common.Name, deviceName)
+	path := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Check, common.Name, deviceName)
 	ts := newTestServer(http.MethodGet, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewDeviceClient(ts.URL)
@@ -54,7 +54,7 @@ func TestDeviceNameExists(t *testing.T) {
 
 func TestQueryDeviceByName(t *testing.T) {
 	deviceName := "device"
-	path := path.Join(common.ApiDeviceRoute, common.Name, deviceName)
+	path := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName)
 	ts := newTestServer(http.MethodGet, path, responses.DeviceResponse{})
 	defer ts.Close()
 	client := NewDeviceClient(ts.URL)
@@ -65,7 +65,7 @@ func TestQueryDeviceByName(t *testing.T) {
 
 func TestDeleteDeviceByName(t *testing.T) {
 	deviceName := "device"
-	path := path.Join(common.ApiDeviceRoute, common.Name, deviceName)
+	path := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName)
 	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewDeviceClient(ts.URL)
@@ -76,7 +76,7 @@ func TestDeleteDeviceByName(t *testing.T) {
 
 func TestQueryDevicesByProfileName(t *testing.T) {
 	profileName := "profile"
-	urlPath := path.Join(common.ApiDeviceRoute, common.Profile, common.Name, profileName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Profile, common.Name, profileName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiDevicesResponse{})
 	defer ts.Close()
 	client := NewDeviceClient(ts.URL)
@@ -87,7 +87,7 @@ func TestQueryDevicesByProfileName(t *testing.T) {
 
 func TestQueryDevicesByServiceName(t *testing.T) {
 	serviceName := "service"
-	urlPath := path.Join(common.ApiDeviceRoute, common.Service, common.Name, serviceName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Service, common.Name, serviceName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiDevicesResponse{})
 	defer ts.Close()
 	client := NewDeviceClient(ts.URL)

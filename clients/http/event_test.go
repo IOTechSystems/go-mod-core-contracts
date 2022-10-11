@@ -8,10 +8,10 @@ package http
 import (
 	"context"
 	"net/http"
-	"path"
 	"strconv"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
@@ -24,7 +24,7 @@ import (
 
 func TestAddEvent(t *testing.T) {
 	event := dtos.Event{ProfileName: "profileName", DeviceName: "deviceName"}
-	apiRoute := path.Join(common.ApiEventRoute, event.ProfileName, event.DeviceName)
+	apiRoute := utils.EscapeAndJoinPath(common.ApiEventRoute, event.ProfileName, event.DeviceName)
 	ts := newTestServer(http.MethodPost, apiRoute, dtoCommon.BaseWithIdResponse{})
 	defer ts.Close()
 
@@ -56,7 +56,7 @@ func TestQueryEventCount(t *testing.T) {
 
 func TestQueryEventCountByDeviceName(t *testing.T) {
 	deviceName := "device"
-	path := path.Join(common.ApiEventCountRoute, common.Device, common.Name, deviceName)
+	path := utils.EscapeAndJoinPath(common.ApiEventCountRoute, common.Device, common.Name, deviceName)
 	ts := newTestServer(http.MethodGet, path, dtoCommon.CountResponse{})
 	defer ts.Close()
 
@@ -68,7 +68,7 @@ func TestQueryEventCountByDeviceName(t *testing.T) {
 
 func TestQueryEventsByDeviceName(t *testing.T) {
 	deviceName := "device"
-	urlPath := path.Join(common.ApiEventRoute, common.Device, common.Name, deviceName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiEventRoute, common.Device, common.Name, deviceName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiEventsResponse{})
 	defer ts.Close()
 
@@ -80,7 +80,7 @@ func TestQueryEventsByDeviceName(t *testing.T) {
 
 func TestDeleteEventsByDeviceName(t *testing.T) {
 	deviceName := "device"
-	path := path.Join(common.ApiEventRoute, common.Device, common.Name, deviceName)
+	path := utils.EscapeAndJoinPath(common.ApiEventRoute, common.Device, common.Name, deviceName)
 	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 
@@ -93,7 +93,7 @@ func TestDeleteEventsByDeviceName(t *testing.T) {
 func TestQueryEventsByTimeRange(t *testing.T) {
 	start := 1
 	end := 10
-	urlPath := path.Join(common.ApiEventRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
+	urlPath := utils.EscapeAndJoinPath(common.ApiEventRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiEventsResponse{})
 	defer ts.Close()
 
@@ -105,7 +105,7 @@ func TestQueryEventsByTimeRange(t *testing.T) {
 
 func TestDeleteEventsByAge(t *testing.T) {
 	age := 10
-	path := path.Join(common.ApiEventRoute, common.Age, strconv.Itoa(age))
+	path := utils.EscapeAndJoinPath(common.ApiEventRoute, common.Age, strconv.Itoa(age))
 	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 
