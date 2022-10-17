@@ -8,10 +8,10 @@ package http
 import (
 	"context"
 	"net/http"
-	"path"
 	"strconv"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
@@ -31,7 +31,7 @@ func TestTransmissionClient_AllTransmissions(t *testing.T) {
 
 func TestTransmissionClient_DeleteProcessedTransmissionsByAge(t *testing.T) {
 	age := 0
-	path := path.Join(common.ApiTransmissionRoute, common.Age, strconv.Itoa(age))
+	path := utils.EscapeAndJoinPath(common.ApiTransmissionRoute, common.Age, strconv.Itoa(age))
 	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewTransmissionClient(ts.URL)
@@ -42,7 +42,7 @@ func TestTransmissionClient_DeleteProcessedTransmissionsByAge(t *testing.T) {
 
 func TestTransmissionClient_TransmissionById(t *testing.T) {
 	testId := ExampleUUID
-	path := path.Join(common.ApiTransmissionRoute, common.Id, testId)
+	path := utils.EscapeAndJoinPath(common.ApiTransmissionRoute, common.Id, testId)
 	ts := newTestServer(http.MethodGet, path, responses.TransmissionResponse{})
 	defer ts.Close()
 	client := NewTransmissionClient(ts.URL)
@@ -53,7 +53,7 @@ func TestTransmissionClient_TransmissionById(t *testing.T) {
 
 func TestTransmissionClient_TransmissionsByStatus(t *testing.T) {
 	status := models.Escalated
-	urlPath := path.Join(common.ApiTransmissionRoute, common.Status, status)
+	urlPath := utils.EscapeAndJoinPath(common.ApiTransmissionRoute, common.Status, status)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiTransmissionsResponse{})
 	defer ts.Close()
 	client := NewTransmissionClient(ts.URL)
@@ -64,7 +64,7 @@ func TestTransmissionClient_TransmissionsByStatus(t *testing.T) {
 
 func TestTransmissionClient_TransmissionsBySubscriptionName(t *testing.T) {
 	subscriptionName := TestSubscriptionName
-	urlPath := path.Join(common.ApiTransmissionRoute, common.Subscription, common.Name, subscriptionName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiTransmissionRoute, common.Subscription, common.Name, subscriptionName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiTransmissionsResponse{})
 	defer ts.Close()
 	client := NewTransmissionClient(ts.URL)
@@ -76,7 +76,7 @@ func TestTransmissionClient_TransmissionsBySubscriptionName(t *testing.T) {
 func TestTransmissionClient_TransmissionsByTimeRange(t *testing.T) {
 	start := 1
 	end := 10
-	urlPath := path.Join(common.ApiTransmissionRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
+	urlPath := utils.EscapeAndJoinPath(common.ApiTransmissionRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiTransmissionsResponse{})
 	defer ts.Close()
 	client := NewTransmissionClient(ts.URL)
@@ -87,7 +87,7 @@ func TestTransmissionClient_TransmissionsByTimeRange(t *testing.T) {
 
 func TestTransmissionClient_TransmissionsByNotificationId(t *testing.T) {
 	notificationId := ExampleUUID
-	urlPath := path.Join(common.ApiTransmissionRoute, common.Notification, common.Id, notificationId)
+	urlPath := utils.EscapeAndJoinPath(common.ApiTransmissionRoute, common.Notification, common.Id, notificationId)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiTransmissionsResponse{})
 	defer ts.Close()
 	client := NewTransmissionClient(ts.URL)

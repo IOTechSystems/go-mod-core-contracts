@@ -8,13 +8,13 @@ package http
 import (
 	"context"
 	"net/http"
-	"path"
 	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
@@ -42,7 +42,7 @@ func TestQueryReadingCount(t *testing.T) {
 
 func TestQueryReadingCountByDeviceName(t *testing.T) {
 	deviceName := "device"
-	path := path.Join(common.ApiReadingCountRoute, common.Device, common.Name, deviceName)
+	path := utils.EscapeAndJoinPath(common.ApiReadingCountRoute, common.Device, common.Name, deviceName)
 	ts := newTestServer(http.MethodGet, path, dtoCommon.CountResponse{})
 	defer ts.Close()
 
@@ -54,7 +54,7 @@ func TestQueryReadingCountByDeviceName(t *testing.T) {
 
 func TestQueryReadingsByDeviceName(t *testing.T) {
 	deviceName := "device"
-	urlPath := path.Join(common.ApiReadingRoute, common.Device, common.Name, deviceName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.Device, common.Name, deviceName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
@@ -66,7 +66,7 @@ func TestQueryReadingsByDeviceName(t *testing.T) {
 
 func TestQueryReadingsByResourceName(t *testing.T) {
 	resourceName := "resource"
-	urlPath := path.Join(common.ApiReadingRoute, common.ResourceName, resourceName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.ResourceName, resourceName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
@@ -79,7 +79,7 @@ func TestQueryReadingsByResourceName(t *testing.T) {
 func TestQueryReadingsByTimeRange(t *testing.T) {
 	start := 1
 	end := 10
-	urlPath := path.Join(common.ApiReadingRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
+	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
@@ -93,7 +93,7 @@ func TestQueryReadingsByResourceNameAndTimeRange(t *testing.T) {
 	resourceName := "resource"
 	start := 1
 	end := 10
-	urlPath := path.Join(common.ApiReadingRoute, common.ResourceName, resourceName, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
+	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.ResourceName, resourceName, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
@@ -106,7 +106,7 @@ func TestQueryReadingsByResourceNameAndTimeRange(t *testing.T) {
 func TestQueryReadingsByDeviceNameAndResourceName(t *testing.T) {
 	deviceName := "device"
 	resourceName := "resource"
-	urlPath := path.Join(common.ApiReadingRoute, common.Device, common.Name, deviceName, common.ResourceName, resourceName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.Device, common.Name, deviceName, common.ResourceName, resourceName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
@@ -121,7 +121,7 @@ func TestQueryReadingsByDeviceNameAndResourceNameAndTimeRange(t *testing.T) {
 	resourceName := "resource"
 	start := 1
 	end := 10
-	urlPath := path.Join(common.ApiReadingRoute, common.Device, common.Name, deviceName, common.ResourceName, resourceName, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
+	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.Device, common.Name, deviceName, common.ResourceName, resourceName, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
@@ -136,7 +136,7 @@ func TestQueryReadingsByDeviceNameAndResourceNamesAndTimeRange(t *testing.T) {
 	resourceNames := []string{"resource01", "resource02"}
 	start := 1
 	end := 10
-	urlPath := path.Join(common.ApiReadingRoute, common.Device, common.Name, deviceName, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
+	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.Device, common.Name, deviceName, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 

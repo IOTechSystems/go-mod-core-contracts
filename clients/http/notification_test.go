@@ -8,11 +8,11 @@ package http
 import (
 	"context"
 	"net/http"
-	"path"
 	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
@@ -46,7 +46,7 @@ func TestNotificationClient_SendNotification(t *testing.T) {
 
 func TestNotificationClient_NotificationById(t *testing.T) {
 	testId := ExampleUUID
-	path := path.Join(common.ApiNotificationRoute, common.Id, testId)
+	path := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Id, testId)
 	ts := newTestServer(http.MethodGet, path, responses.NotificationResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL)
@@ -57,7 +57,7 @@ func TestNotificationClient_NotificationById(t *testing.T) {
 
 func TestNotificationClient_NotificationsByCategory(t *testing.T) {
 	category := TestCategory
-	urlPath := path.Join(common.ApiNotificationRoute, common.Category, category)
+	urlPath := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Category, category)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiNotificationsResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL)
@@ -68,7 +68,7 @@ func TestNotificationClient_NotificationsByCategory(t *testing.T) {
 
 func TestNotificationClient_NotificationsByLabel(t *testing.T) {
 	label := TestLabel
-	urlPath := path.Join(common.ApiNotificationRoute, common.Label, label)
+	urlPath := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Label, label)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiNotificationsResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL)
@@ -79,7 +79,7 @@ func TestNotificationClient_NotificationsByLabel(t *testing.T) {
 
 func TestNotificationClient_NotificationsByStatus(t *testing.T) {
 	status := models.Processed
-	urlPath := path.Join(common.ApiNotificationRoute, common.Status, status)
+	urlPath := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Status, status)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiNotificationsResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL)
@@ -90,7 +90,7 @@ func TestNotificationClient_NotificationsByStatus(t *testing.T) {
 
 func TestNotificationClient_NotificationsBySubscriptionName(t *testing.T) {
 	subscriptionName := TestSubscriptionName
-	urlPath := path.Join(common.ApiNotificationRoute, common.Subscription, common.Name, subscriptionName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Subscription, common.Name, subscriptionName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiNotificationsResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL)
@@ -102,7 +102,7 @@ func TestNotificationClient_NotificationsBySubscriptionName(t *testing.T) {
 func TestNotificationClient_NotificationsByTimeRange(t *testing.T) {
 	start := 1
 	end := 10
-	urlPath := path.Join(common.ApiNotificationRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
+	urlPath := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiNotificationsResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL)
@@ -122,7 +122,7 @@ func TestNotificationClient_CleanupNotifications(t *testing.T) {
 
 func TestNotificationClient_CleanupNotificationsByAge(t *testing.T) {
 	age := 0
-	path := path.Join(common.ApiNotificationCleanupRoute, common.Age, strconv.Itoa(age))
+	path := utils.EscapeAndJoinPath(common.ApiNotificationCleanupRoute, common.Age, strconv.Itoa(age))
 	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL)
@@ -133,7 +133,7 @@ func TestNotificationClient_CleanupNotificationsByAge(t *testing.T) {
 
 func TestNotificationClient_DeleteNotificationById(t *testing.T) {
 	id := ExampleUUID
-	path := path.Join(common.ApiNotificationRoute, common.Id, id)
+	path := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Id, id)
 	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL)
@@ -144,7 +144,7 @@ func TestNotificationClient_DeleteNotificationById(t *testing.T) {
 
 func TestNotificationClient_DeleteProcessedNotificationsByAge(t *testing.T) {
 	age := 0
-	path := path.Join(common.ApiNotificationRoute, common.Age, strconv.Itoa(age))
+	path := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Age, strconv.Itoa(age))
 	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL)
@@ -164,7 +164,7 @@ func TestNotificationClient_NotificationsByQueryConditions(t *testing.T) {
 
 func TestNotificationClient_DeleteNotificationByIds(t *testing.T) {
 	ids := []string{ExampleUUID}
-	path := path.Join(common.ApiNotificationRoute, common.Ids, strings.Join(ids, common.CommaSeparator))
+	path := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Ids, strings.Join(ids, common.CommaSeparator))
 	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL)
@@ -175,7 +175,7 @@ func TestNotificationClient_DeleteNotificationByIds(t *testing.T) {
 
 func TestNotificationClient_UpdateNotificationAckStatusByIds(t *testing.T) {
 	ids := []string{ExampleUUID}
-	path := path.Join(common.ApiNotificationRoute, common.Acknowledge, common.Ids, strings.Join(ids, common.CommaSeparator))
+	path := utils.EscapeAndJoinPath(common.ApiNotificationRoute, common.Acknowledge, common.Ids, strings.Join(ids, common.CommaSeparator))
 	ts := newTestServer(http.MethodPut, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewNotificationClient(ts.URL)

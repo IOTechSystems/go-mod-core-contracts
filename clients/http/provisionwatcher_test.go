@@ -8,9 +8,9 @@ package http
 import (
 	"context"
 	"net/http"
-	"path"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
@@ -50,7 +50,7 @@ func TestProvisionWatcherClient_AllProvisionWatchers(t *testing.T) {
 
 func TestProvisionWatcherClient_ProvisionWatcherByName(t *testing.T) {
 	pwName := "watcher"
-	urlPath := path.Join(common.ApiProvisionWatcherRoute, common.Name, pwName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiProvisionWatcherRoute, common.Name, pwName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.ProvisionWatcherResponse{})
 	defer ts.Close()
 
@@ -62,7 +62,7 @@ func TestProvisionWatcherClient_ProvisionWatcherByName(t *testing.T) {
 
 func TestProvisionWatcherClient_DeleteProvisionWatcherByName(t *testing.T) {
 	pwName := "watcher"
-	urlPath := path.Join(common.ApiProvisionWatcherRoute, common.Name, pwName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiProvisionWatcherRoute, common.Name, pwName)
 	ts := newTestServer(http.MethodDelete, urlPath, dtoCommon.BaseResponse{})
 	defer ts.Close()
 
@@ -74,7 +74,7 @@ func TestProvisionWatcherClient_DeleteProvisionWatcherByName(t *testing.T) {
 
 func TestProvisionWatcherClient_ProvisionWatchersByProfileName(t *testing.T) {
 	profileName := "profile"
-	urlPath := path.Join(common.ApiProvisionWatcherRoute, common.Profile, common.Name, profileName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiProvisionWatcherRoute, common.Profile, common.Name, profileName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiProvisionWatchersResponse{})
 	defer ts.Close()
 
@@ -86,7 +86,7 @@ func TestProvisionWatcherClient_ProvisionWatchersByProfileName(t *testing.T) {
 
 func TestProvisionWatcherClient_ProvisionWatchersByServiceName(t *testing.T) {
 	serviceName := "service"
-	urlPath := path.Join(common.ApiProvisionWatcherRoute, common.Service, common.Name, serviceName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiProvisionWatcherRoute, common.Service, common.Name, serviceName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiProvisionWatchersResponse{})
 	defer ts.Close()
 

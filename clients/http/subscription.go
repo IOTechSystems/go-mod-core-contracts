@@ -8,7 +8,6 @@ package http
 import (
 	"context"
 	"net/url"
-	"path"
 	"strconv"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
@@ -63,7 +62,7 @@ func (client *SubscriptionClient) AllSubscriptions(ctx context.Context, offset i
 
 // SubscriptionsByCategory queries subscriptions with category, offset and limit
 func (client *SubscriptionClient) SubscriptionsByCategory(ctx context.Context, category string, offset int, limit int) (res responses.MultiSubscriptionsResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiSubscriptionRoute, common.Category, category)
+	requestPath := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Category, category)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
@@ -76,7 +75,7 @@ func (client *SubscriptionClient) SubscriptionsByCategory(ctx context.Context, c
 
 // SubscriptionsByLabel queries subscriptions with label, offset and limit
 func (client *SubscriptionClient) SubscriptionsByLabel(ctx context.Context, label string, offset int, limit int) (res responses.MultiSubscriptionsResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiSubscriptionRoute, common.Label, label)
+	requestPath := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Label, label)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
@@ -89,7 +88,7 @@ func (client *SubscriptionClient) SubscriptionsByLabel(ctx context.Context, labe
 
 // SubscriptionsByReceiver queries subscriptions with receiver, offset and limit
 func (client *SubscriptionClient) SubscriptionsByReceiver(ctx context.Context, receiver string, offset int, limit int) (res responses.MultiSubscriptionsResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiSubscriptionRoute, common.Receiver, receiver)
+	requestPath := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Receiver, receiver)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
@@ -102,7 +101,7 @@ func (client *SubscriptionClient) SubscriptionsByReceiver(ctx context.Context, r
 
 // SubscriptionByName query subscription by name.
 func (client *SubscriptionClient) SubscriptionByName(ctx context.Context, name string) (res responses.SubscriptionResponse, err errors.EdgeX) {
-	path := path.Join(common.ApiSubscriptionRoute, common.Name, name)
+	path := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Name, name)
 	err = utils.GetRequest(ctx, &res, client.baseUrl, path, nil)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -112,7 +111,7 @@ func (client *SubscriptionClient) SubscriptionByName(ctx context.Context, name s
 
 // DeleteSubscriptionByName deletes a subscription by name.
 func (client *SubscriptionClient) DeleteSubscriptionByName(ctx context.Context, name string) (res dtoCommon.BaseResponse, err errors.EdgeX) {
-	path := path.Join(common.ApiSubscriptionRoute, common.Name, name)
+	path := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Name, name)
 	err = utils.DeleteRequest(ctx, &res, client.baseUrl, path)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)

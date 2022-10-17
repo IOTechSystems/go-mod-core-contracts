@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"path"
 	"path/filepath"
 	"runtime"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
@@ -169,7 +169,7 @@ func TestUpdateDeviceProfileByYaml(t *testing.T) {
 
 func TestDeleteDeviceProfileByName(t *testing.T) {
 	testName := "testName"
-	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Name, testName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Name, testName)
 	ts := newTestServer(http.MethodDelete, urlPath, dtoCommon.BaseResponse{})
 	defer ts.Close()
 
@@ -181,7 +181,7 @@ func TestDeleteDeviceProfileByName(t *testing.T) {
 
 func TestQueryDeviceProfileByName(t *testing.T) {
 	testName := "testName"
-	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Name, testName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Name, testName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.DeviceProfileResponse{})
 	defer ts.Close()
 	client := NewDeviceProfileClient(ts.URL)
@@ -199,7 +199,7 @@ func TestQueryAllDeviceProfiles(t *testing.T) {
 
 func TestQueryDeviceProfilesByModel(t *testing.T) {
 	testModel := "testModel"
-	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Model, testModel)
+	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Model, testModel)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiDeviceProfilesResponse{})
 	defer ts.Close()
 	client := NewDeviceProfileClient(ts.URL)
@@ -209,7 +209,7 @@ func TestQueryDeviceProfilesByModel(t *testing.T) {
 
 func TestQueryDeviceProfilesByManufacturer(t *testing.T) {
 	testManufacturer := "testManufacturer"
-	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Manufacturer, testManufacturer)
+	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Manufacturer, testManufacturer)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiDeviceProfilesResponse{})
 	defer ts.Close()
 	client := NewDeviceProfileClient(ts.URL)
@@ -220,7 +220,7 @@ func TestQueryDeviceProfilesByManufacturer(t *testing.T) {
 func TestQueryDeviceProfilesByManufacturerAndModel(t *testing.T) {
 	testManufacturer := "testManufacturer"
 	testModel := "testModel"
-	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Manufacturer, testManufacturer, common.Model, testModel)
+	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Manufacturer, testManufacturer, common.Model, testModel)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiDeviceProfilesResponse{})
 	defer ts.Close()
 	client := NewDeviceProfileClient(ts.URL)
@@ -231,7 +231,7 @@ func TestQueryDeviceProfilesByManufacturerAndModel(t *testing.T) {
 func TestDeviceResourceByProfileNameAndResourceName(t *testing.T) {
 	profileName := "testProfile"
 	resourceName := "testResource"
-	urlPath := path.Join(common.ApiDeviceResourceRoute, common.Profile, profileName, common.Resource, resourceName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceResourceRoute, common.Profile, profileName, common.Resource, resourceName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.DeviceResourceResponse{})
 	defer ts.Close()
 	client := NewDeviceProfileClient(ts.URL)
@@ -276,7 +276,7 @@ func TestUpdateDeviceProfileResource(t *testing.T) {
 func TestDeleteDeviceResourceByName(t *testing.T) {
 	profileName := "testProfile"
 	resourceName := "testResource"
-	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Name, profileName, common.Resource, resourceName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Name, profileName, common.Resource, resourceName)
 	ts := newTestServer(http.MethodDelete, urlPath, dtoCommon.BaseResponse{})
 	defer ts.Close()
 
@@ -310,7 +310,7 @@ func TestUpdateDeviceProfileDeviceCommand(t *testing.T) {
 func TestDeleteDeviceCommandByName(t *testing.T) {
 	profileName := "testProfile"
 	commandName := "testCommand"
-	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Name, profileName, common.DeviceCommand, commandName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Name, profileName, common.DeviceCommand, commandName)
 	ts := newTestServer(http.MethodDelete, urlPath, dtoCommon.BaseResponse{})
 	defer ts.Close()
 

@@ -8,7 +8,6 @@ package http
 import (
 	"context"
 	"net/url"
-	"path"
 	"strconv"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
@@ -32,7 +31,7 @@ func NewTransmissionClient(baseUrl string) interfaces.TransmissionClient {
 
 // TransmissionById query transmission by id.
 func (client *TransmissionClient) TransmissionById(ctx context.Context, id string) (res responses.TransmissionResponse, err errors.EdgeX) {
-	path := path.Join(common.ApiTransmissionRoute, common.Id, id)
+	path := utils.EscapeAndJoinPath(common.ApiTransmissionRoute, common.Id, id)
 	err = utils.GetRequest(ctx, &res, client.baseUrl, path, nil)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -42,7 +41,7 @@ func (client *TransmissionClient) TransmissionById(ctx context.Context, id strin
 
 // TransmissionsByTimeRange query transmissions with time range, offset and limit
 func (client *TransmissionClient) TransmissionsByTimeRange(ctx context.Context, start int, end int, offset int, limit int) (res responses.MultiTransmissionsResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiTransmissionRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
+	requestPath := utils.EscapeAndJoinPath(common.ApiTransmissionRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
@@ -67,7 +66,7 @@ func (client *TransmissionClient) AllTransmissions(ctx context.Context, offset i
 
 // TransmissionsByStatus queries transmissions with status, offset and limit
 func (client *TransmissionClient) TransmissionsByStatus(ctx context.Context, status string, offset int, limit int) (res responses.MultiTransmissionsResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiTransmissionRoute, common.Status, status)
+	requestPath := utils.EscapeAndJoinPath(common.ApiTransmissionRoute, common.Status, status)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
@@ -80,7 +79,7 @@ func (client *TransmissionClient) TransmissionsByStatus(ctx context.Context, sta
 
 // DeleteProcessedTransmissionsByAge deletes the processed transmissions if the current timestamp minus their created timestamp is less than the age parameter.
 func (client *TransmissionClient) DeleteProcessedTransmissionsByAge(ctx context.Context, age int) (res dtoCommon.BaseResponse, err errors.EdgeX) {
-	path := path.Join(common.ApiTransmissionRoute, common.Age, strconv.Itoa(age))
+	path := utils.EscapeAndJoinPath(common.ApiTransmissionRoute, common.Age, strconv.Itoa(age))
 	err = utils.DeleteRequest(ctx, &res, client.baseUrl, path)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -90,7 +89,7 @@ func (client *TransmissionClient) DeleteProcessedTransmissionsByAge(ctx context.
 
 // TransmissionsBySubscriptionName query transmissions with subscriptionName, offset and limit
 func (client *TransmissionClient) TransmissionsBySubscriptionName(ctx context.Context, subscriptionName string, offset int, limit int) (res responses.MultiTransmissionsResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiTransmissionRoute, common.Subscription, common.Name, subscriptionName)
+	requestPath := utils.EscapeAndJoinPath(common.ApiTransmissionRoute, common.Subscription, common.Name, subscriptionName)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
@@ -103,7 +102,7 @@ func (client *TransmissionClient) TransmissionsBySubscriptionName(ctx context.Co
 
 // TransmissionsByNotificationId query transmissions with notification id, offset and limit
 func (client *TransmissionClient) TransmissionsByNotificationId(ctx context.Context, id string, offset int, limit int) (res responses.MultiTransmissionsResponse, err errors.EdgeX) {
-	requestPath := path.Join(common.ApiTransmissionRoute, common.Notification, common.Id, id)
+	requestPath := utils.EscapeAndJoinPath(common.ApiTransmissionRoute, common.Notification, common.Id, id)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))

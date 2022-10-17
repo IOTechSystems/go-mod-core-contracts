@@ -16,7 +16,7 @@ import (
 type Device struct {
 	DBTimestamp    `json:",inline"`
 	Id             string                        `json:"id,omitempty" validate:"omitempty,uuid"`
-	Name           string                        `json:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
+	Name           string                        `json:"name" validate:"required,edgex-dto-none-empty-string"`
 	Description    string                        `json:"description,omitempty"`
 	AdminState     string                        `json:"adminState" validate:"oneof='LOCKED' 'UNLOCKED'"`
 	OperatingState string                        `json:"operatingState" validate:"oneof='UP' 'DOWN' 'UNKNOWN'"`

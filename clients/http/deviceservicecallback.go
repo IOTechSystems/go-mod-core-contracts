@@ -7,7 +7,6 @@ package http
 
 import (
 	"context"
-	"path"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/interfaces"
@@ -57,7 +56,7 @@ func (client *deviceServiceCallbackClient) UpdateDeviceCallback(ctx context.Cont
 
 func (client *deviceServiceCallbackClient) DeleteDeviceCallback(ctx context.Context, name string) (dtoCommon.BaseResponse, errors.EdgeX) {
 	var response dtoCommon.BaseResponse
-	requestPath := path.Join(common.ApiDeviceCallbackRoute, common.Name, name)
+	requestPath := utils.EscapeAndJoinPath(common.ApiDeviceCallbackRoute, common.Name, name)
 	err := utils.DeleteRequest(ctx, &response, client.baseUrl, requestPath)
 	if err != nil {
 		return response, errors.NewCommonEdgeXWrapper(err)
@@ -94,7 +93,7 @@ func (client *deviceServiceCallbackClient) UpdateProvisionWatcherCallback(ctx co
 
 func (client *deviceServiceCallbackClient) DeleteProvisionWatcherCallback(ctx context.Context, name string) (dtoCommon.BaseResponse, errors.EdgeX) {
 	var response dtoCommon.BaseResponse
-	requestPath := path.Join(common.ApiWatcherCallbackRoute, common.Name, name)
+	requestPath := utils.EscapeAndJoinPath(common.ApiWatcherCallbackRoute, common.Name, name)
 	err := utils.DeleteRequest(ctx, &response, client.baseUrl, requestPath)
 	if err != nil {
 		return response, errors.NewCommonEdgeXWrapper(err)

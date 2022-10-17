@@ -3,7 +3,6 @@ package http
 import (
 	"context"
 	"net/url"
-	"path"
 	"strconv"
 	"strings"
 
@@ -62,7 +61,7 @@ func (dsc DeviceServiceClient) AllDeviceServices(ctx context.Context, labels []s
 
 func (dsc DeviceServiceClient) DeviceServiceByName(ctx context.Context, name string) (
 	res responses.DeviceServiceResponse, err errors.EdgeX) {
-	path := path.Join(common.ApiDeviceServiceRoute, common.Name, name)
+	path := utils.EscapeAndJoinPath(common.ApiDeviceServiceRoute, common.Name, name)
 	err = utils.GetRequest(ctx, &res, dsc.baseUrl, path, nil)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
@@ -72,7 +71,7 @@ func (dsc DeviceServiceClient) DeviceServiceByName(ctx context.Context, name str
 
 func (dsc DeviceServiceClient) DeleteByName(ctx context.Context, name string) (
 	res dtoCommon.BaseResponse, err errors.EdgeX) {
-	path := path.Join(common.ApiDeviceServiceRoute, common.Name, name)
+	path := utils.EscapeAndJoinPath(common.ApiDeviceServiceRoute, common.Name, name)
 	err = utils.DeleteRequest(ctx, &res, dsc.baseUrl, path)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)

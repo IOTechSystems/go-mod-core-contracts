@@ -8,9 +8,9 @@ package http
 import (
 	"context"
 	"net/http"
-	"path"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
@@ -62,7 +62,7 @@ func TestUpdateDeviceCallback(t *testing.T) {
 func TestDeleteDeviceCallback(t *testing.T) {
 	testDeviceName := "testName"
 	requestId := uuid.New().String()
-	urlPath := path.Join(common.ApiDeviceCallbackRoute, common.Name, testDeviceName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceCallbackRoute, common.Name, testDeviceName)
 	expectedResponse := dtoCommon.NewBaseResponse(requestId, "", http.StatusOK)
 	ts := newTestServer(http.MethodDelete, urlPath, expectedResponse)
 	defer ts.Close()
@@ -116,7 +116,7 @@ func TestUpdateProvisionWatcherCallback(t *testing.T) {
 func TestDeleteProvisionWatcherCallback(t *testing.T) {
 	testWatcherName := "testName"
 	requestId := uuid.New().String()
-	urlPath := path.Join(common.ApiWatcherCallbackRoute, common.Name, testWatcherName)
+	urlPath := utils.EscapeAndJoinPath(common.ApiWatcherCallbackRoute, common.Name, testWatcherName)
 	expectedResponse := dtoCommon.NewBaseResponse(requestId, "", http.StatusOK)
 	ts := newTestServer(http.MethodDelete, urlPath, expectedResponse)
 	defer ts.Close()
