@@ -32,6 +32,9 @@ const (
 	emptyOrDtoRFC3986UnreservedCharTag = "len=0|" + dtoRFC3986UnreservedCharTag
 	dtoInterDatetimeTag                = "edgex-dto-interval-datetime"
 	dtoNoReservedCharTag        = "edgex-dto-no-reserved-chars"
+
+	emptyOrDtoRFC3986UnreservedCharTag = "len=0|" + dtoRFC3986UnreservedCharTag
+	emptyOrDtoNoReservedCharTag        = "len=0|" + dtoNoReservedCharTag
 )
 
 const (
@@ -102,7 +105,7 @@ func getErrorMessage(e validator.FieldError) string {
 		msg = fmt.Sprintf("%s field should not be empty string", fieldName)
 	case dtoRFC3986UnreservedCharTag, emptyOrDtoRFC3986UnreservedCharTag:
 		msg = fmt.Sprintf("%s field only allows unreserved characters which are ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_~:;=", fieldName)
-	case dtoNoReservedCharTag:
+	case dtoNoReservedCharTag, emptyOrDtoNoReservedCharTag:
 		msg = fmt.Sprintf("%s field does not allow reserved characters which are /#+$", fieldName)
 	default:
 		msg = fmt.Sprintf("%s field validation failed on the %s tag", fieldName, tag)
