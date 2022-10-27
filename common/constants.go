@@ -132,6 +132,11 @@ const (
 	ApiOperationRoute   = ApiSystemRoute + "/operation"
 	ApiHealthRoute      = ApiSystemRoute + "/health"
 	ApiMultiConfigRoute = ApiSystemRoute + "/config"
+
+	ApiMultiMetricsRoute = ApiSystemRoute + "/metrics"
+	ApiRuleRoute       = ApiBase + "/rule"
+	ApiAllRulesRoute   = ApiRuleRoute + "/" + All
+	ApiRuleByNameRoute = ApiRuleRoute + "/" + Name + "/{" + Name + "}"
 )
 
 // Constants related to defined url path names and parameters in the v3 service APIs
@@ -291,6 +296,7 @@ const (
 	SystemManagementAgentServiceKey     = "sys-mgmt-agent"
 	SupportSchedulerServiceKey          = "support-scheduler"
 	SupportSparkplugServiceKey          = "support-sparkplug"
+	SupportRulesEngineServiceKey        = "support-rulesengine"
 	SecuritySecretStoreSetupServiceKey  = "security-secretstore-setup"
 	SecurityProxyAuthServiceKey         = "security-proxy-auth"
 	SecurityProxySetupServiceKey        = "security-proxy-setup"
