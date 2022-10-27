@@ -134,6 +134,11 @@ const (
 	ApiOperationRoute   = ApiSystemRoute + "/operation"
 	ApiHealthRoute      = ApiSystemRoute + "/health"
 	ApiMultiConfigRoute = ApiSystemRoute + "/config"
+
+	// Xpert
+	ApiRuleRoute       = ApiBase + "/rule"
+	ApiAllRulesRoute   = ApiRuleRoute + "/" + All
+	ApiRuleByNameRoute = ApiRuleRoute + "/" + Name + "/{" + Name + "}"
 )
 
 // Constants related to defined url path names and parameters in the v3 service APIs
@@ -302,6 +307,9 @@ const (
 	SecurityBootstrapperKey             = "security-bootstrapper"
 	SecurityBootstrapperRedisKey        = "security-bootstrapper-redis"
 	SecuritySpiffeTokenProviderKey      = "security-spiffe-token-provider" // nolint:gosec
+
+	// Xpert
+	SupportRulesEngineServiceKey        = "support-rulesengine"
 )
 
 // Constants related to the possible content types supported by the APIs
