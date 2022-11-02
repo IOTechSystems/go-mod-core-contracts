@@ -37,7 +37,7 @@ type Device struct {
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/UpdateDevice
 type UpdateDevice struct {
 	Id             *string                `json:"id" validate:"required_without=Name,edgex-dto-uuid"`
-	Name           *string                `json:"name" validate:"required_without=Id,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
+	Name           *string                `json:"name" validate:"required_without=Id,edgex-dto-none-empty-string"`
 	Description    *string                `json:"description" validate:"omitempty"`
 	AdminState     *string                `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
 	OperatingState *string                `json:"operatingState" validate:"omitempty,oneof='UP' 'DOWN' 'UNKNOWN'"`

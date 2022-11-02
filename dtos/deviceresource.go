@@ -37,7 +37,7 @@ func (dr *DeviceResource) Validate() error {
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceResource
 type UpdateDeviceResource struct {
 	Description *string `json:"description"`
-	Name        *string `json:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
+	Name        *string `json:"name" validate:"required,edgex-dto-none-empty-string"`
 	IsHidden    *bool   `json:"isHidden"`
 }
 
