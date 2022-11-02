@@ -33,12 +33,12 @@ type Device struct {
 
 type UpdateDevice struct {
 	Id             *string                       `json:"id" validate:"required_without=Name,edgex-dto-uuid"`
-	Name           *string                `json:"name" validate:"required_without=Id,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
+	Name           *string                       `json:"name" validate:"required_without=Id,edgex-dto-none-empty-string"`
 	Description    *string                       `json:"description" validate:"omitempty"`
 	AdminState     *string                       `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
 	OperatingState *string                       `json:"operatingState" validate:"omitempty,oneof='UP' 'DOWN' 'UNKNOWN'"`
 	ServiceName    *string                       `json:"serviceName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	ProfileName    *string                `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
+	ProfileName    *string                       `json:"profileName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
 	Labels         []string                      `json:"labels"`
 	Location       interface{}                   `json:"location"`
 	AutoEvents     []AutoEvent                   `json:"autoEvents" validate:"dive"`

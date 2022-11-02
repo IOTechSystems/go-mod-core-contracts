@@ -21,7 +21,7 @@ type ProvisionWatcher struct {
 	DiscoveredDevice    DiscoveredDevice    `json:"discoveredDevice" yaml:"discoveredDevice" validate:"dive"`
 
 	// Xpert
-	DeviceNameTemplate *string     `json:"deviceNameTemplate" validate:"omitempty,len=0|edgex-dto-no-reserved-chars"`
+	DeviceNameTemplate string      `json:"deviceNameTemplate,omitempty" validate:"omitempty"`
 	ProfileName        *string     `json:"profileName" validate:"omitempty,len=0|edgex-dto-no-reserved-chars"`
 	AdminState         *string     `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
 	AutoEvents         []AutoEvent `json:"autoEvents" validate:"dive"`
@@ -45,7 +45,7 @@ type UpdateProvisionWatcher struct {
 	DiscoveredDevice    UpdateDiscoveredDevice `json:"discoveredDevice"`
 
 	// Xpert
-	DeviceNameTemplate *string     `json:"deviceNameTemplate" validate:"omitempty,len=0|edgex-dto-no-reserved-chars"`
+	DeviceNameTemplate *string     `json:"deviceNameTemplate" validate:"omitempty"`
 	ProfileName        *string     `json:"profileName" validate:"omitempty,len=0|edgex-dto-no-reserved-chars"`
 	AdminState         *string     `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
 	AutoEvents         []AutoEvent `json:"autoEvents" validate:"dive"`

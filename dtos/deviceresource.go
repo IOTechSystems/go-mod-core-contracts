@@ -35,7 +35,7 @@ func (dr *DeviceResource) Validate() error {
 
 type UpdateDeviceResource struct {
 	Description *string `json:"description"`
-	Name        *string `json:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
+	Name        *string `json:"name" validate:"required,edgex-dto-none-empty-string"`
 	IsHidden    *bool   `json:"isHidden"`
 }
 
