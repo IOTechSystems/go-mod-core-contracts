@@ -98,6 +98,9 @@ func NewObjectReading(profileName string, deviceName string, resourceName string
 }
 
 func convertInterfaceValue(valueType string, value interface{}) (string, error) {
+	if value == nil {
+		return "", nil
+	}
 	switch valueType {
 	case common.ValueTypeBool:
 		return convertSimpleValue(valueType, reflect.Bool, value)
