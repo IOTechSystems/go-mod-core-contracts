@@ -103,11 +103,12 @@ const (
 	ApiTransmissionByStatusRoute           = ApiTransmissionRoute + "/" + Status + "/{" + Status + "}"
 	ApiTransmissionByNotificationIdRoute   = ApiTransmissionRoute + "/" + Notification + "/" + Id + "/{" + Id + "}"
 
-	ApiConfigRoute  = ApiBase + "/config"
-	ApiMetricsRoute = ApiBase + "/metrics"
-	ApiPingRoute    = ApiBase + "/ping"
-	ApiVersionRoute = ApiBase + "/version"
-	ApiSecretRoute  = ApiBase + "/secret"
+	ApiConfigRoute         = ApiBase + "/config"
+	ApiMetricsRoute        = ApiBase + "/metrics"
+	ApiPingRoute           = ApiBase + "/ping"
+	ApiVersionRoute        = ApiBase + "/version"
+	ApiSecretRoute         = ApiBase + "/secret"
+	ApiUnitsOfMeasureRoute = ApiBase + "/uom"
 
 	ApiDeviceCallbackRoute      = ApiBase + "/callback/device"
 	ApiDeviceCallbackNameRoute  = ApiBase + "/callback/device/name/{name}"
@@ -306,10 +307,12 @@ const (
 
 // Constants related to the possible content types supported by the APIs
 const (
+	Accept          = "Accept"
 	ContentType     = "Content-Type"
 	ContentLength   = "Content-Length"
 	ContentTypeCBOR = "application/cbor"
 	ContentTypeJSON = "application/json"
+	ContentTypeTOML = "application/toml"
 	ContentTypeYAML = "application/x-yaml"
 	ContentTypeText = "text/plain"
 	ContentTypeXML  = "application/xml"
@@ -328,4 +331,19 @@ const (
 	DeviceRemoveAction = "Device removal"
 
 	DeviceChangedNotificationCategory = "DEVICE_CHANGED"
+)
+
+// Constants related to System Events
+const (
+	DeviceSystemEventType         = "device"
+	DeviceSystemEventActionAdd    = "add"
+	DeviceSystemEventActionUpdate = "update"
+	DeviceSystemEventActionDelete = "delete"
+)
+
+const (
+	ConfigStemApp      = "edgex/appservices/"
+	ConfigStemCore     = "edgex/core/"
+	ConfigStemDevice   = "edgex/devices/"
+	ConfigStemSecurity = "edgex/security/"
 )

@@ -4,6 +4,8 @@ package v1models
 
 import (
 	"fmt"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"net/http"
 	"strconv"
 	"strings"
@@ -292,7 +294,9 @@ func TransformResourceFromV1ToV2(r DeviceResource) (models.DeviceResource, error
 		IsHidden:    false,
 		Tags:        toV2Tags(r.Tags),
 		Properties: models.ResourceProperties{
-			ValueType:    strings.Title(strings.ToLower(r.Properties.Value.Type)),
+			// In go 1.18, function strings.Title has been deprecated.
+			// The alternative is to use the cases.Title function with the cases.NoLower option to get the same effect as strings.title.
+			ValueType:    cases.Title(language.English, cases.NoLower).String(strings.ToLower(r.Properties.Value.Type)),
 			ReadWrite:    r.Properties.Value.ReadWrite,
 			Units:        r.Properties.Units.DefaultValue,
 			Minimum:      r.Properties.Value.Minimum,

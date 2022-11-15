@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -17,6 +17,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"path"
 	"path/filepath"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
@@ -78,7 +79,7 @@ func createRequest(ctx context.Context, httpMethod string, baseUrl string, reque
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse baseUrl", err)
 	}
-	u.Path = requestPath
+	u.Path = path.Join(u.Path, requestPath)
 	if requestParams != nil {
 		u.RawQuery = requestParams.Encode()
 	}
@@ -96,7 +97,7 @@ func createRequestWithRawDataAndParams(ctx context.Context, httpMethod string, b
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse baseUrl", err)
 	}
-	u.Path = requestPath
+	u.Path = path.Join(u.Path, requestPath)
 	if requestParams != nil {
 		u.RawQuery = requestParams.Encode()
 	}
@@ -124,7 +125,7 @@ func createRequestWithRawData(ctx context.Context, httpMethod string, baseUrl st
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse baseUrl", err)
 	}
-	u.Path = requestPath
+	u.Path = path.Join(u.Path, requestPath)
 	if requestParams != nil {
 		u.RawQuery = requestParams.Encode()
 	}
@@ -153,7 +154,7 @@ func createRequestWithEncodedData(ctx context.Context, httpMethod string, baseUr
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse baseUrl", err)
 	}
-	u.Path = requestPath
+	u.Path = path.Join(u.Path, requestPath)
 
 	content := encoding
 	if content == "" {
@@ -175,7 +176,7 @@ func createRequestFromFilePath(ctx context.Context, httpMethod string, baseUrl s
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse baseUrl", err)
 	}
-	u.Path = requestPath
+	u.Path = path.Join(u.Path, requestPath)
 
 	fileContents, err := ioutil.ReadFile(filePath)
 	if err != nil {
