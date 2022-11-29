@@ -96,16 +96,28 @@ func (e *Event) ToXML() (string, error) {
 	// The Tags field is being ignore from XML Marshaling since maps are not supported.
 	// We have to provide our own marshaling of the Tags field if it is non-empty
 	if len(e.Tags) > 0 {
-		tagsXmlElements := []string{"<Tags>"}
 		// Since we change the tags value from string to interface{}, we need to write more complex func or use third-party lib to handle the marshaling
-		for key, value := range e.Tags {
-			tag := fmt.Sprintf("<%s>%s</%s>", key, value, key)
-			tagsXmlElements = append(tagsXmlElements, tag)
-		}
-		tagsXmlElements = append(tagsXmlElements, "</Tags>")
-		tagsXml := strings.Join(tagsXmlElements, "")
+		tagsXml := tagsToXmlString(e.Tags)
 		eventXml = []byte(strings.Replace(string(eventXml), "</Event>", tagsXml+"</Event>", 1))
+	}
+	for _, reading := range e.Readings {
+		if len(reading.Tags) > 0 {
+			tagsXml := tagsToXmlString(reading.Tags)
+			resourceXmlElement := fmt.Sprintf("<ResourceName>%s</ResourceName>", reading.ResourceName)
+			index := strings.Index(string(eventXml), resourceXmlElement)
+			eventXml = []byte(string(eventXml)[:index] + tagsXml + string(eventXml)[index:])
+		}
 	}
 
 	return string(eventXml), nil
+}
+
+func tagsToXmlString(tags map[string]interface{}) string {
+	tagsXmlElements := []string{"<Tags>"}
+	for key, value := range tags {
+		tag := fmt.Sprintf("<%s>%s</%s>", key, value, key)
+		tagsXmlElements = append(tagsXmlElements, tag)
+	}
+	tagsXmlElements = append(tagsXmlElements, "</Tags>")
+	return strings.Join(tagsXmlElements, "")
 }

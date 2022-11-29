@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2022 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -22,13 +22,14 @@ import (
 // BaseReading and its properties are defined in the APIv2 specification:
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.1.0#/BaseReading
 type BaseReading struct {
-	Id            string `json:"id,omitempty"`
-	Origin        int64  `json:"origin" validate:"required"`
-	DeviceName    string `json:"deviceName" validate:"required,edgex-dto-none-empty-string"`
-	ResourceName  string `json:"resourceName" validate:"required,edgex-dto-none-empty-string"`
-	ProfileName   string `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
-	ValueType     string `json:"valueType" validate:"required,edgex-dto-value-type"`
-	Units         string `json:"units,omitempty"`
+	Id            string                 `json:"id,omitempty"`
+	Origin        int64                  `json:"origin" validate:"required"`
+	DeviceName    string                 `json:"deviceName" validate:"required,edgex-dto-none-empty-string"`
+	ResourceName  string                 `json:"resourceName" validate:"required,edgex-dto-none-empty-string"`
+	ProfileName   string                 `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
+	ValueType     string                 `json:"valueType" validate:"required,edgex-dto-value-type"`
+	Units         string                 `json:"units,omitempty"`
+	Tags          map[string]interface{} `json:"tags,omitempty" xml:"-"` // Have to ignore since map not supported for XML
 	BinaryReading `json:",inline" validate:"-"`
 	SimpleReading `json:",inline" validate:"-"`
 	ObjectReading `json:",inline" validate:"-"`
@@ -302,6 +303,7 @@ func ToReadingModel(r BaseReading) models.Reading {
 		ProfileName:  r.ProfileName,
 		ValueType:    r.ValueType,
 		Units:        r.Units,
+		Tags:         r.Tags,
 	}
 	if r.ValueType == common.ValueTypeBinary {
 		readingModel = models.BinaryReading{
@@ -335,6 +337,7 @@ func FromReadingModelToDTO(reading models.Reading) BaseReading {
 			ProfileName:   r.ProfileName,
 			ValueType:     r.ValueType,
 			Units:         r.Units,
+			Tags:          r.Tags,
 			BinaryReading: BinaryReading{BinaryValue: r.BinaryValue, MediaType: r.MediaType},
 		}
 	case models.ObjectReading:
@@ -346,6 +349,7 @@ func FromReadingModelToDTO(reading models.Reading) BaseReading {
 			ProfileName:   r.ProfileName,
 			ValueType:     r.ValueType,
 			Units:         r.Units,
+			Tags:          r.Tags,
 			ObjectReading: ObjectReading{ObjectValue: r.ObjectValue},
 		}
 	case models.SimpleReading:
@@ -357,6 +361,7 @@ func FromReadingModelToDTO(reading models.Reading) BaseReading {
 			ProfileName:   r.ProfileName,
 			ValueType:     r.ValueType,
 			Units:         r.Units,
+			Tags:          r.Tags,
 			SimpleReading: SimpleReading{Value: r.Value},
 		}
 	}
