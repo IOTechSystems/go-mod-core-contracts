@@ -1,8 +1,10 @@
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2022 IOTech Ltd
 
 package xrtmodels
 
 import (
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
 )
@@ -58,12 +60,42 @@ type MultiResourcesResult struct {
 	BaseResult `json:",inline"`
 	Device     string             `json:"device"`
 	Profile    string             `json:"profile"`
+	SourceName string             `json:"sourceName"`
+	Type       string             `json:"type"`
 	Readings   map[string]Reading `json:"readings"`
 }
 
+func (result MultiResourcesResult) ToEventDTO() dtos.Event {
+	readings := make([]dtos.BaseReading, len(result.Readings))
+
+	var i int
+	for k, v := range result.Readings {
+		readings[i] = dtos.BaseReading{
+			Origin:       v.Origin,
+			DeviceName:   result.Device,
+			ResourceName: k,
+			ProfileName:  result.Profile,
+			ValueType:    v.Type,
+		}
+		i++
+	}
+
+	res := dtos.Event{
+		Versionable: common.NewVersionable(),
+		DeviceName:  result.Device,
+		ProfileName: result.Profile,
+		SourceName:  result.SourceName,
+		Origin:      readings[0].Origin,
+		Readings:    readings,
+	}
+
+	return res
+}
+
 type Reading struct {
-	Value interface{} `json:"value"`
-	Type  string      `json:"type"`
+	Origin int64       `json:"origin"`
+	Value  interface{} `json:"value"`
+	Type   string      `json:"type"`
 }
 
 type MultiDevicesResponse struct {
