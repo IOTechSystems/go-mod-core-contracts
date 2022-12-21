@@ -56,14 +56,19 @@ type MultiResourcesResponse struct {
 
 type MultiResourcesResult struct {
 	BaseResult `json:",inline"`
-	Device     string             `json:"device"`
-	Profile    string             `json:"profile"`
-	Readings   map[string]Reading `json:"readings"`
+	Device     string                 `json:"device"`
+	Profile    string                 `json:"profile"`
+	SourceName string                 `json:"sourceName"`
+	Readings   map[string]Reading     `json:"readings"`
+	Tags       map[string]interface{} `json:"tags"`
+	Type       string                 `json:"type"`
 }
 
 type Reading struct {
-	Value interface{} `json:"value"`
-	Type  string      `json:"type"`
+	Value  interface{}            `json:"value"`
+	Type   string                 `json:"type"`
+	Origin int64                  `json:"origin"`
+	Tags   map[string]interface{} `json:"tags"`
 }
 
 type MultiDevicesResponse struct {
