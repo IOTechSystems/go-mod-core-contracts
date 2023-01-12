@@ -38,7 +38,7 @@ type BaseResponse struct {
 
 // Versionable shows the API version in DTOs
 type Versionable struct {
-	ApiVersion string `json:"apiVersion" yaml:"apiVersion" validate:"required"`
+	ApiVersion string `json:"apiVersion" yaml:"apiVersion" toml:"apiVersion" validate:"required"`
 }
 
 // BaseWithIdResponse defines the base content for response DTOs (data transfer objects).
