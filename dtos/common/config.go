@@ -10,9 +10,9 @@ package common
 // This object and its properties correspond to the ConfigResponse object in the APIv2 specification:
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.1.0#/ConfigResponse
 type ConfigResponse struct {
-	Versionable `json:",inline"`
-	Config      interface{} `json:"config"`
-	ServiceName string      `json:"serviceName"`
+	Versionable `json:",inline" toml:",inline"`
+	Config      interface{} `json:"config" toml:"config"`
+	ServiceName string      `json:"serviceName" toml:"serviceName"`
 }
 
 // NewConfigResponse creates new ConfigResponse with all fields set appropriately
