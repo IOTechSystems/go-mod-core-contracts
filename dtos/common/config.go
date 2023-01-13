@@ -8,9 +8,9 @@ package common
 
 // ConfigResponse defines the configuration for the targeted service.
 type ConfigResponse struct {
-	Versionable `json:",inline"`
-	Config      interface{} `json:"config"`
-	ServiceName string      `json:"serviceName"`
+	Versionable `json:",inline" toml:",inline"`
+	Config      interface{} `json:"config" toml:"config"`
+	ServiceName string      `json:"serviceName" toml:"serviceName"`
 }
 
 // NewConfigResponse creates new ConfigResponse with all fields set appropriately

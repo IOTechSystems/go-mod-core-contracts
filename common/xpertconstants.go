@@ -3,6 +3,8 @@
 package common
 
 const (
+	ContextKeyContentType contextKey = ContentType
+
 	BacnetIP             = "BACnet-IP"
 	BacnetMSTP           = "BACnet-MSTP"
 	BacnetDeviceInstance = "DeviceInstance"
