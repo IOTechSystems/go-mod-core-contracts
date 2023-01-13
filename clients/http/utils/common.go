@@ -31,7 +31,7 @@ import (
 
 // FromContext allows for the retrieval of the specified key's value from the supplied Context.
 // If the value is not found, an empty string is returned.
-func FromContext(ctx context.Context, key string) string {
+func FromContext(ctx context.Context, key interface{}) string {
 	hdr, ok := ctx.Value(key).(string)
 	if !ok {
 		hdr = ""
@@ -96,6 +96,7 @@ func createRequest(ctx context.Context, httpMethod string, baseUrl string, reque
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to create a http request", err)
 	}
 	req.Header.Set(common.CorrelationHeader, correlatedId(ctx))
+	req.Header.Set(common.ContentType, FromContext(ctx, common.ContextKeyContentType))
 	return req, nil
 }
 

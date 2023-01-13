@@ -15,4 +15,8 @@ import (
 type GeneralClient interface {
 	// FetchConfiguration obtains configuration information from the target service.
 	FetchConfiguration(ctx context.Context) (common.ConfigResponse, errors.EdgeX)
+
+	// XpertFetchConfiguration obtains configuration information from the target service.
+	// In comparison with FetchConfiguration, this function supports both JSON and TOML formats.
+	XpertFetchConfiguration(ctx context.Context) (common.ConfigResponse, errors.EdgeX)
 }
