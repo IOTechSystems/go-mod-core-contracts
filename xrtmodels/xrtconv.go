@@ -1,4 +1,4 @@
-// Copyright (C) 2022 IOTech Ltd
+// Copyright (C) 2022-2023 IOTech Ltd
 
 package xrtmodels
 
