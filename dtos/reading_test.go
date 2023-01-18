@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020 IOTech Ltd
+// Copyright (C) 2020-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -24,6 +24,7 @@ var testSimpleReading = BaseReading{
 	Origin:       TestTimestamp,
 	ValueType:    TestValueType,
 	Units:        TestUnit,
+	Tags:         map[string]interface{}{"1": TestTag1, "2": TestTag2},
 	SimpleReading: SimpleReading{
 		Value: TestValue,
 	},
@@ -40,6 +41,7 @@ func Test_ToReadingModel(t *testing.T) {
 			Origin:       TestTimestamp,
 			ValueType:    TestValueType,
 			Units:        TestUnit,
+			Tags:         map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		},
 		Value: TestValue,
 	}
@@ -67,6 +69,7 @@ func TestFromReadingModelToDTO(t *testing.T) {
 			ProfileName:  TestDeviceProfileName,
 			ValueType:    TestValueType,
 			Units:        TestUnit,
+			Tags:         map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		},
 		Value: TestValue,
 	}
@@ -78,6 +81,7 @@ func TestFromReadingModelToDTO(t *testing.T) {
 		ProfileName:  TestDeviceProfileName,
 		ValueType:    TestValueType,
 		Units:        TestUnit,
+		Tags:         map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		SimpleReading: SimpleReading{
 			Value: TestValue,
 		},

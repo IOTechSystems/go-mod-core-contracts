@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,10 +10,11 @@ import "github.com/edgexfoundry/go-mod-core-contracts/v2/models"
 // DeviceCommand and its properties are defined in the APIv2 specification:
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/DeviceCommand
 type DeviceCommand struct {
-	Name               string              `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
-	IsHidden           bool                `json:"isHidden" yaml:"isHidden"`
-	ReadWrite          string              `json:"readWrite" yaml:"readWrite" validate:"required,oneof='R' 'W' 'RW' 'WR'"`
-	ResourceOperations []ResourceOperation `json:"resourceOperations" yaml:"resourceOperations" validate:"gt=0,dive"`
+	Name               string                 `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
+	IsHidden           bool                   `json:"isHidden" yaml:"isHidden"`
+	ReadWrite          string                 `json:"readWrite" yaml:"readWrite" validate:"required,oneof='R' 'W' 'RW' 'WR'"`
+	ResourceOperations []ResourceOperation    `json:"resourceOperations" yaml:"resourceOperations" validate:"gt=0,dive"`
+	Tags               map[string]interface{} `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 // UpdateDeviceComman and its properties are defined in the APIv2 specification:
@@ -32,6 +33,7 @@ func ToDeviceCommandModel(dto DeviceCommand) models.DeviceCommand {
 		IsHidden:           dto.IsHidden,
 		ReadWrite:          dto.ReadWrite,
 		ResourceOperations: resourceOperations,
+		Tags:               dto.Tags,
 	}
 }
 
@@ -55,6 +57,7 @@ func FromDeviceCommandModelToDTO(d models.DeviceCommand) DeviceCommand {
 		IsHidden:           d.IsHidden,
 		ReadWrite:          d.ReadWrite,
 		ResourceOperations: resourceOperations,
+		Tags:               d.Tags,
 	}
 }
 
