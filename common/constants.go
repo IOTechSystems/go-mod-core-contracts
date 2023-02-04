@@ -139,6 +139,8 @@ const (
 	ApiRuleRoute       = ApiBase + "/rule"
 	ApiAllRulesRoute   = ApiRuleRoute + "/" + All
 	ApiRuleByNameRoute = ApiRuleRoute + "/" + Name + "/{" + Name + "}"
+	ApiKVSRoute      = ApiBase + "/kvs"
+	ApiKVSByKeyRoute = ApiKVSRoute + "/" + Key + "/{" + Key + "}"
 )
 
 // Constants related to defined url path names and parameters in the v3 service APIs
@@ -187,12 +189,6 @@ const (
 	Sender        = "sender"
 	Severity      = "severity"
 	Interval      = "interval"
-	User          = "user"
-	Group         = "group"
-	PublicKey     = "rsa_public_key"
-	Ack           = "ack"
-	Acknowledge   = "acknowledge"
-	Unacknowledge = "unacknowledge"
 
 	Offset       = "offset"         //query string to specify the number of items to skip before starting to collect the result set.
 	Limit        = "limit"          //query string to specify the numbers of items to return
@@ -200,6 +196,18 @@ const (
 	PushEvent    = "ds-pushevent"   //query string to specify if an event should be pushed to the EdgeX system
 	ReturnEvent  = "ds-returnevent" //query string to specify if an event should be returned from device service
 	RegexCommand = "ds-regexcmd"    //query string to specify if the command name is in regular expression format
+
+	// Central
+	User          = "user"
+	Group         = "group"
+	PublicKey     = "rsa_public_key"
+	Ack           = "ack"
+	Acknowledge   = "acknowledge"
+	Unacknowledge = "unacknowledge"
+	Key           = "key"
+	Flatten     = "flatten"        //query string to specify if the request json payload should be flattened to update multiple keys with the same prefix
+	KeyOnly     = "keyOnly"        //query string to specify if the response will only return the keys of the specified query key prefix, without values and metadata
+	Plaintext   = "plaintext"      //query string to specify if the response will return the stored plain text value of the key(s) without any encoding
 )
 
 // Constants related to the default value of query strings in the v3 service APIs
@@ -306,6 +314,9 @@ const (
 	SecurityBootstrapperKey             = "security-bootstrapper"
 	SecurityBootstrapperRedisKey        = "security-bootstrapper-redis"
 	SecuritySpiffeTokenProviderKey      = "security-spiffe-token-provider" // nolint:gosec
+
+	// Central
+	CoreKeeperServiceKey                = "core-keeper"
 )
 
 // Constants related to the possible content types supported by the APIs

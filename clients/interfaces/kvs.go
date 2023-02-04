@@ -1,0 +1,28 @@
+//
+// Copyright (C) 2023 IOTech Ltd
+//
+
+package interfaces
+
+import (
+	"context"
+
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+)
+
+// KVSClient defines the interface for interactions with the kvs endpoint on the Edge Xpert core-keeper service.
+type KVSClient interface {
+	// UpdateValuesByKey updates values of the specified key and the child keys defined in the request payload.
+	// If no key exists at the given path, the key(s) will be created.
+	UpdateValuesByKey(ctx context.Context, key string, reqs requests.UpdateKeysRequest) (responses.KeysResponse, errors.EdgeX)
+	// ValuesByKey returns the values of the specified key prefix.
+	ValuesByKey(ctx context.Context, key string) (responses.MultiKeyValueResponse, errors.EdgeX)
+	// ListKeys returns the list of the keys with the specified key prefix.
+	ListKeys(ctx context.Context, key string) (responses.KeysResponse, errors.EdgeX)
+	// DeleteKey deletes the specified key.
+	DeleteKey(ctx context.Context, key string) (responses.KeysResponse, errors.EdgeX)
+	// DeleteKeysByPrefix deletes all keys with the specified prefix.
+	DeleteKeysByPrefix(ctx context.Context, key string) (responses.KeysResponse, errors.EdgeX)
+}
