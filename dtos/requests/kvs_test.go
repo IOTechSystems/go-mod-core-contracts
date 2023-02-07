@@ -30,10 +30,10 @@ func TestUpdateKeysRequest_Validate(t *testing.T) {
 	valid := testUpdateKeysRequest
 	nilValue := testUpdateKeysRequest
 	nilValue.Value = nil
-	emptyValue := testUpdateKeysRequest
-	emptyValue.Value = map[string]string{}
 	emptyMap := testUpdateKeysRequest
 	emptyMap.Value = make(map[string]any)
+	emptyStringValue := testUpdateKeysRequest
+	emptyStringValue.Value = ""
 
 	tests := []struct {
 		name        string
@@ -42,8 +42,8 @@ func TestUpdateKeysRequest_Validate(t *testing.T) {
 	}{
 		{"valid UpdateKeysRequest", valid, false},
 		{"invalid UpdateKeysRequest, nil Value", nilValue, true},
-		{"invalid UpdateKeysRequest, invalid Value", emptyValue, true},
 		{"invalid UpdateKeysRequest, empty Value", emptyMap, true},
+		{"valid UpdateKeysRequest, empty string Value", emptyStringValue, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
