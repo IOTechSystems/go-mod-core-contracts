@@ -29,8 +29,6 @@ func (u UpdateKeysRequest) Validate() errors.EdgeX {
 		if len(v) == 0 {
 			return errors.NewCommonEdgeX(errors.KindContractInvalid, "the value field is an empty object", nil)
 		}
-	} else {
-		return errors.NewCommonEdgeX(errors.KindContractInvalid, "the value field is invalid", nil)
 	}
 
 	return nil
