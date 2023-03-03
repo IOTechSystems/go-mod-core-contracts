@@ -398,7 +398,8 @@ const (
 
 // Constants for Notification Category
 const (
-	DisconnectAlert = "Disconnection"
+	DisconnectAlert      = "Disconnection"
+	DeviceOperatingState = "DeviceOperatingState"
 )
 
 // Constants for DeviceChangedNotification
