@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2022 IOTech Ltd
+// Copyright (C) 2022-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,7 +8,6 @@ package common
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"path/filepath"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 )
@@ -24,6 +23,7 @@ const (
 
 	// Redis specific settings
 	RedisTlsCertOutputDir = BaseOutputDir + "/redis"
+	RedisTlsSecretName    = "redis-tls"
 	RedisKeyFileName      = "redis.key"
 	RedisCsrFileName      = "redis.csr"
 	RedisCertFileName     = "redis.crt"
@@ -34,20 +34,18 @@ const (
 	EnvMessageBusMqttTls   = "EDGEXPERT_MESSAGEBUS_MQTT_TLS"
 )
 
-// CreateRedisTlsConfig loads TLS certificates from specified path and creates Redis TLS config
-func CreateRedisTlsConfig() (tlsConfig *tls.Config, err error) {
-	redisKeyFilePath := filepath.Join(RedisTlsCertOutputDir, RedisKeyFileName)
-	redisCertFilePath := filepath.Join(RedisTlsCertOutputDir, RedisCertFileName)
-	cert, err := tls.LoadX509KeyPair(redisCertFilePath, redisKeyFilePath)
+// CreateRedisTlsConfigFromPEM loads TLS certificates from PEM encoded data and creates Redis TLS config
+func CreateRedisTlsConfigFromPEM(certPEMBlock, keyPEMBlock, caPEMBlock []byte) (*tls.Config, errors.EdgeX) {
+	var tlsConfig *tls.Config
+	cert, err := tls.X509KeyPair(certPEMBlock, keyPEMBlock)
 	if err != nil {
 		return tlsConfig, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse the Redis TLS key pair", err)
 	}
-	certificate, err := x509.ParseCertificate(cert.Certificate[0])
-	if err != nil {
-		return tlsConfig, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse the certificate", err)
-	}
+
 	caCertPool := x509.NewCertPool()
-	caCertPool.AddCert(certificate)
+	if ok := caCertPool.AppendCertsFromPEM(caPEMBlock); !ok {
+		return tlsConfig, errors.NewCommonEdgeX(errors.KindServerError, "failed to parse ca to pool", nil)
+	}
 
 	tlsConfig = &tls.Config{
 		Certificates: []tls.Certificate{cert},
