@@ -48,7 +48,7 @@ func (d *DeviceProfileBasicInfoRequest) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-//  ReplaceDeviceProfileModelBasicInfoFieldsWithDTO replace existing DeviceProfile's basic info fields with DTO patch
+// ReplaceDeviceProfileModelBasicInfoFieldsWithDTO replace existing DeviceProfile's basic info fields with DTO patch
 func ReplaceDeviceProfileModelBasicInfoFieldsWithDTO(dp *models.DeviceProfile, patch dtos.UpdateDeviceProfileBasicInfo) {
 	if patch.Description != nil {
 		dp.Description = *patch.Description

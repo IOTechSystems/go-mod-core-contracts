@@ -85,7 +85,7 @@ func (dc *UpdateDeviceCommandRequest) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-//  ReplaceDeviceCommandModelFieldsWithDTO replace existing DeviceCommand's fields with DTO patch
+// ReplaceDeviceCommandModelFieldsWithDTO replace existing DeviceCommand's fields with DTO patch
 func ReplaceDeviceCommandModelFieldsWithDTO(dc *models.DeviceCommand, patch dtos.UpdateDeviceCommand) {
 	if patch.IsHidden != nil {
 		dc.IsHidden = *patch.IsHidden

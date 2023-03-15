@@ -12,11 +12,11 @@ import (
 	errs "errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"path/filepath"
 
@@ -49,7 +49,7 @@ func correlatedId(ctx context.Context) string {
 
 // Helper method to get the body from the response after making the request
 func getBody(resp *http.Response) ([]byte, errors.EdgeX) {
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return body, errors.NewCommonEdgeX(errors.KindIOError, "failed to get the body from the response", err)
 	}
@@ -179,7 +179,7 @@ func createRequestFromFilePath(ctx context.Context, httpMethod string, baseUrl s
 	}
 	u.Path = path.Join(u.Path, requestPath)
 
-	fileContents, err := ioutil.ReadFile(filePath)
+	fileContents, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindIOError, fmt.Sprintf("fail to read file from %s", filePath), err)
 	}
