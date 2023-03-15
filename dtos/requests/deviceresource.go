@@ -83,7 +83,7 @@ func (dr *UpdateDeviceResourceRequest) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-//  ReplaceDeviceResourceModelFieldsWithDTO replace existing DeviceResource's fields with DTO patch
+// ReplaceDeviceResourceModelFieldsWithDTO replace existing DeviceResource's fields with DTO patch
 func ReplaceDeviceResourceModelFieldsWithDTO(dr *models.DeviceResource, patch dtos.UpdateDeviceResource) {
 	if patch.Description != nil {
 		dr.Description = *patch.Description
