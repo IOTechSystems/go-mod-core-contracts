@@ -402,3 +402,32 @@ func TestUnmarshalObjectValueError(t *testing.T) {
 		})
 	}
 }
+
+func TestNewObjectArrayReading(t *testing.T) {
+	expectedDeviceName := TestDeviceName
+	expectedProfileName := TestDeviceProfileName
+	expectedResourceName := TestDeviceResourceName
+	expectedValueType := common.ValueTypeObjectArray
+	expectedValue := []map[string]interface{}{
+		{
+			"Attr1": "yyz",
+			"Attr2": -45,
+			"Attr3": []interface{}{255, 1, 0},
+		},
+		{
+			"Attr1": "abc",
+			"Attr2": -50,
+			"Attr3": []interface{}{255, 1, 0},
+		},
+	}
+
+	actual := NewObjectArrayReading(expectedProfileName, expectedDeviceName, expectedResourceName, expectedValue)
+
+	assert.NotEmpty(t, actual.Id)
+	assert.Equal(t, expectedProfileName, actual.ProfileName)
+	assert.Equal(t, expectedDeviceName, actual.DeviceName)
+	assert.Equal(t, expectedResourceName, actual.ResourceName)
+	assert.Equal(t, expectedValueType, actual.ValueType)
+	assert.Equal(t, expectedValue, actual.ObjectValue)
+	assert.NotZero(t, actual.Origin)
+}

@@ -91,6 +91,15 @@ func NewObjectReading(profileName string, deviceName string, resourceName string
 	return reading
 }
 
+// NewObjectArrayReading creates and returns a new initialized BaseReading with its ObjectArrayReading initialized
+func NewObjectArrayReading(profileName string, deviceName string, resourceName string, objectValue interface{}) BaseReading {
+	reading := newBaseReading(profileName, deviceName, resourceName, common.ValueTypeObjectArray)
+	reading.ObjectReading = ObjectReading{
+		ObjectValue: objectValue,
+	}
+	return reading
+}
+
 func convertInterfaceValue(valueType string, value interface{}) (string, error) {
 	switch valueType {
 	case common.ValueTypeBool:
@@ -265,7 +274,7 @@ func (b BaseReading) Validate() error {
 		if err := common.Validate(binaryReading); err != nil {
 			return err
 		}
-	} else if b.ValueType == common.ValueTypeObject {
+	} else if b.ValueType == common.ValueTypeObject || b.ValueType == common.ValueTypeObjectArray {
 		// validate the inner ObjectReading struct
 		objectReading := b.ObjectReading
 		if err := common.Validate(objectReading); err != nil {
@@ -304,7 +313,7 @@ func ToReadingModel(r BaseReading) models.Reading {
 			BinaryValue: r.BinaryValue,
 			MediaType:   r.MediaType,
 		}
-	} else if r.ValueType == common.ValueTypeObject {
+	} else if r.ValueType == common.ValueTypeObject || r.ValueType == common.ValueTypeObjectArray {
 		readingModel = models.ObjectReading{
 			BaseReading: br,
 			ObjectValue: r.ObjectValue,
