@@ -84,6 +84,11 @@ func (e *Event) AddObjectReading(resourceName string, objectValue interface{}) {
 	e.Readings = append(e.Readings, NewObjectReading(e.ProfileName, e.DeviceName, resourceName, objectValue))
 }
 
+// AddObjectArrayReading adds a object array reading to the Event
+func (e *Event) AddObjectArrayReading(resourceName string, objectValue interface{}) {
+	e.Readings = append(e.Readings, NewObjectArrayReading(e.ProfileName, e.DeviceName, resourceName, objectValue))
+}
+
 // ToXML provides a XML representation of the Event as a string
 func (e *Event) ToXML() (string, error) {
 	eventXml, err := xml.Marshal(e)
