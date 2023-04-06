@@ -1,4 +1,4 @@
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2023 IOTech Ltd
 
 package xrtmodels
 
@@ -23,6 +23,7 @@ const (
 	DeviceResourceSetOperation = "device:put"
 	DeviceDeleteOperation      = "device:delete"
 	DeviceListOperation        = "device:list"
+	DeviceScanOperation        = "device:scan"
 
 	ScheduleAddOperation    = "schedule:add"
 	ScheduleListOperation   = "schedule:list"
@@ -58,6 +59,22 @@ type AddDeviceRequest struct {
 	BaseRequest `json:",inline"`
 	DeviceName  string     `json:"device"`
 	DeviceInfo  DeviceInfo `json:"device_info"`
+}
+
+type AddDiscoveredDeviceRequest struct {
+	BaseRequest `json:",inline"`
+	DeviceName  string               `json:"device"`
+	DeviceInfo  DiscoveredDeviceInfo `json:"device_info"`
+}
+
+type DiscoveredDeviceInfo struct {
+	Protocols map[string]map[string]any `json:"protocols"`
+}
+
+type ScanDeviceRequest struct {
+	BaseRequest `json:",inline"`
+	DeviceName  string `json:"device"`
+	ProfileName string `json:"profile"`
 }
 
 type UpdateDeviceRequest struct {
@@ -173,6 +190,34 @@ func NewDeviceAddRequest(device DeviceInfo, clientName string) AddDeviceRequest 
 		},
 		DeviceName: device.Name,
 		DeviceInfo: device,
+	}
+	return deviceRequest
+}
+
+// NewDiscoveredDeviceAddRequest creates a request to add the discovered device without profile before sending the device:scan to generate the profile
+func NewDiscoveredDeviceAddRequest(device DeviceInfo, clientName string) AddDiscoveredDeviceRequest {
+	deviceRequest := AddDiscoveredDeviceRequest{
+		BaseRequest: BaseRequest{
+			Client:    clientName,
+			RequestId: uuid.New().String(),
+			Op:        DeviceAddOperation,
+		},
+		DeviceName: device.Name,
+		DeviceInfo: DiscoveredDeviceInfo{Protocols: device.Protocols},
+	}
+	return deviceRequest
+}
+
+// NewDeviceScanRequest creates a request to scan the device and generate the profile
+func NewDeviceScanRequest(device DeviceInfo, clientName string) ScanDeviceRequest {
+	deviceRequest := ScanDeviceRequest{
+		BaseRequest: BaseRequest{
+			Client:    clientName,
+			RequestId: uuid.New().String(),
+			Op:        DeviceScanOperation,
+		},
+		DeviceName:  device.Name,
+		ProfileName: device.ProfileName,
 	}
 	return deviceRequest
 }
