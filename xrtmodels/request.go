@@ -130,6 +130,15 @@ func NewBaseRequest(op string, clientName string) BaseRequest {
 	}
 }
 
+func NewAllProfilesRequest(clientName string) BaseRequest {
+	req := BaseRequest{
+		Client:    clientName,
+		RequestId: uuid.New().String(),
+		Op:        ProfileListOperation,
+	}
+	return req
+}
+
 // NewProfileAddRequest creates request with device profile
 func NewProfileAddRequest(profile models.DeviceProfile, clientName string) AddProfileRequest {
 	req := AddProfileRequest{
@@ -235,6 +244,15 @@ func NewDeviceUpdateRequest(device DeviceInfo, clientName string) UpdateDeviceRe
 	return deviceRequest
 }
 
+func NewAllDevicesRequest(clientName string) BaseRequest {
+	req := BaseRequest{
+		Client:    clientName,
+		RequestId: uuid.New().String(),
+		Op:        DeviceListOperation,
+	}
+	return req
+}
+
 func NewDeviceGetRequest(deviceName string, clientName string) DeviceRequest {
 	req := DeviceRequest{
 		BaseRequest: BaseRequest{
@@ -287,7 +305,16 @@ func NewDeviceResourceSetRequest(deviceName string, clientName string, values ma
 	return req
 }
 
-func NewScheduleAddRequest(deviceName string, clientName string, schedule Schedule) AddScheduleRequest {
+func NewAllSchedulesRequest(clientName string) BaseRequest {
+	req := BaseRequest{
+		Client:    clientName,
+		RequestId: uuid.New().String(),
+		Op:        ScheduleListOperation,
+	}
+	return req
+}
+
+func NewScheduleAddRequest(clientName string, schedule Schedule) AddScheduleRequest {
 	req := AddScheduleRequest{
 		BaseRequest: BaseRequest{
 			Client:    clientName,
