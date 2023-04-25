@@ -20,7 +20,7 @@ func EscapeAndJoinPath(apiRoutePath string, pathVariables ...string) string {
 	elements := make([]string, len(pathVariables)+1)
 	elements[0] = apiRoutePath // we don't need to escape the route path like /device, /reading, ...,etc.
 	for i, e := range pathVariables {
-		elements[i+1] = url.QueryEscape(e)
+		elements[i+1] = url.PathEscape(e)
 	}
 	return path.Join(elements...)
 }
