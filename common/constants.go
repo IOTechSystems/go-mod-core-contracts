@@ -304,6 +304,7 @@ const (
 	SystemManagementAgentServiceKey     = "sys-mgmt-agent"
 	SupportSchedulerServiceKey          = "support-scheduler"
 	SupportSparkplugServiceKey          = "support-sparkplug"
+	SupportSparkplugHistorianServiceKey = "support-sparkplug-historian"
 	SupportRulesEngineServiceKey        = "support-rulesengine"
 	SecuritySecretStoreSetupServiceKey  = "security-secretstore-setup"
 	SecurityProxySetupServiceKey        = "security-proxy-setup"
