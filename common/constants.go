@@ -317,6 +317,7 @@ const (
 	// Xpert
 	SupportRulesEngineServiceKey        = "support-rulesengine"
 	CoreKeeperServiceKey                = "core-keeper"
+	SupportSparkplugHistorianServiceKey = "support-sparkplug-historian"
 )
 
 // Constants related to the possible content types supported by the APIs
