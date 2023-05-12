@@ -82,6 +82,9 @@ func ToDeviceProfileModel(deviceProfileDTO DeviceProfile) models.DeviceProfile {
 
 // FromDeviceProfileModelToDTO transforms the DeviceProfile Model to the DeviceProfile DTO
 func FromDeviceProfileModelToDTO(deviceProfile models.DeviceProfile) DeviceProfile {
+	if deviceProfile.ApiVersion == "" {
+		deviceProfile.ApiVersion = common.ApiVersion
+	}
 	return DeviceProfile{
 		DBTimestamp: DBTimestamp(deviceProfile.DBTimestamp),
 		ApiVersion:  deviceProfile.ApiVersion,
