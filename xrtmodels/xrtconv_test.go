@@ -1,4 +1,4 @@
-// Copyright (C) 2022 IOTech Ltd
+// Copyright (C) 2022-2023 IOTech Ltd
 
 package xrtmodels
 
@@ -73,6 +73,9 @@ func TestToXrtProperties(t *testing.T) {
 				common.OpcuaBrowsePublishInterval:      "5.2",
 				common.OpcuaConnectionReadingPostDelay: "0",
 				common.OpcuaIDType:                     "1",
+				common.OpcuaReadBatchSize:              "15",
+				common.OpcuaWriteBatchSize:             "10",
+				common.OpcuaNodesPerBrowse:             "5",
 			},
 			expected: map[string]interface{}{
 				common.OpcuaRequestedSessionTimeout:    1200000,
@@ -80,6 +83,9 @@ func TestToXrtProperties(t *testing.T) {
 				common.OpcuaBrowsePublishInterval:      5.2,
 				common.OpcuaConnectionReadingPostDelay: 0,
 				common.OpcuaIDType:                     "1",
+				common.OpcuaReadBatchSize:              15,
+				common.OpcuaWriteBatchSize:             10,
+				common.OpcuaNodesPerBrowse:             5,
 			},
 		},
 		{
