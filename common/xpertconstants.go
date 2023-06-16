@@ -1,4 +1,4 @@
-// Copyright (C) 2022 IOTech Ltd
+// Copyright (C) 2022-2023 IOTech Ltd
 
 package common
 
@@ -29,6 +29,9 @@ const (
 	OpcuaBrowsePublishInterval      = "BrowsePublishInterval"
 	OpcuaConnectionReadingPostDelay = "ConnectionReadingPostDelay"
 	OpcuaIDType                     = "IDType"
+	OpcuaReadBatchSize              = "ReadBatchSize"
+	OpcuaWriteBatchSize             = "WriteBatchSize"
+	OpcuaNodesPerBrowse             = "NodesPerBrowse"
 
 	S7     = "S7"
 	S7Rack = "Rack"
