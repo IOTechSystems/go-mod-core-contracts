@@ -76,6 +76,7 @@ func TestToXrtProperties(t *testing.T) {
 				common.OpcuaReadBatchSize:              "15",
 				common.OpcuaWriteBatchSize:             "10",
 				common.OpcuaNodesPerBrowse:             "5",
+				common.OpcuaSessionKeepAliveInterval:   "1000",
 			},
 			expected: map[string]interface{}{
 				common.OpcuaRequestedSessionTimeout:    1200000,
@@ -86,6 +87,7 @@ func TestToXrtProperties(t *testing.T) {
 				common.OpcuaReadBatchSize:              15,
 				common.OpcuaWriteBatchSize:             10,
 				common.OpcuaNodesPerBrowse:             5,
+				common.OpcuaSessionKeepAliveInterval:   1000.0,
 			},
 		},
 		{
