@@ -109,7 +109,7 @@ func propertyConversionList(protocol string) ([]string, []string, []string) {
 		intProperties = []string{common.ModbusUnitID, common.ModbusBaudRate, common.ModbusDataBits, common.ModbusStopBits}
 	case common.Opcua:
 		intProperties = []string{common.OpcuaRequestedSessionTimeout, common.OpcuaBrowseDepth, common.OpcuaConnectionReadingPostDelay, common.OpcuaReadBatchSize, common.OpcuaWriteBatchSize, common.OpcuaNodesPerBrowse}
-		floatProperties = []string{common.OpcuaBrowsePublishInterval}
+		floatProperties = []string{common.OpcuaBrowsePublishInterval, common.OpcuaSessionKeepAliveInterval}
 	case common.S7:
 		intProperties = []string{common.S7Rack, common.S7Slot}
 	case common.EtherNetIPExplicitConnected:

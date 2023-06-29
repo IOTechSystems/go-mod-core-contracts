@@ -32,6 +32,7 @@ const (
 	OpcuaReadBatchSize              = "ReadBatchSize"
 	OpcuaWriteBatchSize             = "WriteBatchSize"
 	OpcuaNodesPerBrowse             = "NodesPerBrowse"
+	OpcuaSessionKeepAliveInterval   = "SessionKeepAliveInterval"
 
 	S7     = "S7"
 	S7Rack = "Rack"
