@@ -104,9 +104,13 @@ func propertyConversionList(protocol string) ([]string, []string, []string) {
 	case common.Gps:
 		intProperties = []string{common.GpsGpsdPort, common.GpsGpsdRetries, common.GpsGpsdConnTimeout, common.GpsGpsdRequestTimeout}
 	case common.ModbusTcp:
-		intProperties = []string{common.ModbusUnitID, common.ModbusPort}
+		intProperties = []string{common.ModbusUnitID, common.ModbusPort, common.ModbusReadMaxHoldingRegisters,
+			common.ModbusReadMaxInputRegisters, common.ModbusReadMaxBitsCoils, common.ModbusReadMaxBitsDiscreteInputs,
+			common.ModbusWriteMaxHoldingRegisters, common.ModbusWriteMaxBitsCoils}
 	case common.ModbusRtu:
-		intProperties = []string{common.ModbusUnitID, common.ModbusBaudRate, common.ModbusDataBits, common.ModbusStopBits}
+		intProperties = []string{common.ModbusUnitID, common.ModbusBaudRate, common.ModbusDataBits, common.ModbusStopBits,
+			common.ModbusReadMaxHoldingRegisters, common.ModbusReadMaxInputRegisters, common.ModbusReadMaxBitsCoils,
+			common.ModbusReadMaxBitsDiscreteInputs, common.ModbusWriteMaxHoldingRegisters, common.ModbusWriteMaxBitsCoils}
 	case common.Opcua:
 		intProperties = []string{common.OpcuaRequestedSessionTimeout, common.OpcuaBrowseDepth, common.OpcuaConnectionReadingPostDelay, common.OpcuaReadBatchSize, common.OpcuaWriteBatchSize, common.OpcuaNodesPerBrowse}
 		floatProperties = []string{common.OpcuaBrowsePublishInterval, common.OpcuaSessionKeepAliveInterval}
