@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -17,7 +17,7 @@ type Interval struct {
 	Name        string `json:"name" validate:"edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	Start       string `json:"start,omitempty" validate:"omitempty,edgex-dto-interval-datetime"`
 	End         string `json:"end,omitempty" validate:"omitempty,edgex-dto-interval-datetime"`
-	Interval    string `json:"interval" validate:"required,edgex-dto-duration"`
+	Interval    string `json:"interval" validate:"required,edgex-dto-duration=10ms"` // min/max can be defined as params, ex. edgex-dto-duration=10ms0x2C24h
 }
 
 // NewInterval creates interval DTO with required fields
@@ -32,7 +32,7 @@ type UpdateInterval struct {
 	Name     *string `json:"name" validate:"required_without=Id,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	Start    *string `json:"start" validate:"omitempty,edgex-dto-interval-datetime"`
 	End      *string `json:"end" validate:"omitempty,edgex-dto-interval-datetime"`
-	Interval *string `json:"interval" validate:"omitempty,edgex-dto-duration"`
+	Interval *string `json:"interval" validate:"omitempty,edgex-dto-duration=10ms"` // min/max can be defined as params, ex. edgex-dto-duration=10ms0x2C24h
 }
 
 // NewUpdateInterval creates updateInterval DTO with required field
