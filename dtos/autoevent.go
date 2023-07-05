@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -12,7 +12,7 @@ import (
 // AutoEvent and its properties are defined in the APIv2 specification:
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/AutoEvent
 type AutoEvent struct {
-	Interval   string `json:"interval" validate:"required,edgex-dto-duration"`
+	Interval   string `json:"interval" validate:"required,edgex-dto-duration=1ms"` // min/max can be defined as params, ex. edgex-dto-duration=10ms0x2C24h
 	OnChange   bool   `json:"onChange"`
 	SourceName string `json:"sourceName" validate:"required"`
 }
