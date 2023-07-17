@@ -100,7 +100,7 @@ func propertyConversionList(protocol string) ([]string, []string, []string) {
 	var boolProperties []string
 	switch protocol {
 	case common.BacnetIP, common.BacnetMSTP:
-		intProperties = []string{common.BacnetDeviceInstance}
+		intProperties = []string{common.BacnetDeviceInstance, common.BacnetPort}
 	case common.Gps:
 		intProperties = []string{common.GpsGpsdPort, common.GpsGpsdRetries, common.GpsGpsdConnTimeout, common.GpsGpsdRequestTimeout}
 	case common.ModbusTcp:
