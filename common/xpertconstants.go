@@ -8,6 +8,8 @@ const (
 	BacnetIP             = "BACnet-IP"
 	BacnetMSTP           = "BACnet-MSTP"
 	BacnetDeviceInstance = "DeviceInstance"
+	BacnetAddress        = "Address"
+	BacnetPort           = "Port"
 
 	Gps                   = "GPS"
 	GpsGpsdPort           = "GpsdPort"

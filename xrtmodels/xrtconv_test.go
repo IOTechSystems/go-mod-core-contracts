@@ -66,6 +66,17 @@ func TestToXrtProperties(t *testing.T) {
 			},
 		},
 		{
+			protocol: common.BacnetIP,
+			properties: map[string]interface{}{
+				common.BacnetAddress: "192.168.60.123",
+				common.BacnetPort:    "47809",
+			},
+			expected: map[string]interface{}{
+				common.BacnetAddress: "192.168.60.123",
+				common.BacnetPort:    47809,
+			},
+		},
+		{
 			protocol: common.Opcua,
 			properties: map[string]interface{}{
 				common.OpcuaRequestedSessionTimeout:    "1200000",
