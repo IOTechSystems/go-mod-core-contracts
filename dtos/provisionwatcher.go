@@ -13,25 +13,12 @@ type ProvisionWatcher struct {
 	DBTimestamp         `json:",inline"`
 	Id                  string              `json:"id,omitempty" yaml:"id,omitempty" validate:"omitempty,uuid"`
 	Name                string              `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	ServiceName         string               `json:"serviceName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	ServiceName         string              `json:"serviceName" validate:"required,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
 	Labels              []string            `json:"labels,omitempty" yaml:"labels,omitempty"`
 	Identifiers         map[string]string   `json:"identifiers" yaml:"identifiers" validate:"gt=0,dive,keys,required,endkeys,required"`
 	BlockingIdentifiers map[string][]string `json:"blockingIdentifiers,omitempty" yaml:"blockingIdentifiers,omitempty"`
 	AdminState          string              `json:"adminState" yaml:"adminState" validate:"oneof='LOCKED' 'UNLOCKED'"`
 	DiscoveredDevice    DiscoveredDevice    `json:"discoveredDevice" yaml:"discoveredDevice" validate:"dive"`
-
-	// Xpert
-	DeviceNameTemplate string      `json:"deviceNameTemplate,omitempty" validate:"omitempty"`
-	ProfileName        *string     `json:"profileName" validate:"omitempty,len=0|edgex-dto-no-reserved-chars"`
-	AdminState         *string     `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
-	AutoEvents         []AutoEvent `json:"autoEvents" validate:"dive"`
-	ProtocolName       *string     `json:"protocolName" validate:"omitempty,len=0|edgex-dto-rfc3986-unreserved-chars"`
-	DeviceDescription  *string     `json:"deviceDescription"`
-	DeviceLabels       []string    `json:"deviceLabels"`
-
-	ProfileNameTemplate *string  `json:"profileNameTemplate" validate:"omitempty,len=0|edgex-dto-no-reserved-chars"`
-	ProfileLabels       []string `json:"profileLabels"`
-	ProfileDescription  *string  `json:"profileDescription"`
 }
 
 type UpdateProvisionWatcher struct {
@@ -43,19 +30,6 @@ type UpdateProvisionWatcher struct {
 	BlockingIdentifiers map[string][]string    `json:"blockingIdentifiers"`
 	AdminState          *string                `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
 	DiscoveredDevice    UpdateDiscoveredDevice `json:"discoveredDevice"`
-
-	// Xpert
-	DeviceNameTemplate *string     `json:"deviceNameTemplate" validate:"omitempty"`
-	ProfileName        *string     `json:"profileName" validate:"omitempty,len=0|edgex-dto-no-reserved-chars"`
-	AdminState         *string     `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
-	AutoEvents         []AutoEvent `json:"autoEvents" validate:"dive"`
-	ProtocolName       *string     `json:"protocolName" validate:"omitempty,len=0|edgex-dto-rfc3986-unreserved-chars"`
-	DeviceDescription  *string     `json:"deviceDescription"`
-	DeviceLabels       []string    `json:"deviceLabels"`
-
-	ProfileNameTemplate *string  `json:"profileNameTemplate" validate:"omitempty,len=0|edgex-dto-no-reserved-chars"`
-	ProfileLabels       []string `json:"profileLabels"`
-	ProfileDescription  *string  `json:"profileDescription"`
 }
 
 // ToProvisionWatcherModel transforms the ProvisionWatcher DTO to the ProvisionWatcher model
@@ -70,19 +44,6 @@ func ToProvisionWatcherModel(dto ProvisionWatcher) models.ProvisionWatcher {
 		BlockingIdentifiers: dto.BlockingIdentifiers,
 		AdminState:          models.AdminState(dto.AdminState),
 		DiscoveredDevice:    ToDiscoveredDeviceModel(dto.DiscoveredDevice),
-
-		// Xpert
-		DeviceNameTemplate: dto.DeviceNameTemplate,
-		ProfileName:        dto.ProfileName,
-		AdminState:         models.AdminState(dto.AdminState),
-		AutoEvents:         ToAutoEventModels(dto.AutoEvents),
-		ProtocolName:       dto.ProtocolName,
-		DeviceDescription:  dto.DeviceDescription,
-		DeviceLabels:       dto.DeviceLabels,
-
-		ProfileNameTemplate: dto.ProfileNameTemplate,
-		ProfileLabels:       dto.ProfileLabels,
-		ProfileDescription:  dto.ProfileDescription,
 	}
 }
 
@@ -98,19 +59,6 @@ func FromProvisionWatcherModelToDTO(pw models.ProvisionWatcher) ProvisionWatcher
 		BlockingIdentifiers: pw.BlockingIdentifiers,
 		AdminState:          string(pw.AdminState),
 		DiscoveredDevice:    FromDiscoveredDeviceModelToDTO(pw.DiscoveredDevice),
-
-		// Xpert
-		DeviceNameTemplate: pw.DeviceNameTemplate,
-		ProfileName:        pw.ProfileName,
-		AdminState:         string(pw.AdminState),
-		AutoEvents:         FromAutoEventModelsToDTOs(pw.AutoEvents),
-		ProtocolName:       pw.ProtocolName,
-		DeviceDescription:  pw.DeviceDescription,
-		DeviceLabels:       pw.DeviceLabels,
-
-		ProfileNameTemplate: pw.ProfileNameTemplate,
-		ProfileLabels:       pw.ProfileLabels,
-		ProfileDescription:  pw.ProfileDescription,
 	}
 }
 
@@ -126,19 +74,6 @@ func FromProvisionWatcherModelToUpdateDTO(pw models.ProvisionWatcher) UpdateProv
 		BlockingIdentifiers: pw.BlockingIdentifiers,
 		AdminState:          &adminState,
 		DiscoveredDevice:    FromDiscoveredDeviceModelToUpdateDTO(pw.DiscoveredDevice),
-
-		// Xpert
-		DeviceNameTemplate: &pw.DeviceNameTemplate,
-		ProfileName:        &pw.ProfileName,
-		AdminState:         &adminState,
-		AutoEvents:         FromAutoEventModelsToDTOs(pw.AutoEvents),
-		ProtocolName:       &pw.ProtocolName,
-		DeviceDescription:  &pw.DeviceDescription,
-		DeviceLabels:       pw.DeviceLabels,
-
-		ProfileNameTemplate: &pw.ProfileNameTemplate,
-		ProfileLabels:       pw.ProfileLabels,
-		ProfileDescription:  &pw.ProfileDescription,
 	}
 	return dto
 }

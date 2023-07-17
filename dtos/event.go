@@ -7,6 +7,8 @@ package dtos
 
 import (
 	"encoding/xml"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"

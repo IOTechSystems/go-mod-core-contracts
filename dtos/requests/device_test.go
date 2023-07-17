@@ -52,7 +52,7 @@ var testAddDevice = AddDeviceRequest{
 		AutoEvents:     testAutoEvents,
 		Protocols:      testProtocols,
 
-		ProtocolName:   testProtocolName,
+		ProtocolName: testProtocolName,
 	},
 }
 

@@ -10,4 +10,14 @@ type DiscoveredDevice struct {
 	AdminState  AdminState
 	AutoEvents  []AutoEvent
 	Properties  map[string]any
+
+	// Xpert
+	DeviceNameTemplate string
+	ProtocolName       string
+	DeviceDescription  string
+	DeviceLabels       []string
+
+	ProfileNameTemplate string
+	ProfileLabels       []string
+	ProfileDescription  string
 }

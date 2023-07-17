@@ -65,7 +65,7 @@ func GetRequestAndReturnBinaryRes(ctx context.Context, baseUrl string, requestPa
 	var errResponse commonDTO.BaseResponse
 	e := json.Unmarshal(res, &errResponse)
 	if e != nil {
-		return nil, "", errors.NewCommonEdgeX(errors.KindMapping(resp.StatusCode), string(bodyBytes), e)
+		return nil, "", errors.NewCommonEdgeX(errors.KindMapping(resp.StatusCode), string(res), e)
 	}
 
 	return nil, "", errors.NewCommonEdgeX(errors.KindMapping(errResponse.StatusCode), errResponse.Message, nil)
@@ -242,13 +242,13 @@ func DeleteRequest(ctx context.Context, returnValuePointer interface{}, baseUrl 
 }
 
 // DeleteRequestWithParams makes the delete request with URL query params and return the body
-func DeleteRequestWithParams(ctx context.Context, returnValuePointer interface{}, baseUrl string, requestPath string, requestParams url.Values) errors.EdgeX {
+func DeleteRequestWithParams(ctx context.Context, returnValuePointer interface{}, baseUrl string, requestPath string, requestParams url.Values, authInjector interfaces.AuthenticationInjector) errors.EdgeX {
 	req, err := createRequest(ctx, http.MethodDelete, baseUrl, requestPath, requestParams)
 	if err != nil {
 		return errors.NewCommonEdgeXWrapper(err)
 	}
 
-	res, err := sendRequest(ctx, req)
+	res, err := sendRequest(ctx, req, authInjector)
 	if err != nil {
 		return errors.NewCommonEdgeXWrapper(err)
 	}

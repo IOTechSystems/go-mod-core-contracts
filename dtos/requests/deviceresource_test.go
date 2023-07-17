@@ -33,7 +33,7 @@ var testDeviceResource = AddDeviceResourceRequest{
 			ReadWrite: common.ReadWrite_RW,
 		},
 
-		Tag:         TestTag1,
+		Tag: TestTag1,
 	},
 }
 

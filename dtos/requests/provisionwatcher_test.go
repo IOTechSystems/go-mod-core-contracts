@@ -78,15 +78,13 @@ func mockUpdateProvisionWatcher() dtos.UpdateProvisionWatcher {
 	d.DiscoveredDevice.AutoEvents = testAutoEvents
 
 	// Xpert
-	d.DeviceNameTemplate = &testDeviceNameTemplate
-	d.ProfileName = &testProfileName
-	d.AutoEvents = testAutoEvents
-	d.ProtocolName = &testProtocolName
-	d.DeviceDescription = &testDeviceDescription
-	d.DeviceLabels = testDeviceLabels
-	d.ProfileNameTemplate = &testProfileNameTemplate
-	d.ProfileLabels = testLabels
-	d.ProfileDescription = &testProfileDescription
+	d.DiscoveredDevice.DeviceNameTemplate = &testDeviceNameTemplate
+	d.DiscoveredDevice.ProtocolName = &testProtocolName
+	d.DiscoveredDevice.DeviceDescription = &testDeviceDescription
+	d.DiscoveredDevice.DeviceLabels = testDeviceLabels
+	d.DiscoveredDevice.ProfileNameTemplate = &testProfileNameTemplate
+	d.DiscoveredDevice.ProfileLabels = testLabels
+	d.DiscoveredDevice.ProfileDescription = &testProfileDescription
 	return d
 }
 
@@ -146,7 +144,6 @@ func TestAddProvisionWatcherRequest_Validate(t *testing.T) {
 		{"invalid AddProvisionWatcherRequest, missing Identifiers key", missingIdentifiersKey, true},
 		{"invalid AddProvisionWatcherRequest, missing Identifiers value", missingIdentifiersValue, true},
 		{"invalid AddProvisionWatcherRequest, no ServiceName", noServiceName, true},
-		{"invalid AddProvisionWatcherRequest, no ProfileName", noProfileName, true},
 		{"invalid AddProvisionWatcherRequest, empty string ProfileName", emptyStringProfileName, false},
 		{"invalid AddProvisionWatcherRequest, invalid autoEvent frequency", invalidFrequency, true},
 		{"invalid AddProvisionWatcherRequest, no AutoEvent frequency", noAutoEventFrequency, true},
@@ -298,7 +295,6 @@ func TestUpdateProvisionWatcherRequest_Validate(t *testing.T) {
 		{"invalid, empty service name", invalidEmptyServiceName, true},
 
 		{"valid, nil profile name", validNilProfileName, false},
-		{"invalid, empty profile name", invalidEmptyProfileName, true},
 		{"valid, empty string profile name", emptyStringProfileName, false},
 
 		{"invalid, invalid admin state", invalidAdminState, true},
@@ -375,13 +371,11 @@ func TestReplaceProvisionWatcherModelFieldsWithDTO(t *testing.T) {
 	assert.Equal(t, dtos.ToAutoEventModels(testAutoEvents), provisionWatcher.DiscoveredDevice.AutoEvents)
 
 	// Xpert
-	assert.Equal(t, testProtocolName, provisionWatcher.ProtocolName)
-	assert.Equal(t, TestDeviceProfileName, provisionWatcher.ProfileName)
-	assert.Equal(t, dtos.ToAutoEventModels(testAutoEvents), provisionWatcher.AutoEvents)
-	assert.Equal(t, testDeviceDescription, provisionWatcher.DeviceDescription)
-	assert.Equal(t, testDeviceNameTemplate, provisionWatcher.DeviceNameTemplate)
-	assert.Equal(t, testDeviceLabels, provisionWatcher.DeviceLabels)
-	assert.Equal(t, testProfileNameTemplate, provisionWatcher.ProfileNameTemplate)
-	assert.Equal(t, testLabels, provisionWatcher.ProfileLabels)
-	assert.Equal(t, testProfileDescription, provisionWatcher.ProfileDescription)
+	assert.Equal(t, testProtocolName, provisionWatcher.DiscoveredDevice.ProtocolName)
+	assert.Equal(t, testDeviceDescription, provisionWatcher.DiscoveredDevice.DeviceDescription)
+	assert.Equal(t, testDeviceNameTemplate, provisionWatcher.DiscoveredDevice.DeviceNameTemplate)
+	assert.Equal(t, testDeviceLabels, provisionWatcher.DiscoveredDevice.DeviceLabels)
+	assert.Equal(t, testProfileNameTemplate, provisionWatcher.DiscoveredDevice.ProfileNameTemplate)
+	assert.Equal(t, testLabels, provisionWatcher.DiscoveredDevice.ProfileLabels)
+	assert.Equal(t, testProfileDescription, provisionWatcher.DiscoveredDevice.ProfileDescription)
 }

@@ -23,7 +23,10 @@ var valueTypes = []string{
 	ValueTypeUint8Array, ValueTypeUint16Array, ValueTypeUint32Array, ValueTypeUint64Array,
 	ValueTypeInt8Array, ValueTypeInt16Array, ValueTypeInt32Array, ValueTypeInt64Array,
 	ValueTypeFloat32Array, ValueTypeFloat64Array,
-	ValueTypeObject, ValueTypeObjectArray,
+	ValueTypeObject,
+
+	// Xpert
+	ValueTypeObjectArray,
 }
 
 // NormalizeValueType normalizes the valueType to upper camel case

@@ -91,10 +91,6 @@ const (
 	ApiNotificationByIdRoute               = ApiNotificationRoute + "/" + Id + "/{" + Id + "}"
 	ApiNotificationByStatusRoute           = ApiNotificationRoute + "/" + Status + "/{" + Status + "}"
 	ApiNotificationBySubscriptionNameRoute = ApiNotificationRoute + "/" + Subscription + "/" + Name + "/{" + Name + "}"
-	// Xpert
-	ApiNotificationByIdsRoute              = ApiNotificationRoute + "/" + Ids + "/{" + Ids + "}"
-	ApiNotificationAcknowledgeByIdsRoute   = ApiNotificationRoute + "/" + Acknowledge + "/" + Ids + "/{" + Ids + "}"
-	ApiNotificationUnacknowledgeByIdsRoute = ApiNotificationRoute + "/" + Unacknowledge + "/" + Ids + "/{" + Ids + "}"
 
 	ApiTransmissionRoute                   = ApiBase + "/transmission"
 	ApiTransmissionByIdRoute               = ApiTransmissionRoute + "/" + Id + "/{" + Id + "}"
@@ -133,21 +129,12 @@ const (
 	ApiOperationRoute   = ApiSystemRoute + "/operation"
 	ApiHealthRoute      = ApiSystemRoute + "/health"
 	ApiMultiConfigRoute = ApiSystemRoute + "/config"
-
-	// Xpert
-	ApiRuleRoute       = ApiBase + "/rule"
-	ApiAllRulesRoute   = ApiRuleRoute + "/" + All
-	ApiRuleByNameRoute = ApiRuleRoute + "/" + Name + "/{" + Name + "}"
-
-	ApiKVSRoute      = ApiBase + "/kvs"
-	ApiKVSByKeyRoute = ApiKVSRoute + "/" + Key + "/{" + Key + "}"
 )
 
 // Constants related to defined url path names and parameters in the v3 service APIs
 const (
 	All           = "all"
 	Id            = "id"
-	Ids           = "ids"
 	Created       = "created"
 	Modified      = "modified"
 	Pushed        = "pushed"
@@ -196,18 +183,6 @@ const (
 	PushEvent    = "ds-pushevent"   //query string to specify if an event should be pushed to the EdgeX system
 	ReturnEvent  = "ds-returnevent" //query string to specify if an event should be returned from device service
 	RegexCommand = "ds-regexcmd"    //query string to specify if the command name is in regular expression format
-
-	// Xpert
-	User          = "user"
-	Group         = "group"
-	PublicKey     = "rsa_public_key"
-	Ack           = "ack"
-	Acknowledge   = "acknowledge"
-	Unacknowledge = "unacknowledge"
-	Key           = "key"
-	Flatten     = "flatten"        //query string to specify if the request json payload should be flattened to update multiple keys with the same prefix
-	KeyOnly     = "keyOnly"        //query string to specify if the response will only return the keys of the specified query key prefix, without values and metadata
-	Plaintext   = "plaintext"
 )
 
 // Constants related to the default value of query strings in the v3 service APIs
@@ -247,7 +222,6 @@ const (
 	ValueTypeFloat32Array = "Float32Array"
 	ValueTypeFloat64Array = "Float64Array"
 	ValueTypeObject       = "Object"
-	ValueTypeObjectArray  = "ObjectArray"
 )
 
 // Constants related to configuration file's map key
@@ -259,13 +233,9 @@ const (
 // Constants for Address
 const (
 	// Type
-	REST   = "REST"
-	MQTT   = "MQTT"
-	EMAIL  = "EMAIL"
-	ZeroMQ = "ZeroMQ"
-	HTTP   = "http"
-	TCP    = "tcp"
-	TCPS   = "tcps"
+	REST  = "REST"
+	MQTT  = "MQTT"
+	EMAIL = "EMAIL"
 )
 
 // Constants for SMA Operation Action
@@ -302,10 +272,8 @@ const (
 	CoreCommonConfigServiceKey          = "core-common-config-bootstrapper"
 	SupportLoggingServiceKey            = "support-logging"
 	SupportNotificationsServiceKey      = "support-notifications"
-	SupportProvisionServiceKey          = "support-provision"
 	SystemManagementAgentServiceKey     = "sys-mgmt-agent"
 	SupportSchedulerServiceKey          = "support-scheduler"
-	SupportSparkplugServiceKey          = "support-sparkplug"
 	SecuritySecretStoreSetupServiceKey  = "security-secretstore-setup"
 	SecurityProxyAuthServiceKey         = "security-proxy-auth"
 	SecurityProxySetupServiceKey        = "security-proxy-setup"
@@ -313,11 +281,6 @@ const (
 	SecurityBootstrapperKey             = "security-bootstrapper"
 	SecurityBootstrapperRedisKey        = "security-bootstrapper-redis"
 	SecuritySpiffeTokenProviderKey      = "security-spiffe-token-provider" // nolint:gosec
-
-	// Xpert
-	SupportRulesEngineServiceKey        = "support-rulesengine"
-	CoreKeeperServiceKey                = "core-keeper"
-	SupportSparkplugHistorianServiceKey = "support-sparkplug-historian"
 )
 
 // Constants related to the possible content types supported by the APIs
@@ -331,9 +294,6 @@ const (
 	ContentTypeYAML = "application/x-yaml"
 	ContentTypeText = "text/plain"
 	ContentTypeXML  = "application/xml"
-
-	// Xpert
-	ContentTypeForm = "application/x-www-form-urlencoded"
 )
 
 // Constants related to System Events
@@ -404,34 +364,4 @@ const (
 
 	// App Service Topics
 	// App Service topics remain configurable inorder to filter by subscription.
-)
-
-// Constants for Notification Category
-const (
-	DisconnectAlert      = "Disconnection"
-	DeviceOperatingState = "DeviceOperatingState"
-)
-
-// Constants for DeviceChangedNotification
-const (
-	DeviceCreateAction = "Device creation"
-	DeviceUpdateAction = "Device update"
-	DeviceRemoveAction = "Device removal"
-
-	DeviceChangedNotificationCategory = "DEVICE_CHANGED"
-)
-
-// Constants related to System Events
-const (
-	DeviceSystemEventType         = "device"
-	DeviceSystemEventActionAdd    = "add"
-	DeviceSystemEventActionUpdate = "update"
-	DeviceSystemEventActionDelete = "delete"
-)
-
-const (
-	ConfigStemApp      = "edgex/appservices/"
-	ConfigStemCore     = "edgex/core/"
-	ConfigStemDevice   = "edgex/devices/"
-	ConfigStemSecurity = "edgex/security/"
 )

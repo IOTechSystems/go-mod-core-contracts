@@ -20,7 +20,7 @@ type DeviceResource struct {
 	Tags        map[string]any         `json:"tags,omitempty" yaml:"tags,omitempty"`
 
 	// Xpert
-	Tag         string                 `json:"tag,omitempty" yaml:"tag,omitempty"`
+	Tag string `json:"tag,omitempty" yaml:"tag,omitempty"`
 }
 
 // Validate satisfies the Validator interface
@@ -50,7 +50,7 @@ func ToDeviceResourceModel(d DeviceResource) models.DeviceResource {
 		Tags:        d.Tags,
 
 		// Xpert
-		Tag:         d.Tag,
+		Tag: d.Tag,
 	}
 }
 
@@ -74,7 +74,7 @@ func FromDeviceResourceModelToDTO(d models.DeviceResource) DeviceResource {
 		Tags:        d.Tags,
 
 		// Xpert
-		Tag:         d.Tag,
+		Tag: d.Tag,
 	}
 }
 

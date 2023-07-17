@@ -91,7 +91,7 @@ func createRequest(ctx context.Context, httpMethod string, baseUrl string, reque
 		u.RawQuery = requestParams.Encode()
 	}
 
-	req, err := http.NewRequest(httpMethod, edgeXClientReqURI(u), nil)
+	req, err := http.NewRequest(httpMethod, u.String(), nil)
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to create a http request", err)
 	}
@@ -118,7 +118,7 @@ func createRequestWithRawDataAndParams(ctx context.Context, httpMethod string, b
 		content = common.ContentTypeJSON
 	}
 
-	req, err := http.NewRequest(httpMethod, edgeXClientReqURI(u), bytes.NewReader(jsonEncodedData))
+	req, err := http.NewRequest(httpMethod, u.String(), bytes.NewReader(jsonEncodedData))
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to create a http request", err)
 	}
@@ -146,7 +146,7 @@ func createRequestWithRawData(ctx context.Context, httpMethod string, baseUrl st
 		content = common.ContentTypeJSON
 	}
 
-	req, err := http.NewRequest(httpMethod, edgeXClientReqURI(u), bytes.NewReader(jsonEncodedData))
+	req, err := http.NewRequest(httpMethod, u.String(), bytes.NewReader(jsonEncodedData))
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to create a http request", err)
 	}
@@ -166,7 +166,7 @@ func createRequestWithEncodedData(ctx context.Context, httpMethod string, baseUr
 		content = FromContext(ctx, common.ContentType)
 	}
 
-	req, err := http.NewRequest(httpMethod, edgeXClientReqURI(u), bytes.NewReader(data))
+	req, err := http.NewRequest(httpMethod, u.String(), bytes.NewReader(data))
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to create a http request", err)
 	}
@@ -199,7 +199,7 @@ func createRequestFromFilePath(ctx context.Context, httpMethod string, baseUrl s
 	}
 	writer.Close()
 
-	req, err := http.NewRequest(httpMethod, edgeXClientReqURI(u), body)
+	req, err := http.NewRequest(httpMethod, u.String(), body)
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to create a http request", err)
 	}

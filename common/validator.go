@@ -31,10 +31,6 @@ const (
 	dtoRFC3986UnreservedCharTag        = "edgex-dto-rfc3986-unreserved-chars"
 	emptyOrDtoRFC3986UnreservedCharTag = "len=0|" + dtoRFC3986UnreservedCharTag
 	dtoInterDatetimeTag                = "edgex-dto-interval-datetime"
-	dtoNoReservedCharTag        = "edgex-dto-no-reserved-chars"
-
-	emptyOrDtoRFC3986UnreservedCharTag = "len=0|" + dtoRFC3986UnreservedCharTag
-	emptyOrDtoNoReservedCharTag        = "len=0|" + dtoNoReservedCharTag
 )
 
 const (
@@ -43,13 +39,21 @@ const (
 	rFC3986UnreservedCharsRegexString = "^[a-zA-Z0-9-_~:;=]+$"
 	intervalDatetimeLayout            = "20060102T150405"
 	name                              = "Name"
-	reservedCharsRegexString          = "^[^/#+$]+$"
 )
 
 var (
 	rFC3986UnreservedCharsRegex = regexp.MustCompile(rFC3986UnreservedCharsRegexString)
-	reservedCharsRegex          = regexp.MustCompile(reservedCharsRegexString)
 )
+
+// Xpert
+const (
+	dtoNoReservedCharTag        = "edgex-dto-no-reserved-chars"
+	emptyOrDtoNoReservedCharTag = "len=0|" + dtoNoReservedCharTag
+
+	reservedCharsRegexString = "^[^/#+$]+$"
+)
+
+var reservedCharsRegex = regexp.MustCompile(reservedCharsRegexString)
 
 func init() {
 	val = validator.New()

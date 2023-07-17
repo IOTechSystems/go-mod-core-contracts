@@ -170,11 +170,7 @@ func TestAddEventRequest_Validate(t *testing.T) {
 		readingProfileNameWithReservedChar.Event.Readings[0].ProfileName = n
 
 		testsForNameFields = append(testsForNameFields,
-			testForNameField{"Invalid AddEventRequest with device name containing reserved char", deviceNameWithReservedChar, true},
 			testForNameField{"Invalid AddEventRequest with profile name containing reserved char", profileNameWithReservedChar, true},
-			testForNameField{"Valid AddEventRequest with source name containing reserved char", sourceNameWithReservedChar, false},
-			testForNameField{"Invalid AddEventRequest with reading device name containing reserved char", readingDeviceNameWithReservedChar, true},
-			testForNameField{"Valid AddEventRequest with reading resource name containing reserved char", readingResourceNameWithReservedChar, false},
 			testForNameField{"Invalid AddEventRequest with reading profile name containing reserved char", readingProfileNameWithReservedChar, true},
 		)
 	}

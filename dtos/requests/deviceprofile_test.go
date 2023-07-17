@@ -38,7 +38,7 @@ func profileData() DeviceProfileRequest {
 		},
 		Tags: testTags,
 
-		Tag:         TestTag1,
+		Tag: TestTag1,
 	}}
 	var testDeviceCommands = []dtos.DeviceCommand{{
 		Name:      TestDeviceCommandName,
@@ -85,7 +85,7 @@ var expectedDeviceProfile = models.DeviceProfile{
 		},
 		Tags: testTags,
 
-		Tag:         TestTag1,
+		Tag: TestTag1,
 	}},
 	DeviceCommands: []models.DeviceCommand{{
 		Name:      TestDeviceCommandName,

@@ -172,7 +172,7 @@ func (client *NotificationClient) NotificationsByQueryConditions(ctx context.Con
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
 	requestParams.Set(common.Ack, ack)
-	err = utils.GetRequestWithBodyRawData(ctx, &res, client.baseUrl, common.ApiNotificationRoute, requestParams, conditionReq)
+	err = utils.GetRequestWithBodyRawData(ctx, &res, client.baseUrl, common.ApiNotificationRoute, requestParams, conditionReq, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -182,7 +182,7 @@ func (client *NotificationClient) NotificationsByQueryConditions(ctx context.Con
 // DeleteNotificationByIds deletes notifications by ids
 func (client *NotificationClient) DeleteNotificationByIds(ctx context.Context, ids []string) (res dtoCommon.BaseResponse, err errors.EdgeX) {
 	path := path.Join(common.ApiNotificationRoute, common.Ids, strings.Join(ids, common.CommaSeparator))
-	err = utils.DeleteRequest(ctx, &res, client.baseUrl, path)
+	err = utils.DeleteRequest(ctx, &res, client.baseUrl, path, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -196,7 +196,7 @@ func (client *NotificationClient) UpdateNotificationAckStatusByIds(ctx context.C
 		pathAck = common.Acknowledge
 	}
 	path := path.Join(common.ApiNotificationRoute, pathAck, common.Ids, strings.Join(ids, common.CommaSeparator))
-	err = utils.PutRequest(ctx, &res, client.baseUrl, path, nil, nil)
+	err = utils.PutRequest(ctx, &res, client.baseUrl, path, nil, nil, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}

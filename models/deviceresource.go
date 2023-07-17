@@ -14,5 +14,5 @@ type DeviceResource struct {
 	Tags        map[string]any
 
 	// Xpert
-	Tag         string
+	Tag string
 }

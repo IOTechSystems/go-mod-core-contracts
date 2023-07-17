@@ -3,12 +3,14 @@ module github.com/edgexfoundry/go-mod-core-contracts/v3
 go 1.20
 
 require (
+	github.com/edgexfoundry/go-mod-core-contracts/v2 v2.3.0
 	github.com/fxamacker/cbor/v2 v2.4.0
 	github.com/go-kit/log v0.2.1
 	github.com/go-playground/validator/v10 v10.13.0
 	github.com/google/uuid v1.3.0
-	github.com/stretchr/testify v1.8.2
 	github.com/pelletier/go-toml/v2 v2.0.6
+	github.com/stretchr/testify v1.8.2
+	golang.org/x/text v0.8.0
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -24,5 +26,6 @@ require (
 	github.com/x448/float16 v0.8.4 // indirect
 	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
 )
+
+replace github.com/edgexfoundry/go-mod-core-contracts/v2 => github.com/IOTechSystems/go-mod-core-contracts/v2 v2.0.0-20230717092222-0c7389ba026f

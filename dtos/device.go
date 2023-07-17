@@ -28,7 +28,7 @@ type Device struct {
 	Properties     map[string]any                `json:"properties,omitempty" yaml:"properties,omitempty"`
 
 	// Xpert
-	ProtocolName   string
+	ProtocolName string
 }
 
 type UpdateDevice struct {

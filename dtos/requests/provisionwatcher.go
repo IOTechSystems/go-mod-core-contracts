@@ -117,30 +117,27 @@ func ReplaceProvisionWatcherModelFieldsWithDTO(pw *models.ProvisionWatcher, patc
 	}
 
 	// Xpert
-	if patch.DeviceNameTemplate != nil {
-		pw.DeviceNameTemplate = *patch.DeviceNameTemplate
+	if patch.DiscoveredDevice.DeviceNameTemplate != nil {
+		pw.DiscoveredDevice.DeviceNameTemplate = *patch.DiscoveredDevice.DeviceNameTemplate
 	}
-	if patch.ProfileName != nil {
-		pw.ProfileName = *patch.ProfileName
+	if patch.DiscoveredDevice.ProtocolName != nil {
+		pw.DiscoveredDevice.ProtocolName = *patch.DiscoveredDevice.ProtocolName
 	}
-	if patch.ProtocolName != nil {
-		pw.ProtocolName = *patch.ProtocolName
+	if patch.DiscoveredDevice.DeviceDescription != nil {
+		pw.DiscoveredDevice.DeviceDescription = *patch.DiscoveredDevice.DeviceDescription
 	}
-	if patch.DeviceDescription != nil {
-		pw.DeviceDescription = *patch.DeviceDescription
-	}
-	if patch.DeviceLabels != nil {
-		pw.DeviceLabels = patch.DeviceLabels
+	if patch.DiscoveredDevice.DeviceLabels != nil {
+		pw.DiscoveredDevice.DeviceLabels = patch.DiscoveredDevice.DeviceLabels
 	}
 
-	if patch.ProfileNameTemplate != nil {
-		pw.ProfileNameTemplate = *patch.ProfileNameTemplate
+	if patch.DiscoveredDevice.ProfileNameTemplate != nil {
+		pw.DiscoveredDevice.ProfileNameTemplate = *patch.DiscoveredDevice.ProfileNameTemplate
 	}
-	if patch.ProfileLabels != nil {
-		pw.ProfileLabels = patch.ProfileLabels
+	if patch.DiscoveredDevice.ProfileLabels != nil {
+		pw.DiscoveredDevice.ProfileLabels = patch.DiscoveredDevice.ProfileLabels
 	}
-	if patch.ProfileDescription != nil {
-		pw.ProfileDescription = *patch.ProfileDescription
+	if patch.DiscoveredDevice.ProfileDescription != nil {
+		pw.DiscoveredDevice.ProfileDescription = *patch.DiscoveredDevice.ProfileDescription
 	}
 }
 
