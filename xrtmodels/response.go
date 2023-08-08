@@ -8,12 +8,13 @@ import (
 )
 
 const (
-	// https://github.com/IOTechSystems/xrt/blob/master/include/devsdk/devsdk.h#L27
+	// https://docs.iotechsys.com/edge-xrt21/mqtt-management/mqtt-management.html#general-result-format
 	XrtSdkStatusOk               = 0
 	XrtSdkStatusNotFound         = 1
 	XrtSdkStatusNotSupported     = 2
 	XrtSdkStatusInvalidOperation = 3
 	XrtSdkStatusAlreadyExists    = 7
+	XrtSdkStatusServerError      = 20 // custom error code because XRT haven't defined the Server Error
 )
 
 type BaseResponse struct {
@@ -46,6 +47,22 @@ func (result BaseResult) Error() errors.EdgeX {
 		return errors.NewCommonEdgeX(errors.KindDuplicateName, result.ErrorMessage, nil)
 	default:
 		return errors.NewCommonEdgeX(errors.KindServerError, result.ErrorMessage, nil)
+	}
+}
+
+// XrtErrorCode returns the XRT error code from EdgeX error
+func XrtErrorCode(err errors.EdgeX) int {
+	switch errors.Kind(err) {
+	case errors.KindEntityDoesNotExist:
+		return XrtSdkStatusNotFound
+	case errors.KindNotImplemented:
+		return XrtSdkStatusNotSupported
+	case errors.KindInvalidId:
+		return XrtSdkStatusInvalidOperation
+	case errors.KindDuplicateName:
+		return XrtSdkStatusAlreadyExists
+	default:
+		return XrtSdkStatusServerError
 	}
 }
 
