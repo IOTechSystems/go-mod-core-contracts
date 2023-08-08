@@ -70,9 +70,16 @@ const (
 
 // constants relate to the remote edge node
 const (
-	EdgeNodeName                       = "edgenodeName"
-	DeviceServiceName                  = "deviceServiceName"
-	TopicPatternFieldGroupName         = "GROUP_NAME"
-	TopicPatternFieldNodeName          = "NODE_NAME"
-	TopicPatternFieldDeviceServiceName = "DEVICE_SERVICE_NAME"
+	EdgeNodeName                          = "edgenodeName"
+	DeviceServiceName                     = "deviceServiceName"
+	TopicPatternFieldGroupName            = "GROUP_NAME"
+	TopicPatternFieldNodeName             = "NODE_NAME"
+	TopicPatternFieldXpertGroupName       = "XPERT_GROUP_NAME"
+	TopicPatternFieldXpertNodeName        = "XPERT_NODE_NAME"
+	TopicPatternFieldDeviceServiceName    = "DEVICE_SERVICE_NAME"
+	TopicPatternFieldKeyXpertGroupName    = "${" + TopicPatternFieldXpertGroupName + "}"
+	TopicPatternFieldKeyXpertNodeName     = "${" + TopicPatternFieldXpertNodeName + "}"
+	TopicPatternFieldKeyDeviceServiceName = "${" + TopicPatternFieldDeviceServiceName + "}"
+	XpertNodeRequestTopicKey              = "RequestTopic"
+	XpertNodeReplyTopicKey                = "ReplyTopic"
 )
