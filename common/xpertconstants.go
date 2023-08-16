@@ -66,3 +66,12 @@ const (
 	EtherNetIPMinorRevision     = "MinorRevision"
 	EtherNetIPAddress           = "Address"
 )
+
+// constants relate to the remote edge node
+const (
+	EdgeNodeName                       = "edgenodeName"
+	DeviceServiceName                  = "deviceServiceName"
+	TopicPatternFieldGroupName         = "GROUP_NAME"
+	TopicPatternFieldNodeName          = "NODE_NAME"
+	TopicPatternFieldDeviceServiceName = "DEVICE_SERVICE_NAME"
+)
