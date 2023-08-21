@@ -4,6 +4,7 @@ package common
 
 const (
 	ContextKeyContentType contextKey = ContentType
+	ContentTypeCSV                   = "text/csv"
 
 	BacnetIP             = "BACnet-IP"
 	BacnetMSTP           = "BACnet-MSTP"
