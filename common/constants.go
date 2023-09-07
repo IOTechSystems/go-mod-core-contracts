@@ -141,6 +141,9 @@ const (
 	ApiRuleByNameRoute = ApiRuleRoute + "/" + Name + "/{" + Name + "}"
 	ApiKVSRoute      = ApiBase + "/kvs"
 	ApiKVSByKeyRoute = ApiKVSRoute + "/" + Key + "/{" + Key + "}"
+	ApiRegisterRoute                = ApiBase + "/registry"
+	ApiAllRegistrationsRoute        = ApiRegisterRoute + "/" + All
+	ApiRegistrationByServiceIdRoute = ApiRegisterRoute + "/" + ServiceId + "/{" + ServiceId + "}"
 )
 
 // Constants related to defined url path names and parameters in the v3 service APIs
@@ -205,6 +208,7 @@ const (
 	Acknowledge   = "acknowledge"
 	Unacknowledge = "unacknowledge"
 	Key           = "key"
+	ServiceId     = "serviceId"
 	Flatten     = "flatten"        //query string to specify if the request json payload should be flattened to update multiple keys with the same prefix
 	KeyOnly     = "keyOnly"        //query string to specify if the response will only return the keys of the specified query key prefix, without values and metadata
 	Plaintext   = "plaintext"      //query string to specify if the response will return the stored plain text value of the key(s) without any encoding
