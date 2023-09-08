@@ -138,8 +138,11 @@ const (
 	ApiAllRulesRoute   = ApiRuleRoute + "/" + All
 	ApiRuleByNameRoute = ApiRuleRoute + "/" + Name + "/{" + Name + "}"
 
-	ApiKVSRoute      = ApiBase + "/kvs"
-	ApiKVSByKeyRoute = ApiKVSRoute + "/" + Key + "/{" + Key + "}"
+	ApiKVSRoute                     = ApiBase + "/kvs"
+	ApiKVSByKeyRoute                = ApiKVSRoute + "/" + Key + "/{" + Key + "}"
+	ApiRegisterRoute                = ApiBase + "/registry"
+	ApiAllRegistrationsRoute        = ApiRegisterRoute + "/" + All
+	ApiRegistrationByServiceIdRoute = ApiRegisterRoute + "/" + ServiceId + "/{" + ServiceId + "}"
 )
 
 // Constants related to defined url path names and parameters in the v2 service APIs
@@ -195,6 +198,7 @@ const (
 	Acknowledge   = "acknowledge"
 	Unacknowledge = "unacknowledge"
 	Key           = "key"
+	ServiceId     = "serviceId"
 
 	Offset      = "offset"         //query string to specify the number of items to skip before starting to collect the result set.
 	Limit       = "limit"          //query string to specify the numbers of items to return
