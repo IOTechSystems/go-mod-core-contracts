@@ -1,7 +1,6 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2023 IOTech Ltd
 //
-// SPDX-License-Identifier: Apache-2.0
 
 package requests
 
@@ -20,6 +19,7 @@ type OperationRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	ServiceName           string `json:"serviceName" validate:"required"`
 	Action                string `json:"action" validate:"oneof='start' 'stop' 'restart' 'rm' 'inspect'"`
+	UseRegistry           string `json:"useRegistry"` // to identify whether the app service container will be started with the --registry flag
 }
 
 // Validate satisfies the Validator interface
@@ -34,6 +34,7 @@ func (o *OperationRequest) UnmarshalJSON(b []byte) error {
 		dtoCommon.BaseRequest
 		ServiceName string
 		Action      string
+		UseRegistry string
 	}{}
 
 	if err := json.Unmarshal(b, &alias); err != nil {
