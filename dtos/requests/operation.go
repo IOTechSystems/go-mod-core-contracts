@@ -18,8 +18,8 @@ import (
 type OperationRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	ServiceName           string   `json:"serviceName" validate:"required"`
-	Action                string   `json:"action" validate:"oneof='start' 'stop' 'restart' 'rm' 'inspect'"`
-	Flags                 []string `json:"flags"` // to identify whether the app service container will be started with additional flags
+	Action                string   `json:"action" validate:"required"`
+	CmdFlags              []string `json:"cmdFlags"` // to identify the additional CMD flags or argument of an OCI operation
 }
 
 // Validate satisfies the Validator interface
@@ -34,7 +34,7 @@ func (o *OperationRequest) UnmarshalJSON(b []byte) error {
 		dtoCommon.BaseRequest
 		ServiceName string
 		Action      string
-		Flags       []string
+		CmdFlags    []string
 	}{}
 
 	if err := json.Unmarshal(b, &alias); err != nil {
