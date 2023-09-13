@@ -1,7 +1,6 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2023 IOTech Ltd
 //
-// SPDX-License-Identifier: Apache-2.0
 
 package requests
 
@@ -18,8 +17,9 @@ import (
 // https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/system-agent/2.1.0#/OperationRequest
 type OperationRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
-	ServiceName           string `json:"serviceName" validate:"required"`
-	Action                string `json:"action" validate:"oneof='start' 'stop' 'restart' 'rm' 'inspect'"`
+	ServiceName           string   `json:"serviceName" validate:"required"`
+	Action                string   `json:"action" validate:"required"`
+	CmdFlags              []string `json:"cmdFlags"` // to identify the additional CMD flags or argument of a CRI operation
 }
 
 // Validate satisfies the Validator interface
@@ -34,6 +34,7 @@ func (o *OperationRequest) UnmarshalJSON(b []byte) error {
 		dtoCommon.BaseRequest
 		ServiceName string
 		Action      string
+		CmdFlags    []string
 	}{}
 
 	if err := json.Unmarshal(b, &alias); err != nil {
