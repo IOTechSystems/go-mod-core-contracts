@@ -19,7 +19,7 @@ type OperationRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	ServiceName           string   `json:"serviceName" validate:"required"`
 	Action                string   `json:"action" validate:"required"`
-	CmdFlags              []string `json:"cmdFlags"` // to identify the additional CMD flags or argument of an OCI operation
+	CmdFlags              []string `json:"cmdFlags"` // to identify the additional CMD flags or argument of a CRI operation
 }
 
 // Validate satisfies the Validator interface
