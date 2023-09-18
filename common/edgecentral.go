@@ -38,8 +38,12 @@ func ParseValueByDeviceResource(valueType string, value interface{}) (interface{
 		var arr []string
 		err = json.Unmarshal([]byte(v), &arr)
 		if err != nil {
-			errMsg := fmt.Sprintf("failed to convert set parameter %s to ValueType %s", v, valueType)
-			return nil, errors.NewCommonEdgeX(errors.KindServerError, errMsg, err)
+			// try to handle the nonstandard json format, for example, [foo, bar]
+			strArr := strings.Split(strings.Trim(v, "[]"), ",")
+			for _, u := range strArr {
+				arr = append(arr, strings.TrimSpace(u))
+			}
+			return arr, nil
 		}
 		return arr, nil
 	case ValueTypeBool:
@@ -69,7 +73,7 @@ func ParseValueByDeviceResource(valueType string, value interface{}) (interface{
 		var arr []uint8
 		strArr := strings.Split(strings.Trim(v, "[]"), ",")
 		for _, u := range strArr {
-			n, err := strconv.ParseUint(strings.Trim(u, " "), 10, 8)
+			n, err := strconv.ParseUint(strings.TrimSpace(u), 10, 8)
 			if err != nil {
 				errMsg := fmt.Sprintf("failed to convert set parameter %s to ValueType %s", v, valueType)
 				return nil, errors.NewCommonEdgeX(errors.KindServerError, errMsg, err)
@@ -89,7 +93,7 @@ func ParseValueByDeviceResource(valueType string, value interface{}) (interface{
 		var arr []uint16
 		strArr := strings.Split(strings.Trim(v, "[]"), ",")
 		for _, u := range strArr {
-			n, err := strconv.ParseUint(strings.Trim(u, " "), 10, 16)
+			n, err := strconv.ParseUint(strings.TrimSpace(u), 10, 16)
 			if err != nil {
 				errMsg := fmt.Sprintf("failed to convert set parameter %s to ValueType %s", v, valueType)
 				return nil, errors.NewCommonEdgeX(errors.KindServerError, errMsg, err)
@@ -109,7 +113,7 @@ func ParseValueByDeviceResource(valueType string, value interface{}) (interface{
 		var arr []uint32
 		strArr := strings.Split(strings.Trim(v, "[]"), ",")
 		for _, u := range strArr {
-			n, err := strconv.ParseUint(strings.Trim(u, " "), 10, 32)
+			n, err := strconv.ParseUint(strings.TrimSpace(u), 10, 32)
 			if err != nil {
 				errMsg := fmt.Sprintf("failed to convert set parameter %s to ValueType %s", v, valueType)
 				return nil, errors.NewCommonEdgeX(errors.KindServerError, errMsg, err)
@@ -129,7 +133,7 @@ func ParseValueByDeviceResource(valueType string, value interface{}) (interface{
 		var arr []uint64
 		strArr := strings.Split(strings.Trim(v, "[]"), ",")
 		for _, u := range strArr {
-			n, err := strconv.ParseUint(strings.Trim(u, " "), 10, 64)
+			n, err := strconv.ParseUint(strings.TrimSpace(u), 10, 64)
 			if err != nil {
 				errMsg := fmt.Sprintf("failed to convert set parameter %s to ValueType %s", v, valueType)
 				return nil, errors.NewCommonEdgeX(errors.KindServerError, errMsg, err)

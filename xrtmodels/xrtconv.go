@@ -295,7 +295,13 @@ func ParseXRTReadingValue(valueType string, reading interface{}) (interface{}, e
 	case common.ValueTypeUint8Array:
 		interfaceArray, ok := reading.([]interface{})
 		if !ok {
-			return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("invalid array '%v'", reading), nil)
+			// try to decode from the base64 string
+			data, decodeErr := base64.StdEncoding.DecodeString(fmt.Sprint(reading))
+			if decodeErr != nil {
+				return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("invalid array '%v'", reading), nil)
+			}
+			val = data
+			break
 		}
 		uint8Array := make([]uint8, len(interfaceArray))
 		for i, v := range interfaceArray {
@@ -445,4 +451,30 @@ func ParseXRTReadingValue(valueType string, reading interface{}) (interface{}, e
 	}
 
 	return val, nil
+}
+
+func FromEdgeXToXRTReadings(readings []dtos.BaseReading) (map[string]Reading, errors.EdgeX) {
+	xrtReadings := make(map[string]Reading, len(readings))
+	for _, r := range readings {
+		var val any
+		var err errors.EdgeX
+		switch r.ValueType {
+		case common.ValueTypeObject, common.ValueTypeObjectArray:
+			val = r.ObjectValue
+		case common.ValueTypeBinary:
+			val = r.BinaryValue
+		default:
+			val, err = common.ParseValueByDeviceResource(r.ValueType, r.Value)
+			if err != nil {
+				return nil, errors.NewCommonEdgeX(errors.Kind(err), "failed to convert from EdgeX reading to XRT reading", err)
+			}
+		}
+		xrtReadings[r.ResourceName] = Reading{
+			Value:  val,
+			Type:   r.ValueType,
+			Origin: r.Origin,
+			Tags:   r.Tags,
+		}
+	}
+	return xrtReadings, nil
 }
