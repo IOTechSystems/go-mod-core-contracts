@@ -9,7 +9,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/pelletier/go-toml/v2 v2.0.6
 	github.com/stretchr/testify v1.8.1
-	golang.org/x/text v0.7.0
+	golang.org/x/text v0.13.0
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v3 v3.0.1
 )
