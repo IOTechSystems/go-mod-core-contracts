@@ -83,3 +83,9 @@ const (
 	XpertNodeRequestTopicKey              = "RequestTopic"
 	XpertNodeReplyTopicKey                = "ReplyTopic"
 )
+
+// constants relate to the service status error from sys-mgmt inspect operation
+const (
+	ServiceIsNotRunningButShouldBe = "service is not running but should be"
+	ServiceIsRunningButShouldNotBe = "service is running but shouldn't be"
+)
