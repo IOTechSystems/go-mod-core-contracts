@@ -73,10 +73,10 @@ func (r *Registration) Validate() error {
 	if err != nil {
 		return fmt.Errorf("health check interval is not in Go duration string format: %s", err.Error())
 	}
-	// check if the health status value is UP, DOWN or UNKNOWN
+	// check if the health status value is UP, DOWN, UNKNOWN, or HALT
 	// if the value is invalid or empty, assign UNKNOWN to the status value
 	switch r.Status {
-	case models.Up, models.Down, models.Unknown:
+	case models.Up, models.Down, models.Unknown, models.Halt:
 		break
 	default:
 		r.Status = models.Unknown
