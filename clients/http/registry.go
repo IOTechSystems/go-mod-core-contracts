@@ -6,6 +6,8 @@ package http
 
 import (
 	"context"
+	"net/url"
+	"strconv"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/interfaces"
@@ -59,9 +61,12 @@ func (rc *registryClient) RegistrationByServiceId(ctx context.Context, serviceId
 }
 
 // AllRegistry returns the registration data of all registered service
-func (rc *registryClient) AllRegistry(ctx context.Context) (responses.MultiRegistrationsResponse, errors.EdgeX) {
+func (rc *registryClient) AllRegistry(ctx context.Context, deregistered bool) (responses.MultiRegistrationsResponse, errors.EdgeX) {
+	requestParams := url.Values{}
+	requestParams.Set(common.Deregistered, strconv.FormatBool(deregistered))
+
 	res := responses.MultiRegistrationsResponse{}
-	err := utils.GetRequest(ctx, &res, rc.baseUrl, common.ApiAllRegistrationsRoute, nil)
+	err := utils.GetRequest(ctx, &res, rc.baseUrl, common.ApiAllRegistrationsRoute, requestParams)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
