@@ -17,6 +17,6 @@ type RegistryClient interface {
 	Register(context.Context, requests.AddRegistrationRequest) errors.EdgeX
 	UpdateRegister(context.Context, requests.AddRegistrationRequest) errors.EdgeX
 	RegistrationByServiceId(context.Context, string) (responses.RegistrationResponse, errors.EdgeX)
-	AllRegistry(context.Context) (responses.MultiRegistrationsResponse, errors.EdgeX)
+	AllRegistry(context.Context, bool) (responses.MultiRegistrationsResponse, errors.EdgeX)
 	Deregister(context.Context, string) errors.EdgeX
 }

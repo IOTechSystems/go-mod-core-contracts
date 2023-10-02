@@ -54,7 +54,7 @@ func TestAllRegistry(t *testing.T) {
 	defer ts.Close()
 
 	client := NewRegistryClient(ts.URL)
-	res, err := client.AllRegistry(context.Background())
+	res, err := client.AllRegistry(context.Background(), false)
 
 	require.NoError(t, err)
 	require.IsType(t, responses.MultiRegistrationsResponse{}, res)
