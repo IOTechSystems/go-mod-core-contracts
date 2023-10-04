@@ -224,10 +224,13 @@ func sendRequest(ctx context.Context, req *http.Request) ([]byte, errors.EdgeX) 
 	}
 
 	// Handle error response
+	if !json.Valid(bodyBytes) {
+		return nil, errors.NewCommonEdgeX(errors.KindMapping(resp.StatusCode), fmt.Sprintf("request failed on %s, status code: %d, err: %s", req.URL, resp.StatusCode, string(bodyBytes)), nil)
+	}
 	var errResponse commonDTO.BaseResponse
 	e := json.Unmarshal(bodyBytes, &errResponse)
 	if e != nil {
-		return nil, errors.NewCommonEdgeX(errors.KindMapping(resp.StatusCode), string(bodyBytes), e)
+		return nil, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to decode the error response: %s", string(bodyBytes)), e)
 	}
 
 	return nil, errors.NewCommonEdgeX(errors.KindMapping(errResponse.StatusCode), errResponse.Message, nil)
