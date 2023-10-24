@@ -2,7 +2,7 @@
 // Copyright (C) 2023 IOTech Ltd
 //
 
-package utils
+package centralutils
 
 import (
 	"github.com/xuri/excelize/v2"

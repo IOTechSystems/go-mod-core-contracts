@@ -2,7 +2,7 @@
 // Copyright (C) 2023 IOTech Ltd
 //
 
-package utils
+package centralutils
 
 import (
 	"fmt"
@@ -15,13 +15,13 @@ import (
 )
 
 type DeviceXlsx struct {
-	fieldMappings map[string]mappingField // fieldMappings defines all the device fields with default values defined in the xlsx
-	devices       []*dtos.Device
-	validateErr   []error
+	fieldMappings  map[string]mappingField // fieldMappings defines all the device fields with default values defined in the xlsx
+	Devices        []*dtos.Device          `json:"devices"`
+	ValidateErrors []error                 `json:"validateErrors,omitempty"`
 }
 
 // ConvertDevice parses the Devices sheet and convert the rows to Device DTOs
-func (deviceXlsx *DeviceXlsx) ConvertDevice(xlsFile *excelize.File, protocol string) error {
+func (deviceXlsx *DeviceXlsx) ConvertToDTO(xlsFile *excelize.File, protocol string) error {
 	var header []string
 
 	rows, err := xlsFile.GetRows(devicesSheetName)
@@ -89,9 +89,9 @@ func (deviceXlsx *DeviceXlsx) ConvertDevice(xlsFile *excelize.File, protocol str
 		err := common.Validate(convertedDevice)
 		if err != nil {
 			deviceErr := fmt.Errorf("device %s validation error: %v", convertedDevice.Name, err)
-			deviceXlsx.validateErr = append(deviceXlsx.validateErr, deviceErr)
+			deviceXlsx.ValidateErrors = append(deviceXlsx.ValidateErrors, deviceErr)
 		} else {
-			deviceXlsx.devices = append(deviceXlsx.devices, &convertedDevice)
+			deviceXlsx.Devices = append(deviceXlsx.Devices, &convertedDevice)
 		}
 	}
 
@@ -170,13 +170,13 @@ func (deviceXlsx *DeviceXlsx) convertAutoEvents(xlsFile *excelize.File) error {
 
 		// validate the AutoEvent DTO
 		err = common.Validate(autoEvent)
-		if err == nil {
+		if err != nil {
 			autoEventErr := fmt.Errorf("autoEvent validation error: %v", err)
-			deviceXlsx.validateErr = append(deviceXlsx.validateErr, autoEventErr)
+			deviceXlsx.ValidateErrors = append(deviceXlsx.ValidateErrors, autoEventErr)
 		}
 
 		for _, deviceName := range deviceNames {
-			for _, device := range deviceXlsx.devices {
+			for _, device := range deviceXlsx.Devices {
 				if deviceName == device.Name {
 					device.AutoEvents = append(device.AutoEvents, autoEvent)
 				}
