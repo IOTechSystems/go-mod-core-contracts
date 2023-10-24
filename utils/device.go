@@ -36,9 +36,7 @@ func (deviceXlsx *DeviceXlsx) ConvertDevice(xlsFile *excelize.File, protocol str
 			// get the column count of the header row to see if any Object field from MappingTable sheet is not defined
 			colCount := len(row)
 
-			for _, colCell := range row {
-				header = append(header, colCell)
-			}
+			header = append(header, row...)
 
 			if colCount != len(deviceXlsx.fieldMappings) {
 				for objectField, mapping := range deviceXlsx.fieldMappings {
@@ -120,9 +118,7 @@ func (deviceXlsx *DeviceXlsx) convertAutoEvents(xlsFile *excelize.File) error {
 			// get the column count of the header row to see if any Object field from MappingTable sheet is not defined
 			colCount := len(row)
 
-			for _, colCell := range row {
-				header = append(header, colCell)
-			}
+			header = append(header, row...)
 
 			// AutoEvents sheet should define 4 columns in the header row
 			if colCount != 4 {
