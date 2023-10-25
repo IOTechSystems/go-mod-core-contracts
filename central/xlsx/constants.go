@@ -2,7 +2,7 @@
 // Copyright (C) 2023 IOTech Ltd
 //
 
-package centralutils
+package xlsx
 
 // constants relates to the stylesheet names
 const (

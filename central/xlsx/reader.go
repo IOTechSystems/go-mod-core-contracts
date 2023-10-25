@@ -2,7 +2,7 @@
 // Copyright (C) 2023 IOTech Ltd
 //
 
-package centralutils
+package xlsx
 
 import (
 	"errors"
@@ -15,8 +15,8 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 )
 
-// ReadStruct parses the xlsx data row to the struct type of the structPtr argument
-func ReadStruct(structPtr interface{}, protocol string, headerCol []string, row []string) ([]string, error) {
+// readStruct parses the xlsx data row to the struct type of the structPtr argument
+func readStruct(structPtr interface{}, protocol string, headerCol []string, row []string) ([]string, error) {
 	v := reflect.ValueOf(structPtr)
 	if v.Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
 		return nil, errors.New("the structPtr argument should be a pointer of struct")

@@ -2,19 +2,21 @@
 // Copyright (C) 2023 IOTech Ltd
 //
 
-package centralutils
+package xlsx
 
 import (
+	"fmt"
+
 	"github.com/xuri/excelize/v2"
 )
 
-// ConvertMappingTable parses the MappingTable sheet and stores the default value for each device field
-func ConvertMappingTable(xlsFile *excelize.File) (map[string]mappingField, error) {
+// convertMappingTable parses the MappingTable sheet and stores the default value for each device field
+func convertMappingTable(xlsFile *excelize.File) (map[string]mappingField, error) {
 	defaultValueMap := make(map[string]mappingField)
 
 	rows, err := xlsFile.GetRows(mappingTableSheetName)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to retrieve all rows from %s: %w", mappingTableSheetName, err)
 	}
 
 	var objColIndex, pathColIndex, defaultColIndex, headerLength int
