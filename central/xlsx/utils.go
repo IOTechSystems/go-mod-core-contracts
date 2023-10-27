@@ -6,9 +6,9 @@ package xlsx
 
 import (
 	"fmt"
-	"slices"
 
 	"github.com/xuri/excelize/v2"
+	"golang.org/x/exp/slices"
 )
 
 // checkMappingObject checks if the object field from MappingTable is defined in the provided workseet

@@ -6,13 +6,13 @@ package xlsx
 
 import (
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 
 	"github.com/xuri/excelize/v2"
+	"golang.org/x/exp/slices"
 )
 
 // requiredSheets defines the required worksheet names in the xlsx file
