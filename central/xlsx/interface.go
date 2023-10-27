@@ -4,10 +4,12 @@
 
 package xlsx
 
-import "github.com/xuri/excelize/v2"
-
 // Converter interface provides an abstraction for parsing the xlsx file content
 type Converter interface {
 	// ConvertToDTO parses the xlsx file content to DTOs
-	convertToDTO(*excelize.File, string) error
+	convertToDTO() error
+	// GetDTOs returns the coverted DTOs
+	GetDTOs() any
+	// GetValidateErrors returns the validation error while parsing the excel data rows to DTOs
+	GetValidateErrors() []error
 }

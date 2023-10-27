@@ -5,7 +5,9 @@
 package xlsx
 
 import (
+	"fmt"
 	"io"
+	"reflect"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 
@@ -18,7 +20,16 @@ type mappingField struct {
 }
 
 // ConvertXlsx transforms the xlsx file to the Converter interface
-func ConvertXlsx(file io.Reader, dto any) (Converter, error) {
+func ConvertXlsx(file io.Reader, dtoType reflect.Type) (Converter, error) {
+	// check if the dto is a valid DTO type before read the xlsx file
+	switch dtoType {
+	case reflect.TypeOf(dtos.Device{}), reflect.TypeOf(dtos.DeviceProfile{}):
+	default:
+		return nil, fmt.Errorf("unable to parse the xlsx file to invalid DTO type '%T'", dtoType)
+	}
+
+	var converter Converter
+
 	f, err := excelize.OpenReader(file)
 	if err != nil {
 		return nil, err
@@ -30,29 +41,16 @@ func ConvertXlsx(file io.Reader, dto any) (Converter, error) {
 		return nil, err
 	}
 
-	converter, err := processXlsxByType(f, fieldMappings, dto)
-	if err != nil {
-		return nil, err
+	switch dtoType {
+	case reflect.TypeOf(dtos.Device{}):
+		deviceX := newDeviceXlsx(f, fieldMappings)
+		converter = deviceX
+	case reflect.TypeOf(dtos.DeviceProfile{}):
 	}
 
-	return converter, nil
-}
-
-// processXlsxByType processes the xlsx file based on the dto type and the mapping table definition
-func processXlsxByType(f *excelize.File, fieldMappings map[string]mappingField, dto any) (Converter, error) {
-	var err error
-	var converter Converter
-
-	switch dto.(type) {
-	case dtos.Device:
-		deviceX := new(deviceXlsx)
-		deviceX.fieldMappings = fieldMappings
-		err = deviceX.convertToDTO(f, deviceX.fieldMappings[protocolName].defaultValue)
-		if err != nil {
-			return nil, err
-		}
-		converter = deviceX
-	case dtos.DeviceProfile:
+	err = converter.convertToDTO()
+	if err != nil {
+		return nil, err
 	}
 
 	return converter, nil

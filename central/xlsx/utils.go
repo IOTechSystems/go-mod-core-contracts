@@ -6,6 +6,7 @@ package xlsx
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -56,5 +57,15 @@ func checkMappingObject(xlsFile *excelize.File, sheetName string, totalColCount 
 
 	*header = append(*header, objectField)
 	*totalColCount++
+	return nil
+}
+
+// checkRequiredSheets examines if all the required sheets are defined in the xlsx
+func checkRequiredSheets(allSheetNames, requiredSheets []string) error {
+	for _, requiredSheet := range requiredSheets {
+		if !slices.Contains(allSheetNames, requiredSheet) {
+			return fmt.Errorf("%s worksheet not found in the file", requiredSheet)
+		}
+	}
 	return nil
 }
