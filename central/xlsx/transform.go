@@ -19,13 +19,6 @@ type mappingField struct {
 
 // ConvertXlsx transforms the xlsx file to the Converter interface
 func ConvertXlsx(file io.Reader, dtoType reflect.Type) (Converter, error) {
-	// check if the dto is a valid DTO type before read the xlsx file
-	switch dtoType {
-	case reflect.TypeOf(dtos.Device{}), reflect.TypeOf(dtos.DeviceProfile{}):
-	default:
-		return nil, fmt.Errorf("unable to parse the xlsx file to invalid DTO type '%T'", dtoType)
-	}
-
 	var converter Converter
 	var err error
 
@@ -37,6 +30,8 @@ func ConvertXlsx(file io.Reader, dtoType reflect.Type) (Converter, error) {
 			return nil, fmt.Errorf("failed to create deviceXlsx instance: %w", err)
 		}
 	case reflect.TypeOf(dtos.DeviceProfile{}):
+	default:
+		return nil, fmt.Errorf("unable to parse the xlsx file to invalid DTO type '%T'", dtoType)
 	}
 
 	err = converter.convertToDTO()

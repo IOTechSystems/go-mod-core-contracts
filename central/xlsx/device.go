@@ -28,11 +28,11 @@ type deviceXlsx struct {
 }
 
 func newDeviceXlsx(file io.Reader) (*deviceXlsx, error) {
+	// file io.Reader should be closed from the caller in another module
 	f, err := excelize.OpenReader(file)
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
 
 	fieldMappings, err := convertMappingTable(f)
 	if err != nil {
