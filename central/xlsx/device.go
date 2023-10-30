@@ -6,6 +6,7 @@ package xlsx
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
@@ -26,8 +27,18 @@ type deviceXlsx struct {
 	ValidateErrors []error
 }
 
-func newDeviceXlsx(xlsxFile *excelize.File, fieldMappings map[string]mappingField) *deviceXlsx {
-	return &deviceXlsx{xlsFile: xlsxFile, fieldMappings: fieldMappings}
+func newDeviceXlsx(file io.Reader) (*deviceXlsx, error) {
+	f, err := excelize.OpenReader(file)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	fieldMappings, err := convertMappingTable(f)
+	if err != nil {
+		return nil, err
+	}
+	return &deviceXlsx{xlsFile: f, fieldMappings: fieldMappings}, nil
 }
 
 // convertToDTO parses the Devices sheet and convert the rows to Device DTOs
@@ -89,7 +100,10 @@ func (deviceXlsx *deviceXlsx) convertToDTO() error {
 	}
 
 	if slices.Contains(allSheetNames, autoEventsSheetName) {
-		_ = deviceXlsx.convertAutoEvents(xlsFile)
+		err = deviceXlsx.convertAutoEvents(xlsFile)
+		if err != nil {
+			return fmt.Errorf("failed to convert AutoEvents worksheet: %w", err)
+		}
 	}
 
 	return nil

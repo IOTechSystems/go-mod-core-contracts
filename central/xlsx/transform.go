@@ -10,8 +10,6 @@ import (
 	"reflect"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-
-	"github.com/xuri/excelize/v2"
 )
 
 type mappingField struct {
@@ -29,22 +27,15 @@ func ConvertXlsx(file io.Reader, dtoType reflect.Type) (Converter, error) {
 	}
 
 	var converter Converter
-
-	f, err := excelize.OpenReader(file)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	fieldMappings, err := convertMappingTable(f)
-	if err != nil {
-		return nil, err
-	}
+	var err error
 
 	switch dtoType {
 	case reflect.TypeOf(dtos.Device{}):
-		deviceX := newDeviceXlsx(f, fieldMappings)
+		deviceX, err := newDeviceXlsx(file)
 		converter = deviceX
+		if err != nil {
+			return nil, fmt.Errorf("failed to create deviceXlsx instance: %w", err)
+		}
 	case reflect.TypeOf(dtos.DeviceProfile{}):
 	}
 
