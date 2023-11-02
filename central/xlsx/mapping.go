@@ -5,6 +5,7 @@
 package xlsx
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/xuri/excelize/v2"
@@ -19,7 +20,13 @@ func convertMappingTable(xlsFile *excelize.File) (map[string]mappingField, error
 		return nil, fmt.Errorf("failed to retrieve all rows from %s: %w", mappingTableSheetName, err)
 	}
 
-	var objColIndex, pathColIndex, defaultColIndex, headerLength int
+	// checks at least 2 rows exists in the MappingTable sheet (1 header and 1 data row)
+	if len(rows) < 2 {
+		return nil, errors.New("at least 2 rows needs to be defined in the MappingTable sheet (1 header and 1 data row)")
+	}
+
+	objColIndex, pathColIndex, defaultColIndex := -1, -1, -1
+	var headerLength int
 	for rowIndex, row := range rows {
 		if rowIndex == 0 {
 			// read the header row and get the Object and DefaultValue column index
@@ -32,6 +39,9 @@ func convertMappingTable(xlsFile *excelize.File) (map[string]mappingField, error
 				case defaultValueCol:
 					defaultColIndex = colIndex
 				}
+			}
+			if objColIndex == -1 || pathColIndex == -1 || defaultColIndex == -1 {
+				return nil, fmt.Errorf("column Object, Path, or Default Value not defined in the header of %s worksheet", mappingTableSheetName)
 			}
 			headerLength = len(row)
 		} else {
