@@ -38,30 +38,38 @@ func readStruct(structPtr interface{}, protocol string, headerCol []string, row 
 		headerName := headerCol[colIndex]
 		field := rowElement.FieldByName(headerName)
 
+		cell = strings.TrimSpace(cell)
 		if field.Kind() != reflect.Invalid {
 			var fieldValue interface{}
 			switch field.Kind() {
+			case reflect.String:
+				fieldValue = cell
 			case reflect.Slice:
 				values := strings.Split(cell, common.CommaSeparator)
 				fieldValue = values
 			case reflect.Bool:
-				boolValue, err := strconv.ParseBool(strings.TrimSpace(cell))
+				boolValue, err := strconv.ParseBool(cell)
 				if err != nil {
 					return nil, fmt.Errorf("failed to parse cell '%v' to bool type: %w", cell, err)
 				}
 				fieldValue = boolValue
-			default:
+			case reflect.Int64:
+				int64Value, err := strconv.ParseInt(cell, 10, 64)
+				if err != nil {
+					return nil, fmt.Errorf("failed to parse cell '%v' to Int64 type: %w", cell, err)
+				}
+				fieldValue = int64Value
+			case reflect.Interface:
 				fieldValue = cell
+			default:
+				return nil, fmt.Errorf("failed to parse cell '%v' to %s type", cell, field.Type())
 			}
 			// if the column header matches the struct field, set the cell value to the struct
 			field.Set(reflect.ValueOf(fieldValue))
 		} else {
-			// headerName belongs to the Protocols fields of Device DTO
-			//if elementType == reflect.TypeOf(dtos.Device{}) {
-			//	prtPropertyMap[headerName] = cell
-			//}
 			switch elementType {
 			case reflect.TypeOf(dtos.Device{}):
+				// headerName belongs to the Protocols fields of Device DTO
 				prtPropertyMap[headerName] = cell
 			case reflect.TypeOf(dtos.AutoEvent{}):
 				returnedColumns = append(returnedColumns, cell)
@@ -71,7 +79,11 @@ func readStruct(structPtr interface{}, protocol string, headerCol []string, row 
 
 	if len(prtPropertyMap) > 0 {
 		// set ProtocolProperties map to the Protocols field of Device DTO
-		prtProp := setProtocolPropMap(protocol, prtPropertyMap)
+		prtProp, err := setProtocolPropMap(protocol, prtPropertyMap)
+		if err != nil {
+			return nil, err
+		}
+
 		prtPropertyField := rowElement.FieldByName(protocols)
 		prtPropertyField.Set(reflect.ValueOf(prtProp))
 	}
@@ -82,11 +94,13 @@ func readStruct(structPtr interface{}, protocol string, headerCol []string, row 
 }
 
 // setProtocolPropMap sets the ProtocolProperties outer map key based on protocol and returns the map
-func setProtocolPropMap(protocol string, prtProps map[string]string) map[string]dtos.ProtocolProperties {
+func setProtocolPropMap(protocol string, prtProps map[string]string) (map[string]dtos.ProtocolProperties, error) {
 	prtPropMap := make(map[string]dtos.ProtocolProperties)
 	switch protocol {
 	case modbusRTUKey:
 		prtPropMap = map[string]dtos.ProtocolProperties{modbusRTUKey: prtProps}
+	default:
+		return nil, fmt.Errorf("unknown ProtocolProperties outer key for '%s' protocol", protocol)
 	}
-	return prtPropMap
+	return prtPropMap, nil
 }

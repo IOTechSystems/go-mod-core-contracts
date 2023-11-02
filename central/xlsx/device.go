@@ -100,7 +100,7 @@ func (deviceXlsx *deviceXlsx) convertToDTO() error {
 	}
 
 	if slices.Contains(allSheetNames, autoEventsSheetName) {
-		err = deviceXlsx.convertAutoEvents(xlsFile)
+		err = deviceXlsx.convertAutoEvents()
 		if err != nil {
 			return fmt.Errorf("failed to convert AutoEvents worksheet: %w", err)
 		}
@@ -134,23 +134,26 @@ func (deviceXlsx *deviceXlsx) parseDevicesHeader(header *[]string, rowCount int)
 }
 
 // convertAutoEvents parses the AutoEvents sheet and convert the rows to AutoEvent DTOs
-func (deviceXlsx *deviceXlsx) convertAutoEvents(xlsFile *excelize.File) error {
+func (deviceXlsx *deviceXlsx) convertAutoEvents() error {
 	var header []string
+	xlsFile := deviceXlsx.xlsFile
 
 	rows, err := xlsFile.GetRows(autoEventsSheetName)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve all rows from %s worksheet: %w", autoEventsSheetName, err)
 	}
 
-	// parse the header row
-	if len(rows) > 0 {
+	// checks at least 2 rows exists in the AutoEvents sheet (1 header and 1 data row)
+	// and parses the header row
+	if len(rows) >= 2 {
 		header = rows[0]
+		// parse the header row
 		// get the column count of the header row to see if any Object field from MappingTable sheet is not defined
 		colCount := len(header)
 
-		// AutoEvents sheet should at least define 4 columns in the header row
-		if colCount < 4 {
-			err = deviceXlsx.parseAutoEventsHeader(header, len(rows), colCount)
+		// AutoEvents sheet should at least define 2 columns in the header row (SourceName and Reference Device Name)
+		if colCount < 2 {
+			err = deviceXlsx.parseAutoEventsHeader(header, len(rows))
 			if err != nil {
 				return fmt.Errorf("failed to parse the header row from %s worksheet: %w", autoEventsSheetName, err)
 			}
@@ -195,8 +198,9 @@ func (deviceXlsx *deviceXlsx) convertAutoEvents(xlsFile *excelize.File) error {
 	return nil
 }
 
-func (deviceXlsx *deviceXlsx) parseAutoEventsHeader(header []string, rowCount, colCount int) error {
+func (deviceXlsx *deviceXlsx) parseAutoEventsHeader(header []string, rowCount int) error {
 	var err error
+	colCount := len(header)
 	newColCount := &colCount
 
 	for objectField, mapping := range deviceXlsx.fieldMappings {

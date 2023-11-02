@@ -5,16 +5,21 @@
 package xlsx
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/xuri/excelize/v2"
 	"golang.org/x/exp/slices"
 )
 
-// checkMappingObject checks if the object field from MappingTable is defined in the provided workseet
+// checkMappingObject checks if the object field from MappingTable is defined in the provided worksheet
 // if not found, adds the new object column with defaultValue to the provided sheetName
 func checkMappingObject(xlsFile *excelize.File, sheetName string, totalColCount *int, totalRowCount int,
 	defaultValue, objectField string, header *[]string) error {
+	if header == nil {
+		return errors.New("header cannot be nil")
+	}
+
 	found := false
 	for _, headerCell := range *header {
 		if headerCell == objectField {
