@@ -34,6 +34,7 @@ func Test_ConvertXlsx_InvalidDTOType(t *testing.T) {
 	defer f.Close()
 
 	buffer, err := f.WriteToBuffer()
+	require.NoError(t, err)
 
 	_, err = ConvertXlsx(buffer, reflect.TypeOf("test"))
 	require.Error(t, err, "Expected invalid DTO Type error not occurred")
@@ -45,6 +46,7 @@ func Test_ConvertXlsx_WithoutDeviceSheet(t *testing.T) {
 	defer f.Close()
 
 	buffer, err := f.WriteToBuffer()
+	require.NoError(t, err)
 
 	_, err = ConvertXlsx(buffer, reflect.TypeOf(dtos.Device{}))
 	require.Error(t, err, "Expected no Devices sheet error not occurred")
@@ -56,6 +58,7 @@ func Test_ConvertXlsx_WithDeviceSheet(t *testing.T) {
 	defer f.Close()
 
 	sw, err := f.NewStreamWriter(devicesSheetName)
+	require.NoError(t, err)
 	err = sw.SetRow("A1", validDeviceHeader)
 	require.NoError(t, err)
 	err = sw.SetRow("A2",
@@ -67,7 +70,7 @@ func Test_ConvertXlsx_WithDeviceSheet(t *testing.T) {
 	require.NoError(t, err)
 
 	buffer, err := f.WriteToBuffer()
-
+	require.NoError(t, err)
 	_, err = ConvertXlsx(buffer, reflect.TypeOf(dtos.Device{}))
 	require.NoError(t, err, "Unexpected ConvertXlsx error occurred")
 }

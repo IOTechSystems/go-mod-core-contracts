@@ -27,8 +27,11 @@ func Test_newDeviceXlsx(t *testing.T) {
 
 	_, err := f.NewSheet(mappingTableSheetName)
 	require.NoError(t, err)
-
+	err = createMappingTableSheet(f)
+	require.NoError(t, err)
 	buffer, err := f.WriteToBuffer()
+	require.NoError(t, err)
+
 	deviceXls, err := newDeviceXlsx(buffer)
 	require.NoError(t, err)
 	require.NotEmpty(t, deviceXls)
@@ -129,6 +132,7 @@ func Test_convertToDTO(t *testing.T) {
 	defer deviceX.xlsFile.Close()
 
 	sw, err := deviceX.xlsFile.NewStreamWriter(devicesSheetName)
+	require.NoError(t, err)
 	err = sw.SetRow("A1", validDeviceHeader)
 	require.NoError(t, err)
 	err = sw.SetRow("A2",
@@ -193,10 +197,12 @@ func Test_convertAutoEvents_WithSheet(t *testing.T) {
 			_, err = deviceX.xlsFile.NewSheet(autoEventsSheetName)
 			require.NoError(t, err)
 
-			err = deviceX.xlsFile.SetSheetRow(autoEventsSheetName, "A1", &tt.headerRow)
+			headerRow := tt.headerRow
+			err = deviceX.xlsFile.SetSheetRow(autoEventsSheetName, "A1", &headerRow)
 			require.NoError(t, err)
 			if tt.dataRow != nil {
-				err = deviceX.xlsFile.SetSheetRow(autoEventsSheetName, "A2", &tt.dataRow)
+				dataRow := tt.dataRow
+				err = deviceX.xlsFile.SetSheetRow(autoEventsSheetName, "A2", &dataRow)
 				require.NoError(t, err)
 			}
 			err = deviceX.convertAutoEvents()

@@ -98,7 +98,7 @@ func setProtocolPropMap(protocol string, prtProps map[string]string) (map[string
 	prtPropMap := make(map[string]dtos.ProtocolProperties)
 	switch protocol {
 	case modbusRTUKey:
-		prtPropMap = map[string]dtos.ProtocolProperties{modbusRTUKey: prtProps}
+		prtPropMap[modbusRTUKey] = prtProps
 	default:
 		return nil, fmt.Errorf("unknown ProtocolProperties outer key for '%s' protocol", protocol)
 	}

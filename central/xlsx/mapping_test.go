@@ -43,11 +43,13 @@ func Test_convertMappingTable_WithMappingSheet(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.headerRow != nil {
-				err = f.SetSheetRow(mappingTableSheetName, "A1", &tt.headerRow)
+				headerRow := tt.headerRow
+				err = f.SetSheetRow(mappingTableSheetName, "A1", &headerRow)
 				require.NoError(t, err)
 			}
 			if tt.dataRow != nil {
-				err = f.SetSheetRow(mappingTableSheetName, "A2", &tt.dataRow)
+				dataRow := tt.dataRow
+				err = f.SetSheetRow(mappingTableSheetName, "A2", &dataRow)
 				require.NoError(t, err)
 			}
 			mappingResult, err := convertMappingTable(f)
