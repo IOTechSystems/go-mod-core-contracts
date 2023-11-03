@@ -10,6 +10,6 @@ type Converter interface {
 	convertToDTO() error
 	// GetDTOs returns the coverted DTOs
 	GetDTOs() any
-	// GetValidateErrors returns the validation error while parsing the excel data rows to DTOs
-	GetValidateErrors() []error
+	// GetValidateErrors returns the deviceName-validationError key-value map while parsing the excel data rows to DTOs
+	GetValidateErrors() map[string]error
 }
