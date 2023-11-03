@@ -19,6 +19,7 @@ var (
 	validDeviceHeader = []any{
 		"Name", "Description", "ServiceName", "ProtocolName", "Labels", "AdminState", "Address", "BaudRate", "DataBits", "Parity", "StopBits", "UnitID", "ProfileName",
 	}
+	emptyValidateErr = map[string]error{}
 )
 
 func Test_newDeviceXlsx(t *testing.T) {
@@ -212,9 +213,9 @@ func Test_convertAutoEvents_WithSheet(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				if tt.expectValidateError {
-					require.NotNil(t, deviceX.ValidateErrors, "Expected convertAutoEvents validation error not generated")
+					require.NotNil(t, deviceX.validateErrors, "Expected convertAutoEvents validation error not generated")
 				} else {
-					require.Nil(t, deviceX.ValidateErrors, "Unexpected convertAutoEvents validation error")
+					require.Equal(t, emptyValidateErr, deviceX.validateErrors, "Unexpected convertAutoEvents validation error")
 				}
 			}
 		})
@@ -273,18 +274,23 @@ func Test_GetDTOs(t *testing.T) {
 }
 
 func Test_GetValidateErrors(t *testing.T) {
+	mockDeviceName := "mockDevice"
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
 	defer deviceX.xlsFile.Close()
 
 	validateErrs := deviceX.GetValidateErrors()
-	require.Nil(t, validateErrs)
+	require.Equal(t, validateErrs, emptyValidateErr)
 
 	errMsg := "test error"
 	mockError := errors.New(errMsg)
-	deviceX.ValidateErrors = []error{mockError}
+	deviceX.validateErrors[mockDeviceName] = mockError
 
 	validateErrs = deviceX.GetValidateErrors()
 	require.NotNil(t, validateErrs)
-	require.EqualError(t, validateErrs[0], errMsg)
+	if actualErr, ok := validateErrs[mockDeviceName]; ok {
+		require.EqualError(t, actualErr, errMsg)
+	} else {
+		require.Fail(t, "Expected device validation error not found")
+	}
 }

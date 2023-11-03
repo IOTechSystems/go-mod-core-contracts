@@ -24,7 +24,7 @@ type deviceXlsx struct {
 	xlsFile        *excelize.File
 	fieldMappings  map[string]mappingField // fieldMappings defines all the device fields with default values defined in the xlsx
 	devices        []*dtos.Device
-	ValidateErrors []error
+	validateErrors map[string]error
 }
 
 func newDeviceXlsx(file io.Reader) (*deviceXlsx, error) {
@@ -38,7 +38,11 @@ func newDeviceXlsx(file io.Reader) (*deviceXlsx, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &deviceXlsx{xlsFile: f, fieldMappings: fieldMappings}, nil
+	return &deviceXlsx{
+		xlsFile:        f,
+		fieldMappings:  fieldMappings,
+		validateErrors: make(map[string]error),
+	}, nil
 }
 
 // convertToDTO parses the Devices sheet and convert the rows to Device DTOs
@@ -90,10 +94,9 @@ func (deviceXlsx *deviceXlsx) convertToDTO() error {
 		}
 
 		// validate the device DTO
-		err := common.Validate(convertedDevice)
+		err = common.Validate(convertedDevice)
 		if err != nil {
-			deviceErr := fmt.Errorf("device %s validation error: %v", convertedDevice.Name, err)
-			deviceXlsx.ValidateErrors = append(deviceXlsx.ValidateErrors, deviceErr)
+			deviceXlsx.validateErrors[convertedDevice.Name] = err
 		} else {
 			deviceXlsx.devices = append(deviceXlsx.devices, &convertedDevice)
 		}
@@ -167,6 +170,7 @@ func (deviceXlsx *deviceXlsx) convertAutoEvents() error {
 		return err
 	}
 
+OUTER:
 	// parse the device data rows
 	for rowIndex, row := range rows {
 		if rowIndex == 0 {
@@ -182,8 +186,16 @@ func (deviceXlsx *deviceXlsx) convertAutoEvents() error {
 		// validate the AutoEvent DTO
 		err = common.Validate(autoEvent)
 		if err != nil {
-			autoEventErr := fmt.Errorf("autoEvent validation error: %v", err)
-			deviceXlsx.ValidateErrors = append(deviceXlsx.ValidateErrors, autoEventErr)
+			for _, deviceName := range deviceNames {
+				// find the matched device DTO index equals to the "Reference Device Name" on the AutoEvents row
+				idx := slices.IndexFunc(deviceXlsx.devices, func(d *dtos.Device) bool { return d.Name == deviceName })
+				if idx > -1 {
+					// delete the device element in deviceXlsx.devices slice if the referenced AutoEvent failed validation
+					deviceXlsx.devices = slices.Delete(deviceXlsx.devices, idx, idx+1)
+					deviceXlsx.validateErrors[deviceName] = err
+				}
+			}
+			continue OUTER
 		}
 
 		for _, deviceName := range deviceNames {
@@ -229,6 +241,6 @@ func (deviceXlsx *deviceXlsx) GetDTOs() any {
 	return deviceXlsx.devices
 }
 
-func (deviceXlsx *deviceXlsx) GetValidateErrors() []error {
-	return deviceXlsx.ValidateErrors
+func (deviceXlsx *deviceXlsx) GetValidateErrors() map[string]error {
+	return deviceXlsx.validateErrors
 }
