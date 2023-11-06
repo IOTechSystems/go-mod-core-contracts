@@ -90,6 +90,29 @@ func (_m *NotificationClient) DeleteNotificationById(ctx context.Context, id str
 	return r0, r1
 }
 
+// DeleteNotificationByIds provides a mock function with given fields: ctx, ids
+func (_m *NotificationClient) DeleteNotificationByIds(ctx context.Context, ids []string) (common.BaseResponse, errors.EdgeX) {
+	ret := _m.Called(ctx, ids)
+
+	var r0 common.BaseResponse
+	if rf, ok := ret.Get(0).(func(context.Context, []string) common.BaseResponse); ok {
+		r0 = rf(ctx, ids)
+	} else {
+		r0 = ret.Get(0).(common.BaseResponse)
+	}
+
+	var r1 errors.EdgeX
+	if rf, ok := ret.Get(1).(func(context.Context, []string) errors.EdgeX); ok {
+		r1 = rf(ctx, ids)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(errors.EdgeX)
+		}
+	}
+
+	return r0, r1
+}
+
 // DeleteProcessedNotificationsByAge provides a mock function with given fields: ctx, age
 func (_m *NotificationClient) DeleteProcessedNotificationsByAge(ctx context.Context, age int) (common.BaseResponse, errors.EdgeX) {
 	ret := _m.Called(ctx, age)
@@ -136,20 +159,20 @@ func (_m *NotificationClient) NotificationById(ctx context.Context, id string) (
 	return r0, r1
 }
 
-// NotificationsByCategory provides a mock function with given fields: ctx, category, offset, limit
-func (_m *NotificationClient) NotificationsByCategory(ctx context.Context, category string, offset int, limit int) (responses.MultiNotificationsResponse, errors.EdgeX) {
-	ret := _m.Called(ctx, category, offset, limit)
+// NotificationsByCategory provides a mock function with given fields: ctx, category, offset, limit, ack
+func (_m *NotificationClient) NotificationsByCategory(ctx context.Context, category string, offset int, limit int, ack string) (responses.MultiNotificationsResponse, errors.EdgeX) {
+	ret := _m.Called(ctx, category, offset, limit, ack)
 
 	var r0 responses.MultiNotificationsResponse
-	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) responses.MultiNotificationsResponse); ok {
-		r0 = rf(ctx, category, offset, limit)
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int, string) responses.MultiNotificationsResponse); ok {
+		r0 = rf(ctx, category, offset, limit, ack)
 	} else {
 		r0 = ret.Get(0).(responses.MultiNotificationsResponse)
 	}
 
 	var r1 errors.EdgeX
-	if rf, ok := ret.Get(1).(func(context.Context, string, int, int) errors.EdgeX); ok {
-		r1 = rf(ctx, category, offset, limit)
+	if rf, ok := ret.Get(1).(func(context.Context, string, int, int, string) errors.EdgeX); ok {
+		r1 = rf(ctx, category, offset, limit, ack)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(errors.EdgeX)
@@ -159,20 +182,43 @@ func (_m *NotificationClient) NotificationsByCategory(ctx context.Context, categ
 	return r0, r1
 }
 
-// NotificationsByLabel provides a mock function with given fields: ctx, label, offset, limit
-func (_m *NotificationClient) NotificationsByLabel(ctx context.Context, label string, offset int, limit int) (responses.MultiNotificationsResponse, errors.EdgeX) {
-	ret := _m.Called(ctx, label, offset, limit)
+// NotificationsByLabel provides a mock function with given fields: ctx, label, offset, limit, ack
+func (_m *NotificationClient) NotificationsByLabel(ctx context.Context, label string, offset int, limit int, ack string) (responses.MultiNotificationsResponse, errors.EdgeX) {
+	ret := _m.Called(ctx, label, offset, limit, ack)
 
 	var r0 responses.MultiNotificationsResponse
-	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) responses.MultiNotificationsResponse); ok {
-		r0 = rf(ctx, label, offset, limit)
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int, string) responses.MultiNotificationsResponse); ok {
+		r0 = rf(ctx, label, offset, limit, ack)
 	} else {
 		r0 = ret.Get(0).(responses.MultiNotificationsResponse)
 	}
 
 	var r1 errors.EdgeX
-	if rf, ok := ret.Get(1).(func(context.Context, string, int, int) errors.EdgeX); ok {
-		r1 = rf(ctx, label, offset, limit)
+	if rf, ok := ret.Get(1).(func(context.Context, string, int, int, string) errors.EdgeX); ok {
+		r1 = rf(ctx, label, offset, limit, ack)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(errors.EdgeX)
+		}
+	}
+
+	return r0, r1
+}
+
+// NotificationsByQueryConditions provides a mock function with given fields: ctx, offset, limit, ack, conditionReq
+func (_m *NotificationClient) NotificationsByQueryConditions(ctx context.Context, offset int, limit int, ack string, conditionReq requests.GetNotificationRequest) (responses.MultiNotificationsResponse, errors.EdgeX) {
+	ret := _m.Called(ctx, offset, limit, ack, conditionReq)
+
+	var r0 responses.MultiNotificationsResponse
+	if rf, ok := ret.Get(0).(func(context.Context, int, int, string, requests.GetNotificationRequest) responses.MultiNotificationsResponse); ok {
+		r0 = rf(ctx, offset, limit, ack, conditionReq)
+	} else {
+		r0 = ret.Get(0).(responses.MultiNotificationsResponse)
+	}
+
+	var r1 errors.EdgeX
+	if rf, ok := ret.Get(1).(func(context.Context, int, int, string, requests.GetNotificationRequest) errors.EdgeX); ok {
+		r1 = rf(ctx, offset, limit, ack, conditionReq)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(errors.EdgeX)
@@ -187,15 +233,15 @@ func (_m *NotificationClient) NotificationsByStatus(ctx context.Context, status 
 	ret := _m.Called(ctx, status, offset, limit)
 
 	var r0 responses.MultiNotificationsResponse
-	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) responses.MultiNotificationsResponse); ok {
-		r0 = rf(ctx, status, offset, limit)
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int, string) responses.MultiNotificationsResponse); ok {
+		r0 = rf(ctx, status, offset, limit, ack)
 	} else {
 		r0 = ret.Get(0).(responses.MultiNotificationsResponse)
 	}
 
 	var r1 errors.EdgeX
-	if rf, ok := ret.Get(1).(func(context.Context, string, int, int) errors.EdgeX); ok {
-		r1 = rf(ctx, status, offset, limit)
+	if rf, ok := ret.Get(1).(func(context.Context, string, int, int, string) errors.EdgeX); ok {
+		r1 = rf(ctx, status, offset, limit, ack)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(errors.EdgeX)
@@ -205,20 +251,20 @@ func (_m *NotificationClient) NotificationsByStatus(ctx context.Context, status 
 	return r0, r1
 }
 
-// NotificationsBySubscriptionName provides a mock function with given fields: ctx, subscriptionName, offset, limit
-func (_m *NotificationClient) NotificationsBySubscriptionName(ctx context.Context, subscriptionName string, offset int, limit int) (responses.MultiNotificationsResponse, errors.EdgeX) {
-	ret := _m.Called(ctx, subscriptionName, offset, limit)
+// NotificationsBySubscriptionName provides a mock function with given fields: ctx, subscriptionName, offset, limit, ack
+func (_m *NotificationClient) NotificationsBySubscriptionName(ctx context.Context, subscriptionName string, offset int, limit int, ack string) (responses.MultiNotificationsResponse, errors.EdgeX) {
+	ret := _m.Called(ctx, subscriptionName, offset, limit, ack)
 
 	var r0 responses.MultiNotificationsResponse
-	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) responses.MultiNotificationsResponse); ok {
-		r0 = rf(ctx, subscriptionName, offset, limit)
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int, string) responses.MultiNotificationsResponse); ok {
+		r0 = rf(ctx, subscriptionName, offset, limit, ack)
 	} else {
 		r0 = ret.Get(0).(responses.MultiNotificationsResponse)
 	}
 
 	var r1 errors.EdgeX
-	if rf, ok := ret.Get(1).(func(context.Context, string, int, int) errors.EdgeX); ok {
-		r1 = rf(ctx, subscriptionName, offset, limit)
+	if rf, ok := ret.Get(1).(func(context.Context, string, int, int, string) errors.EdgeX); ok {
+		r1 = rf(ctx, subscriptionName, offset, limit, ack)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(errors.EdgeX)
@@ -228,20 +274,20 @@ func (_m *NotificationClient) NotificationsBySubscriptionName(ctx context.Contex
 	return r0, r1
 }
 
-// NotificationsByTimeRange provides a mock function with given fields: ctx, start, end, offset, limit
-func (_m *NotificationClient) NotificationsByTimeRange(ctx context.Context, start int, end int, offset int, limit int) (responses.MultiNotificationsResponse, errors.EdgeX) {
-	ret := _m.Called(ctx, start, end, offset, limit)
+// NotificationsByTimeRange provides a mock function with given fields: ctx, start, end, offset, limit, ack
+func (_m *NotificationClient) NotificationsByTimeRange(ctx context.Context, start int64, end int64, offset int, limit int, ack string) (responses.MultiNotificationsResponse, errors.EdgeX) {
+	ret := _m.Called(ctx, start, end, offset, limit, ack)
 
 	var r0 responses.MultiNotificationsResponse
-	if rf, ok := ret.Get(0).(func(context.Context, int, int, int, int) responses.MultiNotificationsResponse); ok {
-		r0 = rf(ctx, start, end, offset, limit)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, int, int, string) responses.MultiNotificationsResponse); ok {
+		r0 = rf(ctx, start, end, offset, limit, ack)
 	} else {
 		r0 = ret.Get(0).(responses.MultiNotificationsResponse)
 	}
 
 	var r1 errors.EdgeX
-	if rf, ok := ret.Get(1).(func(context.Context, int, int, int, int) errors.EdgeX); ok {
-		r1 = rf(ctx, start, end, offset, limit)
+	if rf, ok := ret.Get(1).(func(context.Context, int64, int64, int, int, string) errors.EdgeX); ok {
+		r1 = rf(ctx, start, end, offset, limit, ack)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(errors.EdgeX)

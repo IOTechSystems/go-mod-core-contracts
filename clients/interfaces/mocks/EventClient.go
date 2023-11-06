@@ -204,21 +204,18 @@ func (_m *EventClient) EventsByDeviceName(ctx context.Context, name string, offs
 }
 
 // EventsByTimeRange provides a mock function with given fields: ctx, start, end, offset, limit
-func (_m *EventClient) EventsByTimeRange(ctx context.Context, start int, end int, offset int, limit int) (responses.MultiEventsResponse, errors.EdgeX) {
+func (_m *EventClient) EventsByTimeRange(ctx context.Context, start int64, end int64, offset int, limit int) (responses.MultiEventsResponse, errors.EdgeX) {
 	ret := _m.Called(ctx, start, end, offset, limit)
 
 	var r0 responses.MultiEventsResponse
-	var r1 errors.EdgeX
-	if rf, ok := ret.Get(0).(func(context.Context, int, int, int, int) (responses.MultiEventsResponse, errors.EdgeX)); ok {
-		return rf(ctx, start, end, offset, limit)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, int, int, int, int) responses.MultiEventsResponse); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64, int64, int, int) responses.MultiEventsResponse); ok {
 		r0 = rf(ctx, start, end, offset, limit)
 	} else {
 		r0 = ret.Get(0).(responses.MultiEventsResponse)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int, int, int, int) errors.EdgeX); ok {
+	var r1 errors.EdgeX
+	if rf, ok := ret.Get(1).(func(context.Context, int64, int64, int, int) errors.EdgeX); ok {
 		r1 = rf(ctx, start, end, offset, limit)
 	} else {
 		if ret.Get(1) != nil {
