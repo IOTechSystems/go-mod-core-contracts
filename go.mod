@@ -13,7 +13,7 @@ require (
 	go.einride.tech/can v0.7.0
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 	golang.org/x/text v0.13.0
-	google.golang.org/protobuf v1.28.1
+	google.golang.org/protobuf v1.31.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
