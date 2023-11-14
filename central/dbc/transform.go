@@ -6,7 +6,6 @@
 package dbc
 
 import (
-	"io"
 	"math"
 	"strconv"
 
@@ -30,12 +29,7 @@ func valueType(s *descriptor.Signal) string {
 	}
 }
 
-func ConvertDBCtoProfile(file io.Reader) (profileDTOs []dtos.DeviceProfile, err error, validateErrors map[string]error) {
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return
-	}
-
+func ConvertDBCtoProfile(data []byte) (profileDTOs []dtos.DeviceProfile, err error, validateErrors map[string]error) {
 	compileResult, err := Compile("", data)
 	if err != nil {
 		return
@@ -106,12 +100,7 @@ func ConvertDBCtoProfile(file io.Reader) (profileDTOs []dtos.DeviceProfile, err 
 	return
 }
 
-func ConvertDBCtoDevice(file io.Reader, networkName, serviceName string) (deviceDTOs []dtos.Device, err error, validateErrors map[string]error) {
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return
-	}
-
+func ConvertDBCtoDevice(data []byte, networkName, serviceName string) (deviceDTOs []dtos.Device, err error, validateErrors map[string]error) {
 	compileResult, err := Compile("", data)
 	if err != nil {
 		return
