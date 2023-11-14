@@ -6,6 +6,7 @@
 package dbc
 
 import (
+	"io"
 	"os"
 	"reflect"
 	"testing"
@@ -28,7 +29,10 @@ func TestConvertDBCtoDevice(t *testing.T) {
 	}()
 	require.NoError(t, err)
 
-	deviceDTOs, err, _ := ConvertDBCtoDevice(ioReader, networkName, serviceName)
+	data, err := io.ReadAll(ioReader)
+	require.NoError(t, err)
+
+	deviceDTOs, err, _ := ConvertDBCtoDevice(data, networkName, serviceName)
 	require.NoError(t, err)
 	require.NotEmpty(t, deviceDTOs)
 
@@ -60,7 +64,10 @@ func TestConvertDBCtoProfile(t *testing.T) {
 	}()
 	require.NoError(t, err)
 
-	profileDTOs, err, _ := ConvertDBCtoProfile(ioReader)
+	data, err := io.ReadAll(ioReader)
+	require.NoError(t, err)
+
+	profileDTOs, err, _ := ConvertDBCtoProfile(data)
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
 	}
