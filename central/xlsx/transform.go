@@ -30,6 +30,11 @@ func ConvertXlsx(file io.Reader, dtoType reflect.Type) (Converter, error) {
 			return nil, fmt.Errorf("failed to create deviceXlsx instance: %w", err)
 		}
 	case reflect.TypeOf(dtos.DeviceProfile{}):
+		deviceProfileX, err := newDeviceProfileXlsx(file)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create deviceProfileXlsx instance: %w", err)
+		}
+		converter = deviceProfileX
 	default:
 		return nil, fmt.Errorf("unable to parse the xlsx file to invalid DTO type '%T'", dtoType)
 	}
