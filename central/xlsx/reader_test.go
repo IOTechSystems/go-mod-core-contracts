@@ -20,7 +20,7 @@ func Test_readStruct(t *testing.T) {
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
 
-	validMappings := deviceX.fieldMappings
+	validMappings := deviceX.(*deviceXlsx).fieldMappings
 	tests := []struct {
 		name        string
 		structPtr   *dtos.Device
@@ -94,7 +94,7 @@ func Test_setProtocolPropMap_WithMappingTableSheet(t *testing.T) {
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
 
-	validMappings := deviceX.fieldMappings
+	validMappings := deviceX.(*deviceXlsx).fieldMappings
 	invalidMappings := make(map[string]mappingField)
 	invalidMappings["ProtocolName"] = mappingField{defaultValue: "invalidPrt"}
 	tests := []struct {
@@ -135,7 +135,7 @@ func Test_convertDeviceFields(t *testing.T) {
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
 
-	validMappings := deviceX.fieldMappings
+	validMappings := deviceX.(*deviceXlsx).fieldMappings
 
 	tests := []struct {
 		name          string
@@ -170,7 +170,7 @@ func Test_convertAutoEventFields(t *testing.T) {
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
 
-	validMappings := deviceX.fieldMappings
+	validMappings := deviceX.(*deviceXlsx).fieldMappings
 
 	tests := []struct {
 		name          string
@@ -234,7 +234,7 @@ func Test_convertResourcesFields_Invalid(t *testing.T) {
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
 
-	validMappings := deviceX.fieldMappings
+	validMappings := deviceX.(*deviceXlsx).fieldMappings
 	tests := []struct {
 		name          string
 		rowElement    *reflect.Value

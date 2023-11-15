@@ -5,12 +5,17 @@
 
 package xlsx
 
-// Converter interface provides an abstraction for parsing the xlsx file content
-type Converter interface {
+import "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
+
+type AllowedDTOTypes interface {
+	*dtos.DeviceProfile | []*dtos.Device
+}
+
+type Converter[T AllowedDTOTypes] interface {
 	// ConvertToDTO parses the xlsx file content to DTOs
 	convertToDTO() error
 	// GetDTOs returns the coverted DTOs
-	GetDTOs() any
+	GetDTOs() T
 	// GetValidateErrors returns the deviceName-validationError key-value map while parsing the excel data rows to DTOs
 	GetValidateErrors() map[string]error
 }

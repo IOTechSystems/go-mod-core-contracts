@@ -16,7 +16,7 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 )
 
-func readStruct(structPtr interface{}, headerCol []string, row []string, mapppingTable map[string]mappingField) (any, error) {
+func readStruct(structPtr any, headerCol []string, row []string, mapppingTable map[string]mappingField) (any, error) {
 	var extraReturnedCols any
 	v := reflect.ValueOf(structPtr)
 	if v.Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
@@ -66,7 +66,7 @@ func getStructFieldByHeader(structEle *reflect.Value, colIndex int, headerCol []
 
 // setStdStructFieldValue set the struct field with Go standard types to the xlsx cell value
 func setStdStructFieldValue(originValue string, field reflect.Value) error {
-	var fieldValue interface{}
+	var fieldValue any
 	switch field.Kind() {
 	case reflect.String:
 		fieldValue = originValue

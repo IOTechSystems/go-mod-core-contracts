@@ -7,7 +7,6 @@ package xlsx
 import (
 	"fmt"
 	"io"
-	"reflect"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
 )
@@ -17,32 +16,30 @@ type mappingField struct {
 	path         string // the path value defined in the MappingTable sheet
 }
 
-// ConvertXlsx transforms the xlsx file to the Converter interface
-func ConvertXlsx(file io.Reader, dtoType reflect.Type) (Converter, error) {
-	var converter Converter
-	var err error
-
-	switch dtoType {
-	case reflect.TypeOf(dtos.Device{}):
-		deviceX, err := newDeviceXlsx(file)
-		converter = deviceX
-		if err != nil {
-			return nil, fmt.Errorf("failed to create deviceXlsx instance: %w", err)
-		}
-	case reflect.TypeOf(dtos.DeviceProfile{}):
-		deviceProfileX, err := newDeviceProfileXlsx(file)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create deviceProfileXlsx instance: %w", err)
-		}
-		converter = deviceProfileX
-	default:
-		return nil, fmt.Errorf("unable to parse the xlsx file to invalid DTO type '%T'", dtoType)
+func ConvertDeviceXlsx(file io.Reader) (Converter[[]*dtos.Device], error) {
+	deviceX, err := newDeviceXlsx(file)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create deviceXlsx instance: %w", err)
 	}
 
-	err = converter.convertToDTO()
+	err = deviceX.convertToDTO()
 	if err != nil {
 		return nil, err
 	}
 
-	return converter, nil
+	return deviceX, nil
+}
+
+func ConvertDeviceProfileXlsx(file io.Reader) (Converter[*dtos.DeviceProfile], error) {
+	deviceProfileX, err := newDeviceProfileXlsx(file)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create deviceProfileXlsx instance: %w", err)
+	}
+
+	err = deviceProfileX.convertToDTO()
+	if err != nil {
+		return nil, err
+	}
+
+	return deviceProfileX, nil
 }

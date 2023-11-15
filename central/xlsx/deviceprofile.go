@@ -16,6 +16,12 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+const (
+	validateErrResourcePrefix = "deviceResource_"
+	validateErrCommandPrefix  = "deviceCommand_"
+	validateErrProfilePrefix  = "deviceProfile_"
+)
+
 // requiredProfileSheets defines the required worksheet names in the xlsx file
 var requiredProfileSheets = []string{deviceInfoSheetName, deviceResourceSheetName}
 
@@ -25,7 +31,7 @@ type deviceProfileXlsx struct {
 	deviceProfile *dtos.DeviceProfile
 }
 
-func newDeviceProfileXlsx(file io.Reader) (*deviceProfileXlsx, error) {
+func newDeviceProfileXlsx(file io.Reader) (Converter[*dtos.DeviceProfile], error) {
 	// file io.Reader should be closed from the caller in another module
 	f, err := excelize.OpenReader(file)
 	if err != nil {
@@ -77,8 +83,8 @@ func (dpXlsx *deviceProfileXlsx) convertToDTO() error {
 	// validate the device profile DTO
 	err = convertedProfile.Validate()
 	if err != nil {
-		dpXlsx.validateErrors[dpXlsx.deviceProfile.Name] = err
-	} else {
+		dpXlsx.validateErrors[validateErrProfilePrefix+convertedProfile.DeviceProfileBasicInfo.Name] = err
+	} else if dpXlsx.validateErrors != nil {
 		dpXlsx.deviceProfile = convertedProfile
 	}
 	return nil
@@ -149,7 +155,7 @@ func (dpXlsx *deviceProfileXlsx) convertDeviceResources(convertedProfile *dtos.D
 		// validate the DeviceResource DTO
 		err = convertedDR.Validate()
 		if err != nil {
-			dpXlsx.validateErrors[convertedDR.Name] = err
+			dpXlsx.validateErrors[validateErrResourcePrefix+convertedDR.Name] = err
 		} else {
 			convertedProfile.DeviceResources = append(convertedProfile.DeviceResources, convertedDR)
 		}
@@ -206,7 +212,7 @@ func (dpXlsx *deviceProfileXlsx) convertDeviceCommands(convertedProfile *dtos.De
 		// validate the DeviceCommand DTO
 		err = common.Validate(convertedDC)
 		if err != nil {
-			dpXlsx.validateErrors[convertedDC.Name] = err
+			dpXlsx.validateErrors[validateErrCommandPrefix+convertedDC.Name] = err
 		} else {
 			convertedProfile.DeviceCommands = append(convertedProfile.DeviceCommands, convertedDC)
 		}
@@ -214,7 +220,7 @@ func (dpXlsx *deviceProfileXlsx) convertDeviceCommands(convertedProfile *dtos.De
 	return nil
 }
 
-func (dpXlsx *deviceProfileXlsx) GetDTOs() any {
+func (dpXlsx *deviceProfileXlsx) GetDTOs() *dtos.DeviceProfile {
 	return dpXlsx.deviceProfile
 }
 

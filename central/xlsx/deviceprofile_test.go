@@ -89,7 +89,7 @@ func createProfileMappingTableSheet(f *excelize.File) error {
 	return nil
 }
 
-func createDeviceProfileXlsxInst() (*deviceProfileXlsx, error) {
+func createDeviceProfileXlsxInst() (Converter[*dtos.DeviceProfile], error) {
 	f, err := mockExcelFile([]string{deviceInfoSheetName, mappingTableSheetName, deviceResourceSheetName})
 	if err != nil {
 		return nil, err
@@ -121,7 +121,7 @@ func Test_DeviceProfile_convertToDTO_InvalidSheets(t *testing.T) {
 	require.NoError(t, err)
 	dpX, err := newDeviceProfileXlsx(buffer)
 	require.NoError(t, err)
-	defer dpX.xlsFile.Close()
+	defer dpX.(*deviceProfileXlsx).xlsFile.Close()
 
 	err = dpX.convertToDTO()
 	require.Error(t, err, "Expected required worksheet not defined error not occurred")
@@ -130,9 +130,10 @@ func Test_DeviceProfile_convertToDTO_InvalidSheets(t *testing.T) {
 func Test_deviceProfileXlsx_convertToDTO(t *testing.T) {
 	dpX, err := createDeviceProfileXlsxInst()
 	require.NoError(t, err)
-	defer dpX.xlsFile.Close()
+	xlsFile := dpX.(*deviceProfileXlsx).xlsFile
+	defer xlsFile.Close()
 
-	sw, err := dpX.xlsFile.NewStreamWriter(deviceInfoSheetName)
+	sw, err := xlsFile.NewStreamWriter(deviceInfoSheetName)
 	require.NoError(t, err)
 	err = sw.SetRow("A1", []any{"Name", mockProfileName1})
 	require.NoError(t, err)
@@ -141,11 +142,11 @@ func Test_deviceProfileXlsx_convertToDTO(t *testing.T) {
 	err = sw.Flush()
 	require.NoError(t, err)
 
-	sw, err = dpX.xlsFile.NewStreamWriter(deviceResourceSheetName)
+	sw, err = xlsFile.NewStreamWriter(deviceResourceSheetName)
 	require.NoError(t, err)
-	err = sw.SetRow("A1", []any{"Name", "IsHidden", "Description", "ValueType", "ReadWrite", "primaryTable"})
+	err = sw.SetRow("A1", validResourceHeader)
 	require.NoError(t, err)
-	err = sw.SetRow("A2", []any{"IP_Curing_time_St_1", "true", "St_1", "Int16", "W", "INPUT_REGISTERS"})
+	err = sw.SetRow("A2", validResourceRow)
 	require.NoError(t, err)
 
 	err = sw.Flush()
@@ -155,26 +156,28 @@ func Test_deviceProfileXlsx_convertToDTO(t *testing.T) {
 	err = dpX.convertToDTO()
 	require.NoError(t, err)
 
-	require.Equal(t, mockProfileName1, dpX.deviceProfile.Name)
-	require.Equal(t, 1, len(dpX.deviceProfile.DeviceResources))
-	require.Equal(t, "IP_Curing_time_St_1", dpX.deviceProfile.DeviceResources[0].Name)
+	deviceProfile := dpX.GetDTOs()
+	require.Equal(t, mockProfileName1, deviceProfile.Name)
+	require.Equal(t, 1, len(deviceProfile.DeviceResources))
+	require.Equal(t, "IP_Curing_time_St_1", deviceProfile.DeviceResources[0].Name)
 }
 
 func Test_convertDeviceInfo(t *testing.T) {
 	dpX, err := createDeviceProfileXlsxInst()
 	require.NoError(t, err)
-	defer dpX.xlsFile.Close()
+	xlsFile := dpX.(*deviceProfileXlsx).xlsFile
+	defer xlsFile.Close()
 
 	convertedProfile := &dtos.DeviceProfile{}
-	err = dpX.convertDeviceInfo(convertedProfile)
+	err = dpX.(*deviceProfileXlsx).convertDeviceInfo(convertedProfile)
 	require.Error(t, err, "expected \"at least 2 columns needs to be defined\" not occurred")
 
-	err = dpX.xlsFile.SetSheetRow(deviceInfoSheetName, "A1", &[]any{"Name", mockProfileName1})
+	err = xlsFile.SetSheetRow(deviceInfoSheetName, "A1", &[]any{"Name", mockProfileName1})
 	require.NoError(t, err)
-	err = dpX.xlsFile.SetSheetRow(deviceInfoSheetName, "A2", &[]any{"Manufacturer", mockManufacturer})
+	err = xlsFile.SetSheetRow(deviceInfoSheetName, "A2", &[]any{"Manufacturer", mockManufacturer})
 	require.NoError(t, err)
 
-	err = dpX.convertDeviceInfo(convertedProfile)
+	err = dpX.(*deviceProfileXlsx).convertDeviceInfo(convertedProfile)
 	require.NoError(t, err, "Unexpected error occurred")
 
 	require.Equal(t, mockProfileName1, convertedProfile.Name)
@@ -203,23 +206,24 @@ func Test_convertDeviceResources(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			dpX, err := createDeviceProfileXlsxInst()
 			require.NoError(t, err)
-			defer dpX.xlsFile.Close()
+			xlsFile := dpX.(*deviceProfileXlsx).xlsFile
+			defer xlsFile.Close()
 
 			convertedProfile := &dtos.DeviceProfile{}
-			err = dpX.xlsFile.SetSheetRow(deviceResourceSheetName, "A1", &validResourceHeader)
+			err = xlsFile.SetSheetRow(deviceResourceSheetName, "A1", &validResourceHeader)
 			require.NoError(t, err)
 			dataRow := tt.dataRow
-			err = dpX.xlsFile.SetSheetRow(deviceResourceSheetName, "A2", &dataRow)
+			err = xlsFile.SetSheetRow(deviceResourceSheetName, "A2", &dataRow)
 			require.NoError(t, err)
-			err = dpX.convertDeviceResources(convertedProfile)
+			err = dpX.(*deviceProfileXlsx).convertDeviceResources(convertedProfile)
 			if tt.expectError {
 				require.Error(t, err, "Expected convertDeviceResources error not generated")
 			} else {
 				require.NoError(t, err)
 				if tt.expectValidateError {
-					require.NotNil(t, dpX.validateErrors, "Expected convertDeviceResources validation error not generated")
+					require.NotNil(t, dpX.GetValidateErrors(), "Expected convertDeviceResources validation error not generated")
 				} else {
-					require.Equal(t, emptyValidateErr, dpX.validateErrors, "Unexpected convertDeviceResources validation error")
+					require.Equal(t, emptyValidateErr, dpX.GetValidateErrors(), "Unexpected convertDeviceResources validation error")
 					require.Equal(t, 1, len(convertedProfile.DeviceResources))
 					require.Equal(t, tt.dataRow[0], convertedProfile.DeviceResources[0].Name)
 				}
@@ -238,28 +242,28 @@ func Test_parseDeviceResourceHeader_Fail_WithoutDeviceResourceSheet(t *testing.T
 	require.NoError(t, err)
 	dpX, err := newDeviceProfileXlsx(buffer)
 	require.NoError(t, err)
-	defer dpX.xlsFile.Close()
+	defer dpX.(*deviceProfileXlsx).xlsFile.Close()
 
-	err = dpX.parseDeviceResourceHeader(&[]string{"Name"}, 1)
+	err = dpX.(*deviceProfileXlsx).parseDeviceResourceHeader(&[]string{"Name"}, 1)
 	require.Error(t, err, "Expected parseDeviceResourceHeader error not occurred")
 }
 
 func Test_parseDeviceResourceHeader_Success_WithDeviceResourceSheet(t *testing.T) {
 	dpX, err := createDeviceProfileXlsxInst()
 	require.NoError(t, err)
-	defer dpX.xlsFile.Close()
+	defer dpX.(*deviceProfileXlsx).xlsFile.Close()
 
-	err = dpX.parseDeviceResourceHeader(&[]string{"Name"}, 1)
+	err = dpX.(*deviceProfileXlsx).parseDeviceResourceHeader(&[]string{"Name"}, 1)
 	require.NoError(t, err, "Unexpected parseDeviceResourceHeader error occurred")
 }
 
 func Test_DeviceProfile_convertDeviceCommands_NoDeviceCommandSheet(t *testing.T) {
 	dpX, err := createDeviceProfileXlsxInst()
 	require.NoError(t, err)
-	defer dpX.xlsFile.Close()
+	defer dpX.(*deviceProfileXlsx).xlsFile.Close()
 
 	convertedProfile := &dtos.DeviceProfile{}
-	err = dpX.convertDeviceCommands(convertedProfile)
+	err = dpX.(*deviceProfileXlsx).convertDeviceCommands(convertedProfile)
 	require.Error(t, err, "Expected no DeviceCommand sheet error not occurred")
 }
 
@@ -287,25 +291,26 @@ func Test_DeviceProfile_convertDeviceCommands(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			dpX, err := createDeviceProfileXlsxInst()
 			require.NoError(t, err)
-			defer dpX.xlsFile.Close()
+			xlsFile := dpX.(*deviceProfileXlsx).xlsFile
+			defer xlsFile.Close()
 
-			_, err = dpX.xlsFile.NewSheet(deviceCommandSheetName)
+			_, err = xlsFile.NewSheet(deviceCommandSheetName)
 			require.NoError(t, err)
 			convertedProfile := &dtos.DeviceProfile{}
-			err = dpX.xlsFile.SetSheetRow(deviceCommandSheetName, "A1", &validDeviceCommandHeader)
+			err = xlsFile.SetSheetRow(deviceCommandSheetName, "A1", &validDeviceCommandHeader)
 			require.NoError(t, err)
 			dataRow := tt.dataRow
-			err = dpX.xlsFile.SetSheetRow(deviceCommandSheetName, "A2", &dataRow)
+			err = xlsFile.SetSheetRow(deviceCommandSheetName, "A2", &dataRow)
 			require.NoError(t, err)
-			err = dpX.convertDeviceCommands(convertedProfile)
+			err = dpX.(*deviceProfileXlsx).convertDeviceCommands(convertedProfile)
 			if tt.expectError {
 				require.Error(t, err, "Expected convertDeviceCommands error not generated")
 			} else {
 				require.NoError(t, err)
 				if tt.expectValidateError {
-					require.NotNil(t, dpX.validateErrors, "Expected convertDeviceCommands validation error not generated")
+					require.NotNil(t, dpX.GetValidateErrors(), "Expected convertDeviceCommands validation error not generated")
 				} else {
-					require.Equal(t, emptyValidateErr, dpX.validateErrors, "Unexpected convertDeviceCommands validation error")
+					require.Equal(t, emptyValidateErr, dpX.GetValidateErrors(), "Unexpected convertDeviceCommands validation error")
 					require.Equal(t, 1, len(convertedProfile.DeviceCommands))
 					require.Equal(t, tt.dataRow[0], convertedProfile.DeviceCommands[0].Name)
 				}
@@ -317,7 +322,7 @@ func Test_DeviceProfile_convertDeviceCommands(t *testing.T) {
 func Test_deviceProfileXlsx_GetDTOs(t *testing.T) {
 	dpX, err := createDeviceProfileXlsxInst()
 	require.NoError(t, err)
-	defer dpX.xlsFile.Close()
+	defer dpX.(*deviceProfileXlsx).xlsFile.Close()
 
 	deviceProfileDTO := dpX.GetDTOs()
 	require.Nil(t, deviceProfileDTO)
@@ -326,29 +331,24 @@ func Test_deviceProfileXlsx_GetDTOs(t *testing.T) {
 	mockDeviceProfile := dtos.DeviceProfile{
 		DeviceProfileBasicInfo: dtos.DeviceProfileBasicInfo{Name: deviceProfileName},
 	}
-	dpX.deviceProfile = &mockDeviceProfile
+	dpX.(*deviceProfileXlsx).deviceProfile = &mockDeviceProfile
 
-	deviceProfileDTO = dpX.GetDTOs()
-	require.NotNil(t, deviceProfileDTO)
-	if deviceProfile, ok := deviceProfileDTO.(*dtos.DeviceProfile); ok {
-		require.Equal(t, deviceProfileName, deviceProfile.Name)
-	} else {
-		require.Fail(t, "Unexpected GetDTOs data type")
-	}
+	deviceProfile := dpX.GetDTOs()
+	require.Equal(t, deviceProfileName, deviceProfile.Name)
 }
 
 func Test_deviceProfileXlsx_GetValidateErrors(t *testing.T) {
 	mockDeviceProfileName := "testProfile"
 	dpX, err := createDeviceProfileXlsxInst()
 	require.NoError(t, err)
-	defer dpX.xlsFile.Close()
+	defer dpX.(*deviceProfileXlsx).xlsFile.Close()
 
 	validateErrs := dpX.GetValidateErrors()
 	require.Equal(t, validateErrs, emptyValidateErr)
 
 	errMsg := "test error"
 	mockError := errors.New(errMsg)
-	dpX.validateErrors[mockDeviceProfileName] = mockError
+	dpX.(*deviceProfileXlsx).validateErrors[mockDeviceProfileName] = mockError
 
 	validateErrs = dpX.GetValidateErrors()
 	require.NotNil(t, validateErrs)

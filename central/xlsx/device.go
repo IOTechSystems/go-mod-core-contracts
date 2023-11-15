@@ -33,7 +33,7 @@ type deviceXlsx struct {
 	devices []*dtos.Device
 }
 
-func newDeviceXlsx(file io.Reader) (*deviceXlsx, error) {
+func newDeviceXlsx(file io.Reader) (Converter[[]*dtos.Device], error) {
 	// file io.Reader should be closed from the caller in another module
 	f, err := excelize.OpenReader(file)
 	if err != nil {
@@ -250,7 +250,7 @@ func startsWithAutoEvents(path string) bool {
 	return strings.HasPrefix(strings.ToLower(path), strings.ToLower(autoEvents))
 }
 
-func (deviceXlsx *deviceXlsx) GetDTOs() any {
+func (deviceXlsx *deviceXlsx) GetDTOs() []*dtos.Device {
 	return deviceXlsx.devices
 }
 
