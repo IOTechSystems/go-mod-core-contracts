@@ -13,7 +13,7 @@ type AllowedDTOTypes interface {
 
 type Converter[T AllowedDTOTypes] interface {
 	// ConvertToDTO parses the xlsx file content to DTOs
-	convertToDTO() error
+	ConvertToDTO() error
 	// GetDTOs returns the coverted DTOs
 	GetDTOs() T
 	// GetValidateErrors returns the deviceName-validationError key-value map while parsing the excel data rows to DTOs

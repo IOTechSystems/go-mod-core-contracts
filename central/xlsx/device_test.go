@@ -146,7 +146,7 @@ func Test_convertToDTO(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, deviceX)
 
-	err = deviceX.convertToDTO()
+	err = deviceX.ConvertToDTO()
 	require.NoError(t, err)
 
 	devices := deviceX.GetDTOs()

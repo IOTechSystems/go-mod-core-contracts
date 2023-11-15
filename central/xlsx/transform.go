@@ -22,7 +22,7 @@ func ConvertDeviceXlsx(file io.Reader) (Converter[[]*dtos.Device], error) {
 		return nil, fmt.Errorf("failed to create deviceXlsx instance: %w", err)
 	}
 
-	err = deviceX.convertToDTO()
+	err = deviceX.ConvertToDTO()
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func ConvertDeviceProfileXlsx(file io.Reader) (Converter[*dtos.DeviceProfile], e
 		return nil, fmt.Errorf("failed to create deviceProfileXlsx instance: %w", err)
 	}
 
-	err = deviceProfileX.convertToDTO()
+	err = deviceProfileX.ConvertToDTO()
 	if err != nil {
 		return nil, err
 	}

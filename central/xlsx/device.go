@@ -53,8 +53,8 @@ func newDeviceXlsx(file io.Reader) (Converter[[]*dtos.Device], error) {
 	}, nil
 }
 
-// convertToDTO parses the Devices sheet and convert the rows to Device DTOs
-func (deviceXlsx *deviceXlsx) convertToDTO() error {
+// ConvertToDTO parses the Devices sheet and convert the rows to Device DTOs
+func (deviceXlsx *deviceXlsx) ConvertToDTO() error {
 	allSheetNames := deviceXlsx.xlsFile.GetSheetList()
 
 	err := checkRequiredSheets(allSheetNames, requiredSheets)

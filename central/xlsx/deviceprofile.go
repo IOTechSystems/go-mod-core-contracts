@@ -51,8 +51,8 @@ func newDeviceProfileXlsx(file io.Reader) (Converter[*dtos.DeviceProfile], error
 	}, nil
 }
 
-// convertToDTO parses the Devices sheet and convert the rows to Device DTOs
-func (dpXlsx *deviceProfileXlsx) convertToDTO() error {
+// ConvertToDTO parses the DeviceInfo/DeviceResource/DeviceCommand sheets and convert the rows to DeviceProfile DTO
+func (dpXlsx *deviceProfileXlsx) ConvertToDTO() error {
 	allSheetNames := dpXlsx.xlsFile.GetSheetList()
 
 	err := checkRequiredSheets(allSheetNames, requiredProfileSheets)

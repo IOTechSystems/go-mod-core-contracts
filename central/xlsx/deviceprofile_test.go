@@ -123,7 +123,7 @@ func Test_DeviceProfile_convertToDTO_InvalidSheets(t *testing.T) {
 	require.NoError(t, err)
 	defer dpX.(*deviceProfileXlsx).xlsFile.Close()
 
-	err = dpX.convertToDTO()
+	err = dpX.ConvertToDTO()
 	require.Error(t, err, "Expected required worksheet not defined error not occurred")
 }
 
@@ -153,7 +153,7 @@ func Test_deviceProfileXlsx_convertToDTO(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, dpX)
 
-	err = dpX.convertToDTO()
+	err = dpX.ConvertToDTO()
 	require.NoError(t, err)
 
 	deviceProfile := dpX.GetDTOs()
