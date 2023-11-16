@@ -1,6 +1,7 @@
 //
 // Copyright (C) 2023 IOTech Ltd
 //
+// SPDX-License-Identifier: Apache-2.0
 
 package xlsx
 
@@ -19,15 +20,20 @@ import (
 // requiredSheets defines the required worksheet names in the xlsx file
 var requiredSheets = []string{devicesSheetName}
 
-// deviceXlsx stores the worksheets processed result and the converted Device DTOs
-type deviceXlsx struct {
+// baseXlsx stores the basic worksheets information and the parsed validateErrors
+type baseXlsx struct {
 	xlsFile        *excelize.File
 	fieldMappings  map[string]mappingField // fieldMappings defines all the device fields with default values defined in the xlsx
-	devices        []*dtos.Device
 	validateErrors map[string]error
 }
 
-func newDeviceXlsx(file io.Reader) (*deviceXlsx, error) {
+// deviceXlsx stores the worksheets processed result and the converted Device DTOs
+type deviceXlsx struct {
+	baseXlsx
+	devices []*dtos.Device
+}
+
+func newDeviceXlsx(file io.Reader) (Converter[[]*dtos.Device], error) {
 	// file io.Reader should be closed from the caller in another module
 	f, err := excelize.OpenReader(file)
 	if err != nil {
@@ -39,14 +45,16 @@ func newDeviceXlsx(file io.Reader) (*deviceXlsx, error) {
 		return nil, err
 	}
 	return &deviceXlsx{
-		xlsFile:        f,
-		fieldMappings:  fieldMappings,
-		validateErrors: make(map[string]error),
+		baseXlsx: baseXlsx{
+			xlsFile:        f,
+			fieldMappings:  fieldMappings,
+			validateErrors: make(map[string]error),
+		},
 	}, nil
 }
 
-// convertToDTO parses the Devices sheet and convert the rows to Device DTOs
-func (deviceXlsx *deviceXlsx) convertToDTO() error {
+// ConvertToDTO parses the Devices sheet and convert the rows to Device DTOs
+func (deviceXlsx *deviceXlsx) ConvertToDTO() error {
 	allSheetNames := deviceXlsx.xlsFile.GetSheetList()
 
 	err := checkRequiredSheets(allSheetNames, requiredSheets)
@@ -88,7 +96,7 @@ func (deviceXlsx *deviceXlsx) convertToDTO() error {
 		}
 
 		convertedDevice := dtos.Device{ProtocolName: protocol}
-		_, err = readStruct(&convertedDevice, protocol, header, row)
+		_, err = readStruct(&convertedDevice, header, row, deviceXlsx.fieldMappings)
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal an excel row into Device DTO: %w", err)
 		}
@@ -178,9 +186,14 @@ OUTER:
 		}
 
 		autoEvent := dtos.AutoEvent{}
-		deviceNames, err := readStruct(&autoEvent, "", header, row)
+		deviceNameResult, err := readStruct(&autoEvent, header, row, deviceXlsx.fieldMappings)
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal an excel row into AutoEvent DTO: %w", err)
+		}
+
+		deviceNames, ok := deviceNameResult.([]string)
+		if !ok {
+			return fmt.Errorf("failed to obtain the 'Reference Device Name' cell of the xlsx row from %s worksheet", autoEventsSheetName)
 		}
 
 		// validate the AutoEvent DTO
@@ -237,7 +250,7 @@ func startsWithAutoEvents(path string) bool {
 	return strings.HasPrefix(strings.ToLower(path), strings.ToLower(autoEvents))
 }
 
-func (deviceXlsx *deviceXlsx) GetDTOs() any {
+func (deviceXlsx *deviceXlsx) GetDTOs() []*dtos.Device {
 	return deviceXlsx.devices
 }
 

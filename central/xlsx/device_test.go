@@ -1,6 +1,7 @@
 //
 // Copyright (C) 2023 IOTech Ltd
 //
+// SPDX-License-Identifier: Apache-2.0
 
 package xlsx
 
@@ -105,7 +106,7 @@ func createMappingTableSheet(f *excelize.File) error {
 	return nil
 }
 
-func createDeviceXlsxInst() (*deviceXlsx, error) {
+func createDeviceXlsxInst() (Converter[[]*dtos.Device], error) {
 	f, err := mockExcelFile([]string{devicesSheetName, mappingTableSheetName})
 	if err != nil {
 		return nil, err
@@ -130,9 +131,9 @@ func createDeviceXlsxInst() (*deviceXlsx, error) {
 func Test_convertToDTO(t *testing.T) {
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
-	defer deviceX.xlsFile.Close()
+	defer deviceX.(*deviceXlsx).xlsFile.Close()
 
-	sw, err := deviceX.xlsFile.NewStreamWriter(devicesSheetName)
+	sw, err := deviceX.(*deviceXlsx).xlsFile.NewStreamWriter(devicesSheetName)
 	require.NoError(t, err)
 	err = sw.SetRow("A1", validDeviceHeader)
 	require.NoError(t, err)
@@ -145,31 +146,32 @@ func Test_convertToDTO(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, deviceX)
 
-	err = deviceX.convertToDTO()
+	err = deviceX.ConvertToDTO()
 	require.NoError(t, err)
 
-	require.Equal(t, 1, len(deviceX.devices))
-	require.Equal(t, "Sensor30001", deviceX.devices[0].Name)
+	devices := deviceX.GetDTOs()
+	require.Equal(t, 1, len(devices))
+	require.Equal(t, "Sensor30001", devices[0].Name)
 }
 
 func Test_parseDevicesHeader(t *testing.T) {
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
-	defer deviceX.xlsFile.Close()
+	defer deviceX.(*deviceXlsx).xlsFile.Close()
 
-	err = deviceX.xlsFile.SetSheetRow(devicesSheetName, "A1", &[]any{"Name"})
+	err = deviceX.(*deviceXlsx).xlsFile.SetSheetRow(devicesSheetName, "A1", &[]any{"Name"})
 	require.NoError(t, err)
 
-	err = deviceX.parseDevicesHeader(&deviceHeaderStr, 1)
+	err = deviceX.(*deviceXlsx).parseDevicesHeader(&deviceHeaderStr, 1)
 	require.NoError(t, err)
 }
 
 func Test_convertAutoEvents_WithoutSheet(t *testing.T) {
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
-	defer deviceX.xlsFile.Close()
+	defer deviceX.(*deviceXlsx).xlsFile.Close()
 
-	err = deviceX.convertAutoEvents()
+	err = deviceX.(*deviceXlsx).convertAutoEvents()
 	require.Error(t, err, "AutoEvents sheet not exists error should be displayed")
 }
 
@@ -193,29 +195,30 @@ func Test_convertAutoEvents_WithSheet(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			deviceX, err := createDeviceXlsxInst()
 			require.NoError(t, err)
-			defer deviceX.xlsFile.Close()
+			xlsFile := deviceX.(*deviceXlsx).xlsFile
+			defer xlsFile.Close()
 
-			_, err = deviceX.xlsFile.NewSheet(autoEventsSheetName)
+			_, err = xlsFile.NewSheet(autoEventsSheetName)
 			require.NoError(t, err)
 
 			headerRow := tt.headerRow
-			err = deviceX.xlsFile.SetSheetRow(autoEventsSheetName, "A1", &headerRow)
+			err = xlsFile.SetSheetRow(autoEventsSheetName, "A1", &headerRow)
 			require.NoError(t, err)
 			if tt.dataRow != nil {
 				dataRow := tt.dataRow
-				err = deviceX.xlsFile.SetSheetRow(autoEventsSheetName, "A2", &dataRow)
+				err = xlsFile.SetSheetRow(autoEventsSheetName, "A2", &dataRow)
 				require.NoError(t, err)
 			}
-			err = deviceX.convertAutoEvents()
+			err = deviceX.(*deviceXlsx).convertAutoEvents()
 
 			if tt.expectError {
 				require.Error(t, err, "Expected convertAutoEvents error not generated")
 			} else {
 				require.NoError(t, err)
 				if tt.expectValidateError {
-					require.NotNil(t, deviceX.validateErrors, "Expected convertAutoEvents validation error not generated")
+					require.NotNil(t, deviceX.GetValidateErrors(), "Expected convertAutoEvents validation error not generated")
 				} else {
-					require.Equal(t, emptyValidateErr, deviceX.validateErrors, "Unexpected convertAutoEvents validation error")
+					require.Equal(t, emptyValidateErr, deviceX.GetValidateErrors(), "Unexpected convertAutoEvents validation error")
 				}
 			}
 		})
@@ -225,21 +228,23 @@ func Test_convertAutoEvents_WithSheet(t *testing.T) {
 func Test_parseAutoEventsHeader_Fail_WithoutAutoEventsSheet(t *testing.T) {
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
-	defer deviceX.xlsFile.Close()
+	xlsFile := deviceX.(*deviceXlsx).xlsFile
+	defer xlsFile.Close()
 
-	err = deviceX.parseAutoEventsHeader([]string{"Resource"}, 1)
+	err = deviceX.(*deviceXlsx).parseAutoEventsHeader([]string{"Resource"}, 1)
 	require.Error(t, err, "Expected parseAutoEventsHeader error not occurred")
 }
 
 func Test_parseAutoEventsHeader_Success_WithAutoEventsSheet(t *testing.T) {
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
-	defer deviceX.xlsFile.Close()
+	xlsFile := deviceX.(*deviceXlsx).xlsFile
+	defer xlsFile.Close()
 
-	_, err = deviceX.xlsFile.NewSheet(autoEventsSheetName)
+	_, err = xlsFile.NewSheet(autoEventsSheetName)
 	require.NoError(t, err)
 
-	err = deviceX.parseAutoEventsHeader([]string{"Resource"}, 1)
+	err = deviceX.(*deviceXlsx).parseAutoEventsHeader([]string{"Resource"}, 1)
 	require.NoError(t, err, "Unexpected parseAutoEventsHeader error occurred")
 }
 
@@ -254,37 +259,32 @@ func Test_startsWithAutoEvents(t *testing.T) {
 func Test_GetDTOs(t *testing.T) {
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
-	defer deviceX.xlsFile.Close()
+	defer deviceX.(*deviceXlsx).xlsFile.Close()
 
 	deviceDTOs := deviceX.GetDTOs()
 	require.Nil(t, deviceDTOs)
 
 	deviceName := "testDevice"
 	mockDevice := dtos.Device{Name: deviceName}
-	deviceX.devices = []*dtos.Device{&mockDevice}
+	deviceX.(*deviceXlsx).devices = []*dtos.Device{&mockDevice}
 
-	deviceDTOs = deviceX.GetDTOs()
-	require.NotNil(t, deviceDTOs)
-	if devices, ok := deviceDTOs.([]*dtos.Device); ok {
-		require.Equal(t, 1, len(devices))
-		require.Equal(t, deviceName, devices[0].Name)
-	} else {
-		require.Fail(t, "Unexpected GetDTOs data type")
-	}
+	devices := deviceX.GetDTOs()
+	require.Equal(t, 1, len(devices))
+	require.Equal(t, deviceName, devices[0].Name)
 }
 
 func Test_GetValidateErrors(t *testing.T) {
 	mockDeviceName := "mockDevice"
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
-	defer deviceX.xlsFile.Close()
+	defer deviceX.(*deviceXlsx).xlsFile.Close()
 
 	validateErrs := deviceX.GetValidateErrors()
 	require.Equal(t, validateErrs, emptyValidateErr)
 
 	errMsg := "test error"
 	mockError := errors.New(errMsg)
-	deviceX.validateErrors[mockDeviceName] = mockError
+	deviceX.(*deviceXlsx).validateErrors[mockDeviceName] = mockError
 
 	validateErrs = deviceX.GetValidateErrors()
 	require.NotNil(t, validateErrs)
