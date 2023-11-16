@@ -7,6 +7,7 @@ package xlsx
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -31,7 +32,7 @@ func convertMappingTable(xlsFile *excelize.File) (map[string]mappingField, error
 		if rowIndex == 0 {
 			// read the header row and get the Object and DefaultValue column index
 			for colIndex, colCell := range row {
-				switch colCell {
+				switch strings.ToLower(colCell) {
 				case objectCol:
 					objColIndex = colIndex
 				case pathCol:
