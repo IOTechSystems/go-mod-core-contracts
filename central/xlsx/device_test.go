@@ -17,8 +17,15 @@ import (
 
 var (
 	deviceHeaderStr   = []string{"Name", "Description", "ServiceName", "ProtocolName", "Labels", "AdminState", "Address", "BaudRate", "DataBits", "Parity", "StopBits", "UnitID", "ProfileName"}
+	mockTagsHeader    = "MachineType"
 	validDeviceHeader = []any{
-		"Name", "Description", "ServiceName", "ProtocolName", "Labels", "AdminState", "Address", "BaudRate", "DataBits", "Parity", "StopBits", "UnitID", "ProfileName",
+		"Name", "Description", "ServiceName", "ProtocolName", "Labels", "AdminState", "Address", "BaudRate", "DataBits", "Parity", "StopBits", "UnitID", "ProfileName", mockTagsHeader,
+	}
+	mockDeviceName1   = "Sensor30001"
+	mockDeviceAddress = "/dev/virtualport"
+	mockTags1         = "Motor"
+	validDeviceRow    = []any{
+		mockDeviceName1, "test-rtu-device 30001", "device-modbus", modbusRTUKey, "modbus-rtu-labels1,modbus-rtu-labels2", "LOCKED", mockDeviceAddress, "19200", "8", "O", "1", "247", "rtu-profile", mockTags1,
 	}
 	emptyValidateErr = map[string]error{}
 )
@@ -98,6 +105,22 @@ func createMappingTableSheet(f *excelize.File) error {
 		return err
 	}
 
+	err = sw.SetRow("A6",
+		[]any{
+			"Address", "protocols.modbus-rtu.Address", "",
+		})
+	if err != nil {
+		return err
+	}
+
+	err = sw.SetRow("A7",
+		[]any{
+			"MachineType", "tags.MachineType", "",
+		})
+	if err != nil {
+		return err
+	}
+
 	err = sw.Flush()
 	if err != nil {
 		return err
@@ -137,10 +160,7 @@ func Test_convertToDTO(t *testing.T) {
 	require.NoError(t, err)
 	err = sw.SetRow("A1", validDeviceHeader)
 	require.NoError(t, err)
-	err = sw.SetRow("A2",
-		[]any{
-			"Sensor30001", "test-rtu-device 30001", "device-modbus", "modbus-rtu", "modbus-rtu-labels1,modbus-rtu-labels2", "LOCKED", "/dev/virtualport", "19200", "8", "O", "1", "247", "rtu-profile",
-		})
+	err = sw.SetRow("A2", validDeviceRow)
 	require.NoError(t, err)
 	err = sw.Flush()
 	require.NoError(t, err)
@@ -151,7 +171,9 @@ func Test_convertToDTO(t *testing.T) {
 
 	devices := deviceX.GetDTOs()
 	require.Equal(t, 1, len(devices))
-	require.Equal(t, "Sensor30001", devices[0].Name)
+	require.Equal(t, mockDeviceName1, devices[0].Name)
+	require.Equal(t, mockDeviceAddress, devices[0].Protocols[modbusRTUKey]["Address"])
+	require.Equal(t, mockTags1, devices[0].Tags[mockTagsHeader])
 }
 
 func Test_parseDevicesHeader(t *testing.T) {

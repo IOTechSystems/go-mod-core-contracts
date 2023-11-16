@@ -27,6 +27,7 @@ const (
 	protocols    = "Protocols"
 	protocolName = "ProtocolName"
 	autoEvents   = "AutoEvents"
+	tags         = "Tags"
 )
 
 // constants relates to the DeviceResource/DeviceCommand DTO field names
@@ -41,3 +42,5 @@ const (
 	modbusRTUKey = "modbus-rtu"
 	modbusTCPKey = "modbus-tcp"
 )
+
+const mappingPathSeparator = "."
