@@ -149,6 +149,7 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 		return errors.New("fieldMappings not defined while converting device fields")
 	}
 	protocolProperties := dtos.ProtocolProperties{}
+	tagsMap := make(map[string]any)
 
 	for colIndex, cell := range xlsxRow {
 		headerName, field := getStructFieldByHeader(rowElement, colIndex, headerCol)
@@ -167,13 +168,30 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 				return err
 			}
 		} else {
-			// set the cell to Protocols map if header not belongs to the above fields with standard types
+			// header not belongs to the above fields with standard types
+			// map the cell to the Protocols or Tags field
 			if fieldValue != "" {
-				protocolProperties[headerName] = fieldValue
+				// get the Path defined in the MappingTable
+				if mapping, ok := fieldMappings[headerName]; ok && mapping.path != "" {
+					path := mapping.path
+					fieldPrefix := strings.SplitN(path, mappingPathSeparator, 2)[0]
+					switch fieldPrefix {
+					case strings.ToLower(protocols):
+						// set the cell to Protocols map
+						protocolProperties[headerName] = fieldValue
+					case strings.ToLower(tags):
+						// set the cell to Tags map
+						tagsMap[headerName] = fieldValue
+					default:
+						// unknown column header
+						continue
+					}
+				}
 			}
 		}
 	}
 
+	// set Protocols field to the Device DTO struct
 	if len(protocolProperties) > 0 {
 		prtField := rowElement.FieldByName(protocols)
 		if prtField.Kind() == reflect.Invalid {
@@ -185,6 +203,15 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 		}
 		prtField.Set(reflect.ValueOf(prtPropMap))
 	}
+	// set Tags field to the Device DTO struct
+	if len(tagsMap) > 0 {
+		tagsField := rowElement.FieldByName(tags)
+		if tagsField.Kind() == reflect.Invalid {
+			return errors.New("failed to find Tags field in Device DTO")
+		}
+		tagsField.Set(reflect.ValueOf(tagsMap))
+	}
+
 	return nil
 }
 
