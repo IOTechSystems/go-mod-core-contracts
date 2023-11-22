@@ -21,4 +21,6 @@ const (
 	MuxSignal     = "muxSignal"
 	MuxNum        = "muxNum"
 	IsSigned      = "isSigned"
+
+	messageIDExtendedFlag = 0x80000000
 )
