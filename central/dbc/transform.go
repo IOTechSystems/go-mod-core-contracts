@@ -120,7 +120,7 @@ func ConvertDBCtoDevice(data []byte, networkName, serviceName string) (deviceDTO
 				Canbus: {
 					Network:  networkName,
 					Standard: J1939,
-					ID:       strconv.Itoa(int(m.ID)),
+					ID:       getOriginalCanId(m.ID),
 					DataSize: strconv.Itoa(int(m.Length)),
 					Sender:   m.SenderNode,
 				},
@@ -134,4 +134,9 @@ func ConvertDBCtoDevice(data []byte, networkName, serviceName string) (deviceDTO
 		}
 	}
 	return
+}
+
+func getOriginalCanId(canID uint32) string {
+	id := canID | messageIDExtendedFlag
+	return strconv.FormatUint(uint64(id), 10)
 }
