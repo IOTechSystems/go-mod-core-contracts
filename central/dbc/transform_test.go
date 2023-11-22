@@ -47,7 +47,7 @@ func TestConvertDBCtoDevice(t *testing.T) {
 			Canbus: {
 				Network:  networkName,
 				Standard: J1939,
-				ID:       "217056254",
+				ID:       "2364539902",
 				DataSize: "8",
 				Sender:   "Vector__XXX",
 			},
