@@ -111,7 +111,7 @@ func convertDTOStdTypeFields(rowElement *reflect.Value, xlsxRow []string, header
 
 			err := setStdStructFieldValue(fieldValue, field)
 			if err != nil {
-				return err
+				return fmt.Errorf("error occurred on '%s' column: %w", headerName, err)
 			}
 		} else {
 			// field not found in the DTO struct, skip this column
@@ -165,7 +165,7 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 			// header matches the Device DTO field name (one of the Name, Description, AdminState, OperatingState, etc)
 			err := setStdStructFieldValue(fieldValue, field)
 			if err != nil {
-				return err
+				return fmt.Errorf("error occurred on '%s' column: %w", headerName, err)
 			}
 		} else {
 			// header not belongs to the above fields with standard types
@@ -236,7 +236,7 @@ func convertAutoEventFields(rowElement *reflect.Value, xlsxRow []string, headerC
 			// header matches the AutoEvent DTO field name (one of the Interval, OnChange, SourceName field)
 			err := setStdStructFieldValue(fieldValue, field)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("error occurred on '%s' column: %w", headerName, err)
 			}
 		} else {
 			// the cell belongs to the "Reference Device Name" column, append it to deviceNames
@@ -253,14 +253,14 @@ func convertAutoEventFields(rowElement *reflect.Value, xlsxRow []string, headerC
 func convertDeviceCommandFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string) error {
 	var resOpSlice []dtos.ResourceOperation
 	for colIndex, cell := range xlsxRow {
-		_, field := getStructFieldByHeader(rowElement, colIndex, headerCol)
+		headerName, field := getStructFieldByHeader(rowElement, colIndex, headerCol)
 		cell = strings.TrimSpace(cell)
 
 		if field.Kind() != reflect.Invalid {
 			// header matches the DeviceCommand field name (one of the Name, IsHidden or ReadWrite field name)
 			err := setStdStructFieldValue(cell, field)
 			if err != nil {
-				return err
+				return fmt.Errorf("error occurred on '%s' column: %w", headerName, err)
 			}
 		} else {
 			// parse the rest ResourceName columns in the xlsx row and convert to the ResourceOperation DTO
@@ -302,7 +302,7 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 			// header matches the DeviceResource field name (one of the Name, Description or IsHidden field name)
 			err := setStdStructFieldValue(fieldValue, field)
 			if err != nil {
-				return err
+				return fmt.Errorf("error occurred on '%s' column: %w", headerName, err)
 			}
 		} else {
 			resPropField := rowElement.FieldByName(properties).FieldByName(headerName)
@@ -310,7 +310,7 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 				// header matches the ResourceProperties DTO field name (one of the ValueType, ReadWrite, Units, etc)
 				err := setStdStructFieldValue(fieldValue, resPropField)
 				if err != nil {
-					return err
+					return fmt.Errorf("error occurred on '%s' column: %w", headerName, err)
 				}
 			} else {
 				// set the cell to Attributes map if header not belongs to Properties field
