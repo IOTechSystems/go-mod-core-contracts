@@ -5,25 +5,26 @@
 package xlsx
 
 import (
-	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 
 	"github.com/xuri/excelize/v2"
 )
 
 // convertMappingTable parses the MappingTable sheet and stores the default value for each device field
-func convertMappingTable(xlsFile *excelize.File) (map[string]mappingField, error) {
+func convertMappingTable(xlsFile *excelize.File) (map[string]mappingField, errors.EdgeX) {
 	defaultValueMap := make(map[string]mappingField)
 
 	rows, err := xlsFile.GetRows(mappingTableSheetName)
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve all rows from %s: %w", mappingTableSheetName, err)
+		return nil, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all rows from %s", mappingTableSheetName), err)
 	}
 
 	// checks at least 2 rows exists in the MappingTable sheet (1 header and 1 data row)
 	if len(rows) < 2 {
-		return nil, errors.New("at least 2 rows needs to be defined in the MappingTable sheet (1 header and 1 data row)")
+		return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, "at least 2 rows needs to be defined in the MappingTable sheet (1 header and 1 data row)", nil)
 	}
 
 	objColIndex, pathColIndex, defaultColIndex := -1, -1, -1
@@ -42,7 +43,8 @@ func convertMappingTable(xlsFile *excelize.File) (map[string]mappingField, error
 				}
 			}
 			if objColIndex == -1 || pathColIndex == -1 || defaultColIndex == -1 {
-				return nil, fmt.Errorf("column Object, Path, or Default Value not defined in the header of %s worksheet", mappingTableSheetName)
+				return nil, errors.NewCommonEdgeX(errors.KindContractInvalid,
+					fmt.Sprintf("column Object, Path, or Default Value not defined in the header of %s worksheet", mappingTableSheetName), nil)
 			}
 			headerLength = len(row)
 		} else {
