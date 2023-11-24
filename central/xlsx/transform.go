@@ -1,6 +1,7 @@
 //
 // Copyright (C) 2023 IOTech Ltd
 //
+// SPDX-License-Identifier: Apache-2.0
 
 package xlsx
 
@@ -9,6 +10,7 @@ import (
 	"io"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 )
 
 type mappingField struct {
@@ -16,15 +18,15 @@ type mappingField struct {
 	path         string // the path value defined in the MappingTable sheet
 }
 
-func ConvertDeviceXlsx(file io.Reader) (Converter[[]*dtos.Device], error) {
+func ConvertDeviceXlsx(file io.Reader) (Converter[[]*dtos.Device], errors.EdgeX) {
 	deviceX, err := newDeviceXlsx(file)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create deviceXlsx instance: %w", err)
+		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to create deviceXlsx instance", err)
 	}
 
 	err = deviceX.ConvertToDTO()
 	if err != nil {
-		return nil, err
+		return nil, errors.NewCommonEdgeXWrapper(err)
 	}
 
 	return deviceX, nil

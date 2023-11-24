@@ -12,6 +12,7 @@ import (
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 
 	"github.com/xuri/excelize/v2"
 	"golang.org/x/exp/slices"
@@ -33,16 +34,16 @@ type deviceXlsx struct {
 	devices []*dtos.Device
 }
 
-func newDeviceXlsx(file io.Reader) (Converter[[]*dtos.Device], error) {
+func newDeviceXlsx(file io.Reader) (Converter[[]*dtos.Device], errors.EdgeX) {
 	// file io.Reader should be closed from the caller in another module
 	f, err := excelize.OpenReader(file)
 	if err != nil {
-		return nil, err
+		return nil, errors.NewCommonEdgeXWrapper(err)
 	}
 
-	fieldMappings, err := convertMappingTable(f)
-	if err != nil {
-		return nil, err
+	fieldMappings, edgexErr := convertMappingTable(f)
+	if edgexErr != nil {
+		return nil, errors.NewCommonEdgeXWrapper(edgexErr)
 	}
 	return &deviceXlsx{
 		baseXlsx: baseXlsx{
@@ -54,12 +55,12 @@ func newDeviceXlsx(file io.Reader) (Converter[[]*dtos.Device], error) {
 }
 
 // ConvertToDTO parses the Devices sheet and convert the rows to Device DTOs
-func (deviceXlsx *deviceXlsx) ConvertToDTO() error {
+func (deviceXlsx *deviceXlsx) ConvertToDTO() errors.EdgeX {
 	allSheetNames := deviceXlsx.xlsFile.GetSheetList()
 
-	err := checkRequiredSheets(allSheetNames, requiredSheets)
-	if err != nil {
-		return err
+	edgexErr := checkRequiredSheets(allSheetNames, requiredSheets)
+	if edgexErr != nil {
+		return errors.NewCommonEdgeXWrapper(edgexErr)
 	}
 
 	var header []string
@@ -68,25 +69,25 @@ func (deviceXlsx *deviceXlsx) ConvertToDTO() error {
 
 	rows, err := xlsFile.GetRows(devicesSheetName)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve all rows from %s worksheet: %w", devicesSheetName, err)
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all rows from %s worksheet", devicesSheetName), err)
 	}
 
 	// checks at least 2 rows exists in the Devices sheet (1 header and 1 data row)
 	// and parses the header row
 	if len(rows) >= 2 {
 		header = rows[0]
-		err = deviceXlsx.parseDevicesHeader(&header, len(rows))
-		if err != nil {
-			return fmt.Errorf("failed to parse the header row from %s worksheet: %w", devicesSheetName, err)
+		edgexErr = deviceXlsx.parseDevicesHeader(&header, len(rows))
+		if edgexErr != nil {
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("failed to parse the header row from %s worksheet", devicesSheetName), err)
 		}
 	} else {
-		return fmt.Errorf("at least 2 rows need to be defined in %s worksheet", devicesSheetName)
+		return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("at least 2 rows need to be defined in %s worksheet", devicesSheetName), nil)
 	}
 
 	// retrieve all rows again as new columns might be added while the Header row
 	rows, err = xlsFile.GetRows(devicesSheetName)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve all rows from %s worksheet after inserting misshing columns: %w", devicesSheetName, err)
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all rows from %s worksheet after inserting misshing columns", devicesSheetName), err)
 	}
 
 	// parse the device data rows
@@ -98,7 +99,7 @@ func (deviceXlsx *deviceXlsx) ConvertToDTO() error {
 		convertedDevice := dtos.Device{ProtocolName: protocol}
 		_, err = readStruct(&convertedDevice, header, row, deviceXlsx.fieldMappings)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal an excel row into Device DTO: %w", err)
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("failed to unmarshal an xlsx row into Device DTO"), err)
 		}
 
 		// validate the device DTO
@@ -113,14 +114,14 @@ func (deviceXlsx *deviceXlsx) ConvertToDTO() error {
 	if slices.Contains(allSheetNames, autoEventsSheetName) {
 		err = deviceXlsx.convertAutoEvents()
 		if err != nil {
-			return fmt.Errorf("failed to convert AutoEvents worksheet: %w", err)
+			return errors.NewCommonEdgeXWrapper(err)
 		}
 	}
 
 	return nil
 }
 
-func (deviceXlsx *deviceXlsx) parseDevicesHeader(header *[]string, rowCount int) error {
+func (deviceXlsx *deviceXlsx) parseDevicesHeader(header *[]string, rowCount int) errors.EdgeX {
 	var err error
 	// get the column count of the header row to see if any Object field from MappingTable sheet is not defined
 	colCount := len(*header)
@@ -136,7 +137,7 @@ func (deviceXlsx *deviceXlsx) parseDevicesHeader(header *[]string, rowCount int)
 		if mapping.defaultValue != "" {
 			err = checkMappingObject(deviceXlsx.xlsFile, devicesSheetName, &colCount, rowCount, mapping.defaultValue, objectField, header)
 			if err != nil {
-				return fmt.Errorf("failed to check mapping object: %w", err)
+				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("failed to check mapping object"), err)
 			}
 		}
 	}
@@ -145,13 +146,13 @@ func (deviceXlsx *deviceXlsx) parseDevicesHeader(header *[]string, rowCount int)
 }
 
 // convertAutoEvents parses the AutoEvents sheet and convert the rows to AutoEvent DTOs
-func (deviceXlsx *deviceXlsx) convertAutoEvents() error {
+func (deviceXlsx *deviceXlsx) convertAutoEvents() errors.EdgeX {
 	var header []string
 	xlsFile := deviceXlsx.xlsFile
 
 	rows, err := xlsFile.GetRows(autoEventsSheetName)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve all rows from %s worksheet: %w", autoEventsSheetName, err)
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all rows from %s worksheet", autoEventsSheetName), err)
 	}
 
 	// checks at least 2 rows exists in the AutoEvents sheet (1 header and 1 data row)
@@ -166,7 +167,7 @@ func (deviceXlsx *deviceXlsx) convertAutoEvents() error {
 		if colCount < 2 {
 			err = deviceXlsx.parseAutoEventsHeader(header, len(rows))
 			if err != nil {
-				return fmt.Errorf("failed to parse the header row from %s worksheet: %w", autoEventsSheetName, err)
+				return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse the header row from %s worksheet", autoEventsSheetName), err)
 			}
 		}
 	} else {
@@ -175,7 +176,7 @@ func (deviceXlsx *deviceXlsx) convertAutoEvents() error {
 
 	rows, err = xlsFile.GetRows(autoEventsSheetName)
 	if err != nil {
-		return err
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all rows from %s worksheet", autoEventsSheetName), err)
 	}
 
 OUTER:
@@ -186,14 +187,15 @@ OUTER:
 		}
 
 		autoEvent := dtos.AutoEvent{}
-		deviceNameResult, err := readStruct(&autoEvent, header, row, deviceXlsx.fieldMappings)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal an excel row into AutoEvent DTO: %w", err)
+		deviceNameResult, edgexErr := readStruct(&autoEvent, header, row, deviceXlsx.fieldMappings)
+		if edgexErr != nil {
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to unmarshal an excel row into AutoEvent DTO", err)
 		}
 
 		deviceNames, ok := deviceNameResult.([]string)
 		if !ok {
-			return fmt.Errorf("failed to obtain the 'Reference Device Name' cell of the xlsx row from %s worksheet", autoEventsSheetName)
+			return errors.NewCommonEdgeX(errors.KindContractInvalid,
+				fmt.Sprintf("failed to obtain the 'Reference Device Name' cell of the xlsx row from %s worksheet", autoEventsSheetName), nil)
 		}
 
 		// validate the AutoEvent DTO
@@ -223,7 +225,7 @@ OUTER:
 	return nil
 }
 
-func (deviceXlsx *deviceXlsx) parseAutoEventsHeader(header []string, rowCount int) error {
+func (deviceXlsx *deviceXlsx) parseAutoEventsHeader(header []string, rowCount int) errors.EdgeX {
 	var err error
 	colCount := len(header)
 	newColCount := &colCount
@@ -238,7 +240,7 @@ func (deviceXlsx *deviceXlsx) parseAutoEventsHeader(header []string, rowCount in
 		// if not, insert the mapping object as a new column in the Devices sheet with defaultValue set in each data row
 		err = checkMappingObject(deviceXlsx.xlsFile, autoEventsSheetName, newColCount, rowCount, mapping.defaultValue, objectField, &header)
 		if err != nil {
-			return fmt.Errorf("failed to check mapping object: %w", err)
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to check mapping object", err)
 		}
 	}
 
