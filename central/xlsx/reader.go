@@ -6,7 +6,6 @@
 package xlsx
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -14,19 +13,20 @@ import (
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 )
 
-func readStruct(structPtr any, headerCol []string, row []string, mapppingTable map[string]mappingField) (any, error) {
+func readStruct(structPtr any, headerCol []string, row []string, mapppingTable map[string]mappingField) (any, errors.EdgeX) {
 	var extraReturnedCols any
 	v := reflect.ValueOf(structPtr)
 	if v.Kind() != reflect.Ptr || v.Elem().Kind() != reflect.Struct {
-		return nil, errors.New("the structPtr argument should be a pointer of struct")
+		return nil, errors.NewCommonEdgeX(errors.KindServerError, "the structPtr argument should be a pointer of struct", nil)
 	}
 
 	elementType := v.Elem().Type()
 	rowElement := reflect.New(elementType).Elem()
 
-	var err error
+	var err errors.EdgeX
 	switch elementType {
 	case reflect.TypeOf(dtos.DeviceProfile{}):
 		err = convertDTOStdTypeFields(&rowElement, row, headerCol, mapppingTable)
@@ -40,7 +40,7 @@ func readStruct(structPtr any, headerCol []string, row []string, mapppingTable m
 		err = convertResourcesFields(&rowElement, row, headerCol, mapppingTable)
 	default:
 		// skip the processing of the not found field name
-		err = fmt.Errorf("unknown converted DTO type '%T'", elementType)
+		err = errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("unknown converted DTO type '%T'", elementType), nil)
 	}
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func getStructFieldByHeader(structEle *reflect.Value, colIndex int, headerCol []
 }
 
 // setStdStructFieldValue set the struct field with Go standard types to the xlsx cell value
-func setStdStructFieldValue(originValue string, field reflect.Value) error {
+func setStdStructFieldValue(originValue string, field reflect.Value) errors.EdgeX {
 	var fieldValue any
 	switch field.Kind() {
 	case reflect.String:
@@ -76,19 +76,19 @@ func setStdStructFieldValue(originValue string, field reflect.Value) error {
 	case reflect.Bool:
 		boolValue, err := strconv.ParseBool(originValue)
 		if err != nil {
-			return fmt.Errorf("failed to parse originValue '%v' to bool type: %w", originValue, err)
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("failed to parse originValue '%v' to bool type", originValue), err)
 		}
 		fieldValue = boolValue
 	case reflect.Int64:
 		int64Value, err := strconv.ParseInt(originValue, 10, 64)
 		if err != nil {
-			return fmt.Errorf("failed to parse originValue '%v' to Int64 type: %w", originValue, err)
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("failed to parse originValue '%v' to Int64 type", originValue), err)
 		}
 		fieldValue = int64Value
 	case reflect.Interface:
 		fieldValue = originValue
 	default:
-		return fmt.Errorf("failed to parse originValue '%v' to %s type", originValue, field.Type())
+		return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("failed to parse originValue '%v' to %s type", originValue, field.Type()), nil)
 	}
 
 	field.Set(reflect.ValueOf(fieldValue))
@@ -96,7 +96,7 @@ func setStdStructFieldValue(originValue string, field reflect.Value) error {
 }
 
 // convertDTOStdTypeFields unmarshalls the xlsx cells into the standard type fields of the DTO struct
-func convertDTOStdTypeFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string, fieldMappings map[string]mappingField) error {
+func convertDTOStdTypeFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string, fieldMappings map[string]mappingField) errors.EdgeX {
 	for colIndex, cell := range xlsxRow {
 		headerName, field := getStructFieldByHeader(rowElement, colIndex, headerCol)
 		fieldValue := strings.TrimSpace(cell)
@@ -111,7 +111,7 @@ func convertDTOStdTypeFields(rowElement *reflect.Value, xlsxRow []string, header
 
 			err := setStdStructFieldValue(fieldValue, field)
 			if err != nil {
-				return err
+				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("error occurred on '%s' column", headerName), err)
 			}
 		} else {
 			// field not found in the DTO struct, skip this column
@@ -122,14 +122,14 @@ func convertDTOStdTypeFields(rowElement *reflect.Value, xlsxRow []string, header
 }
 
 // setProtocolPropMap sets the ProtocolProperties outer map key based on protocol and returns the Protocols map
-func setProtocolPropMap(prtProps map[string]string, fieldMappings map[string]mappingField) (map[string]dtos.ProtocolProperties, error) {
+func setProtocolPropMap(prtProps map[string]string, fieldMappings map[string]mappingField) (map[string]dtos.ProtocolProperties, errors.EdgeX) {
 	var protocol string
 	prtPropMap := make(map[string]dtos.ProtocolProperties)
 
 	if mapping, ok := fieldMappings[protocolName]; ok {
 		protocol = mapping.defaultValue
 	} else {
-		return nil, errors.New("ProtocolName not defined in fieldMappings")
+		return nil, errors.NewCommonEdgeX(errors.KindServerError, "ProtocolName not defined in fieldMappings", nil)
 	}
 
 	switch protocol {
@@ -138,15 +138,15 @@ func setProtocolPropMap(prtProps map[string]string, fieldMappings map[string]map
 	case modbusTCPKey:
 		prtPropMap[modbusTCPKey] = prtProps
 	default:
-		return nil, fmt.Errorf("unknown ProtocolProperties outer key for '%s' protocol", protocol)
+		return nil, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("unknown ProtocolProperties outer key for '%s' protocol", protocol), nil)
 	}
 	return prtPropMap, nil
 }
 
 // convertDeviceFields convert the xlsx row to the Device DTO
-func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string, fieldMappings map[string]mappingField) error {
+func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string, fieldMappings map[string]mappingField) errors.EdgeX {
 	if fieldMappings == nil {
-		return errors.New("fieldMappings not defined while converting device fields")
+		return errors.NewCommonEdgeX(errors.KindServerError, "fieldMappings not defined while converting device fields", nil)
 	}
 	protocolProperties := dtos.ProtocolProperties{}
 	tagsMap := make(map[string]any)
@@ -165,7 +165,7 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 			// header matches the Device DTO field name (one of the Name, Description, AdminState, OperatingState, etc)
 			err := setStdStructFieldValue(fieldValue, field)
 			if err != nil {
-				return err
+				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("error occurred on '%s' column", headerName), err)
 			}
 		} else {
 			// header not belongs to the above fields with standard types
@@ -195,7 +195,7 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 	if len(protocolProperties) > 0 {
 		prtField := rowElement.FieldByName(protocols)
 		if prtField.Kind() == reflect.Invalid {
-			return errors.New("failed to find Protocols field in Device DTO")
+			return errors.NewCommonEdgeX(errors.KindServerError, "failed to find Protocols field in Device DTO", nil)
 		}
 		prtPropMap, err := setProtocolPropMap(protocolProperties, fieldMappings)
 		if err != nil {
@@ -207,7 +207,7 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 	if len(tagsMap) > 0 {
 		tagsField := rowElement.FieldByName(tags)
 		if tagsField.Kind() == reflect.Invalid {
-			return errors.New("failed to find Tags field in Device DTO")
+			return errors.NewCommonEdgeX(errors.KindServerError, "failed to find Tags field in Device DTO", nil)
 		}
 		tagsField.Set(reflect.ValueOf(tagsMap))
 	}
@@ -216,9 +216,9 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 }
 
 // convertAutoEventFields convert the xlsx row to the AutoEvent DTO
-func convertAutoEventFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string, fieldMappings map[string]mappingField) ([]string, error) {
+func convertAutoEventFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string, fieldMappings map[string]mappingField) ([]string, errors.EdgeX) {
 	if fieldMappings == nil {
-		return nil, errors.New("fieldMappings not defined while converting AutoEvent fields")
+		return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, "fieldMappings not defined while converting AutoEvent fields", nil)
 	}
 	var deviceNames []string
 
@@ -236,7 +236,7 @@ func convertAutoEventFields(rowElement *reflect.Value, xlsxRow []string, headerC
 			// header matches the AutoEvent DTO field name (one of the Interval, OnChange, SourceName field)
 			err := setStdStructFieldValue(fieldValue, field)
 			if err != nil {
-				return nil, err
+				return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("error occurred on '%s' column", headerName), err)
 			}
 		} else {
 			// the cell belongs to the "Reference Device Name" column, append it to deviceNames
@@ -250,17 +250,17 @@ func convertAutoEventFields(rowElement *reflect.Value, xlsxRow []string, headerC
 }
 
 // convertDeviceCommandFields convert the xlsx row to the DeviceCommand DTO
-func convertDeviceCommandFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string) error {
+func convertDeviceCommandFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string) errors.EdgeX {
 	var resOpSlice []dtos.ResourceOperation
 	for colIndex, cell := range xlsxRow {
-		_, field := getStructFieldByHeader(rowElement, colIndex, headerCol)
+		headerName, field := getStructFieldByHeader(rowElement, colIndex, headerCol)
 		cell = strings.TrimSpace(cell)
 
 		if field.Kind() != reflect.Invalid {
 			// header matches the DeviceCommand field name (one of the Name, IsHidden or ReadWrite field name)
 			err := setStdStructFieldValue(cell, field)
 			if err != nil {
-				return err
+				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("error occurred on '%s' column", headerName), err)
 			}
 		} else {
 			// parse the rest ResourceName columns in the xlsx row and convert to the ResourceOperation DTO
@@ -275,7 +275,7 @@ func convertDeviceCommandFields(rowElement *reflect.Value, xlsxRow []string, hea
 		// set resOpSlice to the ResourceOperations field of DeviceCommand struct
 		resOpField := rowElement.FieldByName(resourceOperations)
 		if resOpField.Kind() == reflect.Invalid {
-			return errors.New("failed to find ResourceOperations field in DeviceCommand DTO")
+			return errors.NewCommonEdgeX(errors.KindServerError, "failed to find ResourceOperations field in DeviceCommand DTO", nil)
 		}
 		resOpField.Set(reflect.ValueOf(resOpSlice))
 	}
@@ -283,9 +283,9 @@ func convertDeviceCommandFields(rowElement *reflect.Value, xlsxRow []string, hea
 }
 
 // convertResourcesFields convert the xlsx row to the DeviceResource DTO
-func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string, fieldMappings map[string]mappingField) error {
+func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string, fieldMappings map[string]mappingField) errors.EdgeX {
 	if fieldMappings == nil {
-		return errors.New("fieldMappings not defined while converting DeviceResource fields")
+		return errors.NewCommonEdgeX(errors.KindServerError, "fieldMappings not defined while converting DeviceResource fields", nil)
 	}
 
 	for colIndex, cell := range xlsxRow {
@@ -302,7 +302,7 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 			// header matches the DeviceResource field name (one of the Name, Description or IsHidden field name)
 			err := setStdStructFieldValue(fieldValue, field)
 			if err != nil {
-				return err
+				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("error occurred on '%s' column", headerName), err)
 			}
 		} else {
 			resPropField := rowElement.FieldByName(properties).FieldByName(headerName)
@@ -310,7 +310,7 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 				// header matches the ResourceProperties DTO field name (one of the ValueType, ReadWrite, Units, etc)
 				err := setStdStructFieldValue(fieldValue, resPropField)
 				if err != nil {
-					return err
+					return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("error occurred on '%s' column", headerName), err)
 				}
 			} else {
 				// set the cell to Attributes map if header not belongs to Properties field

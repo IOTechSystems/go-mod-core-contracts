@@ -6,8 +6,9 @@
 package xlsx
 
 import (
-	"errors"
 	"fmt"
+
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 
 	"github.com/xuri/excelize/v2"
 	"golang.org/x/exp/slices"
@@ -16,9 +17,9 @@ import (
 // checkMappingObject checks if the object field from MappingTable is defined in the provided worksheet
 // if not found, adds the new object column with defaultValue to the provided sheetName
 func checkMappingObject(xlsFile *excelize.File, sheetName string, totalColCount *int, totalRowCount int,
-	defaultValue, objectField string, header *[]string) error {
+	defaultValue, objectField string, header *[]string) errors.EdgeX {
 	if header == nil {
-		return errors.New("header cannot be nil")
+		return errors.NewCommonEdgeX(errors.KindContractInvalid, "header cannot be nil", nil)
 	}
 
 	found := false
@@ -38,12 +39,12 @@ func checkMappingObject(xlsFile *excelize.File, sheetName string, totalColCount 
 	// Append a new column before colName for this missing field with DefaultValue set on each row
 	colName, err := excelize.ColumnNumberToName(*totalColCount + 1)
 	if err != nil {
-		return fmt.Errorf("failed to covert column number to name: %w", err)
+		return errors.NewCommonEdgeX(errors.KindServerError, "failed to covert column number to name", err)
 	}
 
 	err = xlsFile.InsertCols(sheetName, colName, 1)
 	if err != nil {
-		return fmt.Errorf("failed to insert empty column to %s: %w", sheetName, err)
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to insert empty column to %s", sheetName), err)
 	}
 
 	// create the new column values to append to the worksheet for the missing column
@@ -58,7 +59,7 @@ func checkMappingObject(xlsFile *excelize.File, sheetName string, totalColCount 
 
 	err = xlsFile.SetSheetCol(sheetName, colName+"1", &newColValues)
 	if err != nil {
-		return fmt.Errorf("failed to set new column to %s in %s: %w", colName, sheetName, err)
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to set new column to %s in %s", colName, sheetName), err)
 	}
 
 	*header = append(*header, objectField)
@@ -67,10 +68,10 @@ func checkMappingObject(xlsFile *excelize.File, sheetName string, totalColCount 
 }
 
 // checkRequiredSheets examines if all the required sheets are defined in the xlsx
-func checkRequiredSheets(allSheetNames, requiredSheets []string) error {
+func checkRequiredSheets(allSheetNames, requiredSheets []string) errors.EdgeX {
 	for _, requiredSheet := range requiredSheets {
 		if !slices.Contains(allSheetNames, requiredSheet) {
-			return fmt.Errorf("%s worksheet not found in the file", requiredSheet)
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("%s worksheet not found in the file", requiredSheet), nil)
 		}
 	}
 	return nil
