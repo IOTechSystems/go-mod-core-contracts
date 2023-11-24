@@ -99,7 +99,7 @@ func (deviceXlsx *deviceXlsx) ConvertToDTO() errors.EdgeX {
 		convertedDevice := dtos.Device{ProtocolName: protocol}
 		_, err = readStruct(&convertedDevice, header, row, deviceXlsx.fieldMappings)
 		if err != nil {
-			return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("failed to unmarshal an xlsx row into Device DTO"), err)
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to unmarshal an xlsx row into Device DTO", err)
 		}
 
 		// validate the device DTO
@@ -137,7 +137,7 @@ func (deviceXlsx *deviceXlsx) parseDevicesHeader(header *[]string, rowCount int)
 		if mapping.defaultValue != "" {
 			err = checkMappingObject(deviceXlsx.xlsFile, devicesSheetName, &colCount, rowCount, mapping.defaultValue, objectField, header)
 			if err != nil {
-				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("failed to check mapping object"), err)
+				return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to check mapping object", err)
 			}
 		}
 	}

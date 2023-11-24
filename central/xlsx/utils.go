@@ -39,7 +39,7 @@ func checkMappingObject(xlsFile *excelize.File, sheetName string, totalColCount 
 	// Append a new column before colName for this missing field with DefaultValue set on each row
 	colName, err := excelize.ColumnNumberToName(*totalColCount + 1)
 	if err != nil {
-		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to covert column number to name"), err)
+		return errors.NewCommonEdgeX(errors.KindServerError, "failed to covert column number to name", err)
 	}
 
 	err = xlsFile.InsertCols(sheetName, colName, 1)
