@@ -6,6 +6,7 @@
 package dbc
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 
@@ -125,7 +126,11 @@ func ConvertDBCtoDevice(data []byte, networkName, serviceName string) (deviceDTO
 					Sender:   m.SenderNode,
 				},
 			},
+			Tags: map[string]any{
+				PGN: getPGN(m.ID),
+			},
 		}
+
 		validateErr := common.Validate(deviceDTO)
 		if validateErr != nil {
 			validateErrors[deviceDTO.Name] = validateErr
@@ -139,4 +144,10 @@ func ConvertDBCtoDevice(data []byte, networkName, serviceName string) (deviceDTO
 func getOriginalCanId(canID uint32) string {
 	id := canID | messageIDExtendedFlag
 	return strconv.FormatUint(uint64(id), 10)
+}
+
+func getPGN(canID uint32) string {
+	// J1939 PGN bit start from 9, length is 18
+	pgn := (canID >> j1939PGNOffset) & j1939PGNMask
+	return fmt.Sprintf("%X", pgn)
 }
