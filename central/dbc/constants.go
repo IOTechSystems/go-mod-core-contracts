@@ -13,6 +13,7 @@ const (
 	ID       = "ID"
 	DataSize = "dataSize"
 	Sender   = "sender"
+	PGN      = "PGN"
 
 	BitStart      = "bitStart"
 	BitLen        = "bitLen"
@@ -23,4 +24,6 @@ const (
 	IsSigned      = "isSigned"
 
 	messageIDExtendedFlag = 0x80000000
+	j1939PGNOffset        = 8
+	j1939PGNMask          = 0x3FFFF
 )
