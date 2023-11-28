@@ -105,10 +105,6 @@ func ValidateDeviceProfileDTO(profile DeviceProfile) error {
 	// deviceResources validation
 	dupCheck := make(map[string]bool)
 	for _, resource := range profile.DeviceResources {
-		if resource.Properties.ValueType == common.ValueTypeBinary &&
-			strings.Contains(resource.Properties.ReadWrite, common.ReadWrite_W) {
-			return edgexErrors.NewCommonEdgeX(edgexErrors.KindContractInvalid, fmt.Sprintf("write permission not support %s value type for resource '%s'", common.ValueTypeBinary, resource.Name), nil)
-		}
 		// deviceResource name should not duplicated
 		if dupCheck[resource.Name] {
 			return edgexErrors.NewCommonEdgeX(edgexErrors.KindContractInvalid, fmt.Sprintf("device resource %s is duplicated", resource.Name), nil)

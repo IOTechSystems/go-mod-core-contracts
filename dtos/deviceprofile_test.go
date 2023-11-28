@@ -117,7 +117,6 @@ func TestDeviceProfileDTOValidation(t *testing.T) {
 		{"duplicated device command", duplicatedDeviceCommand, true},
 		{"mismatched resource", mismatchedResource, true},
 		{"invalid ReadWrite permission", invalidReadWrite, true},
-		{"write permission not support Binary value type", binaryWithWritePermission, true},
 	}
 
 	for _, tt := range tests {
