@@ -52,6 +52,9 @@ func TestConvertDBCtoDevice(t *testing.T) {
 				Sender:   "Vector__XXX",
 			},
 		},
+		Tags: map[string]any{
+			"PGN": "F003",
+		},
 	}
 	require.EqualValues(t, expectedDeviceDTO, deviceDTOs[0], "Generated Device DTO doesn't match the expected value.")
 }
