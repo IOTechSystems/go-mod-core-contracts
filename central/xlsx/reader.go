@@ -325,6 +325,8 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 					var attrValue any
 					if intValue, err := strconv.ParseInt(fieldValue, 10, 16); err == nil {
 						attrValue = intValue
+					} else if floatValue, err := strconv.ParseFloat(fieldValue, 64); err == nil {
+						attrValue = floatValue
 					} else if boolValue, err := strconv.ParseBool(fieldValue); err == nil {
 						attrValue = boolValue
 					} else {
