@@ -6,14 +6,21 @@
 package dbc
 
 const (
-	Canbus   = "CANbus"
-	J1939    = "J1939"
-	Network  = "network"
-	Standard = "standard"
-	ID       = "ID"
-	DataSize = "dataSize"
-	Sender   = "sender"
-	PGN      = "PGN"
+	ServiceName = "ServiceName"
+
+	Canbus          = "CANbus"
+	J1939           = "J1939"
+	Network         = "Network"
+	Standard        = "Standard"
+	ID              = "ID"
+	DataSize        = "DataSize"
+	Sender          = "Sender"
+	PGN             = "PGN"
+	CommType        = "CommType"
+	CommTypeTCP     = "TCP"
+	Port            = "Port"
+	NetType         = "NetType"
+	NetTypeEthernet = "Ethernet"
 
 	BitStart      = "bitStart"
 	BitLen        = "bitLen"
