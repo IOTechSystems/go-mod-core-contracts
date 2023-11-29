@@ -5,6 +5,7 @@ package xrtmodels
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/central/dbc"
 	"strconv"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
@@ -124,6 +125,8 @@ func propertyConversionList(protocol string) ([]string, []string, []string) {
 	case common.EtherNetIPKey:
 		intProperties = []string{common.EtherNetIPVendorID, common.EtherNetIPDeviceType, common.EtherNetIPProductCode,
 			common.EtherNetIPMajorRevision, common.EtherNetIPMinorRevision}
+	case dbc.Canbus:
+		intProperties = []string{dbc.ID, dbc.DataSize, dbc.Port}
 	}
 	return intProperties, floatProperties, boolProperties
 }
