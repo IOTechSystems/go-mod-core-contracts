@@ -101,7 +101,7 @@ func ConvertDBCtoProfile(data []byte) (profileDTOs []dtos.DeviceProfile, err err
 	return
 }
 
-func ConvertDBCtoDevice(data []byte, networkName, serviceName string) (deviceDTOs []dtos.Device, err error, validateErrors map[string]error) {
+func ConvertDBCtoDevice(data []byte, args map[string]string) (deviceDTOs []dtos.Device, err error, validateErrors map[string]error) {
 	compileResult, err := Compile("", data)
 	if err != nil {
 		return
@@ -116,10 +116,12 @@ func ConvertDBCtoDevice(data []byte, networkName, serviceName string) (deviceDTO
 			AdminState:     models.Unlocked,
 			OperatingState: models.Up,
 			ProfileName:    m.Name,
-			ServiceName:    serviceName,
+			ServiceName:    args[ServiceName],
 			Protocols: map[string]dtos.ProtocolProperties{
 				Canbus: {
-					Network:  networkName,
+					NetType:  args[NetType],
+					CommType: args[CommType],
+					Network:  args[Network],
 					Standard: J1939,
 					ID:       getOriginalCanId(m.ID),
 					DataSize: strconv.Itoa(int(m.Length)),
@@ -129,6 +131,9 @@ func ConvertDBCtoDevice(data []byte, networkName, serviceName string) (deviceDTO
 			Tags: map[string]any{
 				PGN: getPGN(m.ID),
 			},
+		}
+		if args[NetType] == NetTypeEthernet {
+			deviceDTO.Protocols[Canbus][Port] = args[Port]
 		}
 
 		validateErr := common.Validate(deviceDTO)

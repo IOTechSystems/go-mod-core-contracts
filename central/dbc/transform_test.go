@@ -19,8 +19,11 @@ import (
 )
 
 func TestConvertDBCtoDevice(t *testing.T) {
-	networkName := "vcan0"
+	networkName := "192.168.0.7"
 	serviceName := "device-can"
+	netType := NetTypeEthernet
+	commType := CommTypeTCP
+	port := "20001"
 
 	ioReader, err := os.Open("dbc_sample.dbc")
 	defer func() {
@@ -32,8 +35,16 @@ func TestConvertDBCtoDevice(t *testing.T) {
 	data, err := io.ReadAll(ioReader)
 	require.NoError(t, err)
 
-	deviceDTOs, err, _ := ConvertDBCtoDevice(data, networkName, serviceName)
+	args := map[string]string{
+		ServiceName: serviceName,
+		NetType:     netType,
+		Network:     networkName,
+		CommType:    commType,
+		Port:        port,
+	}
+	deviceDTOs, err, validateErr := ConvertDBCtoDevice(data, args)
 	require.NoError(t, err)
+	require.Empty(t, validateErr)
 	require.NotEmpty(t, deviceDTOs)
 
 	expectedDeviceDTO := dtos.Device{
@@ -45,7 +56,10 @@ func TestConvertDBCtoDevice(t *testing.T) {
 		ServiceName:    serviceName,
 		Protocols: map[string]dtos.ProtocolProperties{
 			Canbus: {
+				NetType:  netType,
 				Network:  networkName,
+				CommType: commType,
+				Port:     port,
 				Standard: J1939,
 				ID:       "2364539902",
 				DataSize: "8",
