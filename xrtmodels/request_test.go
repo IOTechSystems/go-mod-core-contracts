@@ -1,4 +1,4 @@
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2023 IOTech Ltd
 
 package xrtmodels
 
@@ -36,6 +36,9 @@ func TestNewRequest(t *testing.T) {
 	require.NoError(t, err)
 	setDeviceResourceRequest, err := json.Marshal(NewDeviceResourceSetRequest(device.Name, clientName, map[string]interface{}{}, map[string]interface{}{}))
 	require.NoError(t, err)
+	categoryName := "IOT::Core"
+	componentDiscoverReq, err := json.Marshal(NewComponentDiscoverRequest(clientName, categoryName))
+	require.NoError(t, err)
 
 	var tests = []struct {
 		name       string
@@ -52,6 +55,7 @@ func TestNewRequest(t *testing.T) {
 		{"new DeleteDeviceRequest", deleteDeviceRequest, DeviceDeleteOperation},
 		{"new GetDeviceResourceRequest", getDeviceResourceRequest, DeviceResourceGetOperation},
 		{"new SetDeviceResourceRequest", setDeviceResourceRequest, DeviceResourceSetOperation},
+		{"new ComponentDiscoverRequest", componentDiscoverReq, ComponentDiscoverOperation},
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {

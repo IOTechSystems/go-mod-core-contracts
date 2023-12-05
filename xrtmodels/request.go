@@ -31,7 +31,8 @@ const (
 
 	DiscoveryTriggerOperation = "discovery:trigger"
 
-	ComponentUpdateOperation = "component:update"
+	ComponentUpdateOperation   = "component:update"
+	ComponentDiscoverOperation = "component:discover"
 )
 
 type BaseRequest struct {
@@ -115,6 +116,11 @@ type UpdateComponentRequest struct {
 	BaseRequest `json:",inline"`
 	Component   string                 `json:"component"`
 	Config      map[string]interface{} `json:"config"`
+}
+
+type DiscoverComponentRequest struct {
+	BaseRequest `json:",inline"`
+	Category    string `json:"category,omitempty"`
 }
 
 type DiscoveryRequest struct {
@@ -347,6 +353,17 @@ func NewComponentUpdateRequest(Component string, clientName string, config map[s
 		},
 		Component: Component,
 		Config:    config,
+	}
+	return req
+}
+
+func NewComponentDiscoverRequest(clientName string, category string) DiscoverComponentRequest {
+	req := DiscoverComponentRequest{
+		BaseRequest: BaseRequest{
+			Client:    clientName,
+			RequestId: uuid.New().String(),
+			Op:        ComponentDiscoverOperation,
+		},
 	}
 	return req
 }
