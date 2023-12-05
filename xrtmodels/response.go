@@ -142,3 +142,13 @@ type MultiSchedulesResult struct {
 	BaseResult `json:",inline"`
 	Schedules  []string `json:"schedules"`
 }
+
+type MultiComponentsResponse struct {
+	BaseResponse `json:",inline"`
+	Result       MultiComponentsResult `json:"result"`
+}
+
+type MultiComponentsResult struct {
+	BaseResult `json:",inline"`
+	Components []Component `json:"components"`
+}

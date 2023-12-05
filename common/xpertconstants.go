@@ -70,6 +70,7 @@ const (
 
 // constants relate to the remote edge node
 const (
+	BrokerName                            = "brokerName"
 	EdgeNodeName                          = "edgenodeName"
 	DeviceServiceName                     = "deviceServiceName"
 	TopicPatternFieldGroupName            = "GROUP_NAME"
