@@ -52,6 +52,18 @@ func (dc DeviceClient) Update(ctx context.Context, reqs []requests.UpdateDeviceR
 	return res, nil
 }
 
+func (dc DeviceClient) UpdateWithQueryParams(ctx context.Context, reqs []requests.UpdateDeviceRequest, queryParams map[string]string) (res []dtoCommon.BaseResponse, err errors.EdgeX) {
+	requestParams := url.Values{}
+	for k, v := range queryParams {
+		requestParams.Set(k, v)
+	}
+	err = utils.PatchRequest(ctx, &res, dc.baseUrl, common.ApiDeviceRoute, requestParams, reqs)
+	if err != nil {
+		return res, errors.NewCommonEdgeXWrapper(err)
+	}
+	return res, nil
+}
+
 func (dc DeviceClient) AllDevices(ctx context.Context, labels []string, offset int, limit int) (res responses.MultiDevicesResponse, err errors.EdgeX) {
 	requestParams := url.Values{}
 	if len(labels) > 0 {

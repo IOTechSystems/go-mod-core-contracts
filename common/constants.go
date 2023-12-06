@@ -213,6 +213,7 @@ const (
 	KeyOnly       = "keyOnly"        //query string to specify if the response will only return the keys of the specified query key prefix, without values and metadata
 	Plaintext     = "plaintext"      //query string to specify if the response will return the stored plain text value of the key(s) without any encoding
 	Deregistered  = "deregistered"   //query string to specify if the response will return the registries of deregistered services
+	NoCallback    = "nocallback"     //query string to tell core-metadata not to invoke the service callback
 )
 
 // Constants related to the default value of query strings in the v3 service APIs
