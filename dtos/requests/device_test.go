@@ -34,6 +34,9 @@ var testProtocols = map[string]dtos.ProtocolProperties{
 		"UnitID":  "1",
 	},
 }
+var testProperties = map[string]any{
+	"LastScan": float64(1702275547),
+}
 var testAddDevice = AddDeviceRequest{
 	BaseRequest: dtoCommon.BaseRequest{
 		RequestId:   ExampleUUID,
@@ -82,6 +85,7 @@ func mockUpdateDevice() dtos.UpdateDevice {
 	d.Tags = map[string]interface{}{"1": TestTag1, "2": TestTag2}
 	d.AutoEvents = testAutoEvents
 	d.Protocols = testProtocols
+	d.Properties = testProperties
 	return d
 }
 
@@ -427,6 +431,7 @@ func TestReplaceDeviceModelFieldsWithDTO(t *testing.T) {
 	assert.Equal(t, map[string]interface{}{"1": TestTag1, "2": TestTag2}, device.Tags)
 	assert.Equal(t, dtos.ToAutoEventModels(testAutoEvents), device.AutoEvents)
 	assert.Equal(t, dtos.ToProtocolModels(testProtocols), device.Protocols)
+	assert.Equal(t, testProperties, device.Properties)
 }
 
 func TestNewAddDeviceRequest(t *testing.T) {
