@@ -30,7 +30,7 @@ type Device struct {
 	// want as much info as we can find about the device (so for example in a big system they have a better idea of what
 	// actual device is being provisioned). So we added a properties field to carry this information. IMHO this is a valid
 	// generic requirement to support discovery.
-	Properties map[string]interface{}
+	Properties map[string]any
 }
 
 // ProtocolProperties contains the device connection information in key/value pair
