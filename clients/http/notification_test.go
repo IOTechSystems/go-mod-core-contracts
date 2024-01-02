@@ -8,13 +8,13 @@ package http
 
 import (
 	"context"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/http/utils"
 	"net/http"
 	"path"
 	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/http/utils"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"

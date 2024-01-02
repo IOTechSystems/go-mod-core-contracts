@@ -31,7 +31,7 @@ const (
 	// MQTT specific settings
 	MqttClientKeyFileName  = "mqtt.key"
 	MqttClientCertFileName = "mqtt.crt"
-	EnvMessageBusMqttTls   = "EDGEXPERT_MESSAGEBUS_MQTT_TLS"
+	EnvMessageBusMqttTls   = "EDGECENTRAL_MESSAGEBUS_MQTT_TLS"
 )
 
 // CreateRedisTlsConfigFromPEM loads TLS certificates from PEM encoded data and creates Redis TLS config

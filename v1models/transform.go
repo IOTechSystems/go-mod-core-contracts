@@ -4,7 +4,6 @@ package v1models
 
 import (
 	"fmt"
-	v2dtos "github.com/edgexfoundry/go-mod-core-contracts/v3/v2models/dto"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"net/http"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/v2dtos"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/v2models"
 )
 

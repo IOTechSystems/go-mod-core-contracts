@@ -7,15 +7,15 @@ package http
 
 import (
 	"context"
-	"github.com/pelletier/go-toml/v2"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/pelletier/go-toml/v2"
+	"github.com/stretchr/testify/require"
+
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
-
-	"github.com/stretchr/testify/require"
 )
 
 func Test_generalClient_CentralFetchConfiguration_JSON(t *testing.T) {
