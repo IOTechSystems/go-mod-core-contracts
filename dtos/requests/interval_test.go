@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -9,9 +9,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -87,7 +87,7 @@ func TestAddIntervalRequest_Validate(t *testing.T) {
 		{"valid AddIntervalRequest", valid, false},
 		{"valid AddIntervalRequest, no Request Id", noReqId, false},
 		{"valid AddIntervalRequest, interval name containing unreserved chars", intervalNameWithUnreservedChars, false},
-		{"invalid AddIntervalRequest, interval name containing reserved chars", intervalNameWithReservedChars, true},
+		{"valid AddIntervalRequest, interval name containing reserved chars", intervalNameWithReservedChars, false},
 		{"invalid AddIntervalRequest, Request Id is not an uuid", invalidReqId, true},
 		{"invalid AddIntervalRequest, no IntervalName", noIntervalName, true},
 		{"invalid AddIntervalRequest, invalid frequency", invalidFrequency, true},
@@ -230,9 +230,9 @@ func TestUpdateIntervalRequest_Validate(t *testing.T) {
 
 func TestUpdateIntervalRequest_UnmarshalJSON_NilField(t *testing.T) {
 	reqJson := `{
-		"apiVersion" : "v2",
+		"apiVersion" : "v3",
         "requestId":"7a1707f0-166f-4c4b-bc9d-1d54c74e0137",
-		"interval":{"apiVersion":"v2", "name":"TestInterval"}
+		"interval":{"apiVersion":"v3", "name":"TestInterval"}
 	}`
 	var req UpdateIntervalRequest
 

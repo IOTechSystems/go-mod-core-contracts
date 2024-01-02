@@ -1,24 +1,25 @@
 //
-// Copyright (C) 2020-2022 IOTech Ltd
+// Copyright (C) 2020-2023 IOTech Ltd
+// Copyright (C) 2023 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package common
 
-// Constants related to defined routes in the v2 service APIs
+// Constants related to defined routes in the v3 service APIs
 const (
-	ApiVersion = "v2"
-	ApiBase    = "/api/v2"
+	ApiVersion = "v3"
+	ApiBase    = "/api/v3"
 
-	ApiEventRoute                                = ApiBase + "/event"
-	ApiEventProfileNameDeviceNameSourceNameRoute = ApiEventRoute + "/{" + ProfileName + "}" + "/{" + DeviceName + "}" + "/{" + SourceName + "}"
-	ApiAllEventRoute                             = ApiEventRoute + "/" + All
-	ApiEventIdRoute                              = ApiEventRoute + "/" + Id + "/{" + Id + "}"
-	ApiEventCountRoute                           = ApiEventRoute + "/" + Count
-	ApiEventCountByDeviceNameRoute               = ApiEventCountRoute + "/" + Device + "/" + Name + "/{" + Name + "}"
-	ApiEventByDeviceNameRoute                    = ApiEventRoute + "/" + Device + "/" + Name + "/{" + Name + "}"
-	ApiEventByTimeRangeRoute                     = ApiEventRoute + "/" + Start + "/{" + Start + "}/" + End + "/{" + End + "}"
-	ApiEventByAgeRoute                           = ApiEventRoute + "/" + Age + "/{" + Age + "}"
+	ApiEventRoute                                           = ApiBase + "/event"
+	ApiEventServiceNameProfileNameDeviceNameSourceNameRoute = ApiEventRoute + "/{" + ServiceName + "}" + "/{" + ProfileName + "}" + "/{" + DeviceName + "}" + "/{" + SourceName + "}"
+	ApiAllEventRoute                                        = ApiEventRoute + "/" + All
+	ApiEventIdRoute                                         = ApiEventRoute + "/" + Id + "/{" + Id + "}"
+	ApiEventCountRoute                                      = ApiEventRoute + "/" + Count
+	ApiEventCountByDeviceNameRoute                          = ApiEventCountRoute + "/" + Device + "/" + Name + "/{" + Name + "}"
+	ApiEventByDeviceNameRoute                               = ApiEventRoute + "/" + Device + "/" + Name + "/{" + Name + "}"
+	ApiEventByTimeRangeRoute                                = ApiEventRoute + "/" + Start + "/{" + Start + "}/" + End + "/{" + End + "}"
+	ApiEventByAgeRoute                                      = ApiEventRoute + "/" + Age + "/{" + Age + "}"
 
 	ApiReadingRoute                                        = ApiBase + "/reading"
 	ApiAllReadingRoute                                     = ApiReadingRoute + "/" + All
@@ -88,11 +89,8 @@ const (
 	ApiNotificationByCategoryRoute         = ApiNotificationRoute + "/" + Category + "/{" + Category + "}"
 	ApiNotificationByLabelRoute            = ApiNotificationRoute + "/" + Label + "/{" + Label + "}"
 	ApiNotificationByIdRoute               = ApiNotificationRoute + "/" + Id + "/{" + Id + "}"
-	ApiNotificationByIdsRoute              = ApiNotificationRoute + "/" + Ids + "/{" + Ids + "}"
 	ApiNotificationByStatusRoute           = ApiNotificationRoute + "/" + Status + "/{" + Status + "}"
 	ApiNotificationBySubscriptionNameRoute = ApiNotificationRoute + "/" + Subscription + "/" + Name + "/{" + Name + "}"
-	ApiNotificationAcknowledgeByIdsRoute   = ApiNotificationRoute + "/" + Acknowledge + "/" + Ids + "/{" + Ids + "}"
-	ApiNotificationUnacknowledgeByIdsRoute = ApiNotificationRoute + "/" + Unacknowledge + "/" + Ids + "/{" + Ids + "}"
 
 	ApiTransmissionRoute                   = ApiBase + "/transmission"
 	ApiTransmissionByIdRoute               = ApiTransmissionRoute + "/" + Id + "/{" + Id + "}"
@@ -104,7 +102,6 @@ const (
 	ApiTransmissionByNotificationIdRoute   = ApiTransmissionRoute + "/" + Notification + "/" + Id + "/{" + Id + "}"
 
 	ApiConfigRoute         = ApiBase + "/config"
-	ApiMetricsRoute        = ApiBase + "/metrics"
 	ApiPingRoute           = ApiBase + "/ping"
 	ApiVersionRoute        = ApiBase + "/version"
 	ApiSecretRoute         = ApiBase + "/secret"
@@ -128,11 +125,18 @@ const (
 	ApiIntervalActionByNameRoute   = ApiIntervalActionRoute + "/" + Name + "/{" + Name + "}"
 	ApiIntervalActionByTargetRoute = ApiIntervalActionRoute + "/" + Target + "/{" + Target + "}"
 
-	ApiSystemRoute       = ApiBase + "/system"
-	ApiOperationRoute    = ApiSystemRoute + "/operation"
-	ApiHealthRoute       = ApiSystemRoute + "/health"
+	ApiSystemRoute      = ApiBase + "/system"
+	ApiOperationRoute   = ApiSystemRoute + "/operation"
+	ApiHealthRoute      = ApiSystemRoute + "/health"
+	ApiMultiConfigRoute = ApiSystemRoute + "/config"
+
+	// Central
+	ApiMetricsRoute      = ApiBase + "/metrics"
 	ApiMultiMetricsRoute = ApiSystemRoute + "/metrics"
-	ApiMultiConfigRoute  = ApiSystemRoute + "/config"
+
+	ApiNotificationByIdsRoute              = ApiNotificationRoute + "/" + Ids + "/{" + Ids + "}"
+	ApiNotificationAcknowledgeByIdsRoute   = ApiNotificationRoute + "/" + Acknowledge + "/" + Ids + "/{" + Ids + "}"
+	ApiNotificationUnacknowledgeByIdsRoute = ApiNotificationRoute + "/" + Unacknowledge + "/" + Ids + "/{" + Ids + "}"
 
 	ApiRuleRoute       = ApiBase + "/rule"
 	ApiAllRulesRoute   = ApiRuleRoute + "/" + All
@@ -143,13 +147,13 @@ const (
 	ApiRegisterRoute                = ApiBase + "/registry"
 	ApiAllRegistrationsRoute        = ApiRegisterRoute + "/" + All
 	ApiRegistrationByServiceIdRoute = ApiRegisterRoute + "/" + ServiceId + "/{" + ServiceId + "}"
+
 )
 
-// Constants related to defined url path names and parameters in the v2 service APIs
+// Constants related to defined url path names and parameters in the v3 service APIs
 const (
 	All           = "all"
 	Id            = "id"
-	Ids           = "ids"
 	Created       = "created"
 	Modified      = "modified"
 	Pushed        = "pushed"
@@ -191,6 +195,16 @@ const (
 	Sender        = "sender"
 	Severity      = "severity"
 	Interval      = "interval"
+
+	Offset       = "offset"         //query string to specify the number of items to skip before starting to collect the result set.
+	Limit        = "limit"          //query string to specify the numbers of items to return
+	Labels       = "labels"         //query string to specify associated user-defined labels for querying a given object. More than one label may be specified via a comma-delimited list
+	PushEvent    = "ds-pushevent"   //query string to specify if an event should be pushed to the EdgeX system
+	ReturnEvent  = "ds-returnevent" //query string to specify if an event should be returned from device service
+	RegexCommand = "ds-regexcmd"    //query string to specify if the command name is in regular expression format
+
+	// Central
+	Ids           = "ids"
 	User          = "user"
 	Group         = "group"
 	PublicKey     = "rsa_public_key"
@@ -199,26 +213,18 @@ const (
 	Unacknowledge = "unacknowledge"
 	Key           = "key"
 	ServiceId     = "serviceId"
-
-	Offset       = "offset"         //query string to specify the number of items to skip before starting to collect the result set.
-	Limit        = "limit"          //query string to specify the numbers of items to return
-	Labels       = "labels"         //query string to specify associated user-defined labels for querying a given object. More than one label may be specified via a comma-delimited list
-	PushEvent    = "ds-pushevent"   //query string to specify if an event should be pushed to the EdgeX system
-	ReturnEvent  = "ds-returnevent" //query string to specify if an event should be returned from device service
 	Flatten      = "flatten"        //query string to specify if the request json payload should be flattened to update multiple keys with the same prefix
 	KeyOnly      = "keyOnly"        //query string to specify if the response will only return the keys of the specified query key prefix, without values and metadata
 	Plaintext    = "plaintext"      //query string to specify if the response will return the stored plain text value of the key(s) without any encoding
 	Deregistered = "deregistered"   //query string to specify if the response will return the registries of deregistered services
-	NoCallback   = "nocallback"     //query string to specify if the response will return the registries of deregistered services
+	NoCallback   = "nocallback"     //query string to ask core-metadata not to invoke DS callback
 )
 
-// Constants related to the default value of query strings in the v2 service APIs
+// Constants related to the default value of query strings in the v3 service APIs
 const (
 	DefaultOffset  = 0
 	DefaultLimit   = 20
 	CommaSeparator = ","
-	ValueYes       = "yes"
-	ValueNo        = "no"
 	ValueTrue      = "true"
 	ValueFalse     = "false"
 )
@@ -251,6 +257,8 @@ const (
 	ValueTypeFloat32Array = "Float32Array"
 	ValueTypeFloat64Array = "Float64Array"
 	ValueTypeObject       = "Object"
+
+	// Central
 	ValueTypeObjectArray  = "ObjectArray"
 )
 
@@ -263,9 +271,11 @@ const (
 // Constants for Address
 const (
 	// Type
-	REST   = "REST"
-	MQTT   = "MQTT"
-	EMAIL  = "EMAIL"
+	REST  = "REST"
+	MQTT  = "MQTT"
+	EMAIL = "EMAIL"
+
+	// Central
 	ZeroMQ = "ZeroMQ"
 	HTTP   = "http"
 	TCP    = "tcp"
@@ -303,21 +313,26 @@ const (
 	CoreCommandServiceKey               = "core-command"
 	CoreDataServiceKey                  = "core-data"
 	CoreMetaDataServiceKey              = "core-metadata"
-	CoreKeeperServiceKey                = "core-keeper"
+	CoreCommonConfigServiceKey          = "core-common-config-bootstrapper"
 	SupportLoggingServiceKey            = "support-logging"
 	SupportNotificationsServiceKey      = "support-notifications"
-	SupportProvisionServiceKey          = "support-provision"
 	SystemManagementAgentServiceKey     = "sys-mgmt-agent"
 	SupportSchedulerServiceKey          = "support-scheduler"
-	SupportSparkplugServiceKey          = "support-sparkplug"
-	SupportSparkplugHistorianServiceKey = "support-sparkplug-historian"
-	SupportRulesEngineServiceKey        = "support-rulesengine"
 	SecuritySecretStoreSetupServiceKey  = "security-secretstore-setup"
+	SecurityProxyAuthServiceKey         = "security-proxy-auth"
 	SecurityProxySetupServiceKey        = "security-proxy-setup"
 	SecurityFileTokenProviderServiceKey = "security-file-token-provider"
 	SecurityBootstrapperKey             = "security-bootstrapper"
 	SecurityBootstrapperRedisKey        = "security-bootstrapper-redis"
 	SecuritySpiffeTokenProviderKey      = "security-spiffe-token-provider" // nolint:gosec
+
+	// Central
+	CoreKeeperServiceKey                = "core-keeper"
+	SupportProvisionServiceKey          = "support-provision"
+	SupportSparkplugServiceKey          = "support-sparkplug"
+	SupportSparkplugHistorianServiceKey = "support-sparkplug-historian"
+	SupportRulesEngineServiceKey        = "support-rulesengine"
+
 )
 
 // Constants related to the possible content types supported by the APIs
@@ -331,9 +346,80 @@ const (
 	ContentTypeYAML = "application/x-yaml"
 	ContentTypeText = "text/plain"
 	ContentTypeXML  = "application/xml"
+
+	// Central
 	ContentTypeForm = "application/x-www-form-urlencoded"
 )
 
+// Constants related to System Events
+const (
+	DeviceSystemEventType           = "device"
+	DeviceProfileSystemEventType    = "deviceprofile"
+	DeviceServiceSystemEventType    = "deviceservice"
+	ProvisionWatcherSystemEventType = "provisionwatcher"
+	SystemEventActionAdd            = "add"
+	SystemEventActionUpdate         = "update"
+	SystemEventActionDelete         = "delete"
+
+	// Central
+	DeviceSystemEventActionAdd    = "add"
+	DeviceSystemEventActionUpdate = "update"
+	DeviceSystemEventActionDelete = "delete"
+)
+
+const (
+	ConfigStemAll      = "edgex/v3" // Version never changes during minor releases so v3 is more appropriate than 3.0
+	ConfigStemApp      = ConfigStemAll
+	ConfigStemCore     = ConfigStemAll
+	ConfigStemDevice   = ConfigStemAll
+	ConfigStemSecurity = ConfigStemAll
+)
+
+const (
+	CommandQueryRequestTopicKey   = "CommandQueryRequestTopic" // #nosec G101
+	CommandQueryResponseTopicKey  = "CommandQueryResponseTopic"
+	CommandRequestTopicKey        = "CommandRequestTopic"
+	CommandResponseTopicPrefixKey = "CommandResponseTopicPrefix"
+)
+
+// MessageBus Topics
+const (
+
+	// Common Topics
+	DefaultBaseTopic        = "edgex"         // Used if the base topic is not specified in MessageBus configuration
+	EventsPublishTopic      = "events"        // <ServiceType>/<DeviceServiceName>/<ProfileName>/<DeviceName>/<SourceName> are appended
+	ResponseTopic           = "response"      // <ServiceName>/<RequestId> are prepended
+	MetricsPublishTopic     = "telemetry"     // <ServiceName>/<MetricName> are prepended
+	SystemEventPublishTopic = "system-events" // <SourceServiceName>/<SystemEventType>/<SystemEventAction><OwnerServiceName>/<ProfileName>
+
+	// Core Data Topics
+	CoreDataEventSubscribeTopic = "events/device/#"
+
+	// Core Command Topics
+	CoreCommandDeviceRequestPublishTopic  = "device/command/request" // <DeviceServiceName>/<DeviceName>/<CommandName>/<CommandMethod> are appended
+	CoreCommandRequestSubscribeTopic      = "core/command/request/#"
+	CoreCommandQueryRequestSubscribeTopic = "core/commandquery/request/#"
+
+	// Command Client Topics
+	CoreCommandQueryRequestPublishTopic = "core/commandquery/request" // <deviceName>|all is prepended
+	CoreCommandRequestPublishTopic      = "core/command/request"      // <DeviceName>/<CommandName>/<CommandMethod> are appended
+
+	// Support Notifications
+	// No Topics Yet
+
+	// Support Scheduler
+	// No Topics Yet
+
+	// Device Services Topics
+	CommandRequestSubscribeTopic      = "device/command/request"          // <DeviceServiceName>/# is appended <
+	MetadataSystemEventSubscribeTopic = "system-events/core-metadata/+/+" // <DeviceServiceName>/# is appended
+	ValidateDeviceSubscribeTopic      = "validate/device"                 // <DeviceServiceName> is pre-pended
+
+	// App Service Topics
+	// App Service topics remain configurable inorder to filter by subscription.
+)
+
+// Central
 // Constants for Notification Category
 const (
 	DisconnectAlert      = "Disconnection"
@@ -347,19 +433,4 @@ const (
 	DeviceRemoveAction = "Device removal"
 
 	DeviceChangedNotificationCategory = "DEVICE_CHANGED"
-)
-
-// Constants related to System Events
-const (
-	DeviceSystemEventType         = "device"
-	DeviceSystemEventActionAdd    = "add"
-	DeviceSystemEventActionUpdate = "update"
-	DeviceSystemEventActionDelete = "delete"
-)
-
-const (
-	ConfigStemApp      = "edgex/appservices/"
-	ConfigStemCore     = "edgex/core/"
-	ConfigStemDevice   = "edgex/devices/"
-	ConfigStemSecurity = "edgex/security/"
 )

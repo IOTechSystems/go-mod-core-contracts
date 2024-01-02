@@ -1,3 +1,9 @@
+//
+// Copyright (C) 2020-2021 Unknown author
+// Copyright (C) 2023 Intel Corporation
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package http
 
 import (
@@ -7,16 +13,16 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path"
 	"path/filepath"
 	"runtime"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
-	edgexErrors "github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
+	edgexErrors "github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -43,7 +49,7 @@ func TestAddDeviceProfiles(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.Add(context.Background(), []requests.DeviceProfileRequest{})
 	require.NoError(t, err)
 	require.NotNil(t, res)
@@ -70,7 +76,7 @@ func TestPutDeviceProfiles(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.Update(context.Background(), []requests.DeviceProfileRequest{})
 	require.NoError(t, err)
 	require.NotNil(t, res)
@@ -96,7 +102,7 @@ func TestAddDeviceProfileByYaml(t *testing.T) {
 		_, _ = w.Write(res)
 	}))
 	defer ts.Close()
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	_, b, _, _ := runtime.Caller(0)
 
 	tests := []struct {
@@ -141,7 +147,7 @@ func TestUpdateDeviceProfileByYaml(t *testing.T) {
 		_, _ = w.Write(res)
 	}))
 	defer ts.Close()
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	_, b, _, _ := runtime.Caller(0)
 
 	tests := []struct {
@@ -169,11 +175,11 @@ func TestUpdateDeviceProfileByYaml(t *testing.T) {
 
 func TestDeleteDeviceProfileByName(t *testing.T) {
 	testName := "testName"
-	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Name, testName)
+	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Name, testName)
 	ts := newTestServer(http.MethodDelete, urlPath, dtoCommon.BaseResponse{})
 	defer ts.Close()
 
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.DeleteByName(context.Background(), testName)
 	require.NoError(t, err)
 	require.NotNil(t, res)
@@ -181,10 +187,10 @@ func TestDeleteDeviceProfileByName(t *testing.T) {
 
 func TestQueryDeviceProfileByName(t *testing.T) {
 	testName := "testName"
-	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Name, testName)
+	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Name, testName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.DeviceProfileResponse{})
 	defer ts.Close()
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	_, err := client.DeviceProfileByName(context.Background(), testName)
 	require.NoError(t, err)
 }
@@ -192,27 +198,27 @@ func TestQueryDeviceProfileByName(t *testing.T) {
 func TestQueryAllDeviceProfiles(t *testing.T) {
 	ts := newTestServer(http.MethodGet, common.ApiAllDeviceProfileRoute, responses.MultiDeviceProfilesResponse{})
 	defer ts.Close()
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	_, err := client.AllDeviceProfiles(context.Background(), []string{"testLabel1", "testLabel2"}, 1, 10)
 	require.NoError(t, err)
 }
 
 func TestQueryDeviceProfilesByModel(t *testing.T) {
 	testModel := "testModel"
-	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Model, testModel)
+	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Model, testModel)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiDeviceProfilesResponse{})
 	defer ts.Close()
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	_, err := client.DeviceProfilesByModel(context.Background(), testModel, 1, 10)
 	require.NoError(t, err)
 }
 
 func TestQueryDeviceProfilesByManufacturer(t *testing.T) {
 	testManufacturer := "testManufacturer"
-	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Manufacturer, testManufacturer)
+	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Manufacturer, testManufacturer)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiDeviceProfilesResponse{})
 	defer ts.Close()
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	_, err := client.DeviceProfilesByManufacturer(context.Background(), testManufacturer, 1, 10)
 	require.NoError(t, err)
 }
@@ -220,10 +226,10 @@ func TestQueryDeviceProfilesByManufacturer(t *testing.T) {
 func TestQueryDeviceProfilesByManufacturerAndModel(t *testing.T) {
 	testManufacturer := "testManufacturer"
 	testModel := "testModel"
-	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Manufacturer, testManufacturer, common.Model, testModel)
+	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Manufacturer, testManufacturer, common.Model, testModel)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiDeviceProfilesResponse{})
 	defer ts.Close()
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	_, err := client.DeviceProfilesByManufacturerAndModel(context.Background(), testManufacturer, testModel, 1, 10)
 	require.NoError(t, err)
 }
@@ -231,10 +237,10 @@ func TestQueryDeviceProfilesByManufacturerAndModel(t *testing.T) {
 func TestDeviceResourceByProfileNameAndResourceName(t *testing.T) {
 	profileName := "testProfile"
 	resourceName := "testResource"
-	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceResourceRoute, common.Profile, profileName, common.Resource, resourceName)
+	urlPath := path.Join(common.ApiDeviceResourceRoute, common.Profile, profileName, common.Resource, resourceName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.DeviceResourceResponse{})
 	defer ts.Close()
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 
 	res, err := client.DeviceResourceByProfileNameAndResourceName(context.Background(), profileName, resourceName)
 
@@ -246,7 +252,7 @@ func TestUpdateDeviceProfileBasicInfo(t *testing.T) {
 	ts := newTestServer(http.MethodPatch, common.ApiDeviceProfileBasicInfoRoute, []dtoCommon.BaseResponse{})
 	defer ts.Close()
 
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.UpdateDeviceProfileBasicInfo(context.Background(), []requests.DeviceProfileBasicInfoRequest{})
 	require.NoError(t, err)
 	require.IsType(t, []dtoCommon.BaseResponse{}, res)
@@ -256,7 +262,7 @@ func TestAddDeviceProfileResource(t *testing.T) {
 	ts := newTestServer(http.MethodPost, common.ApiDeviceProfileResourceRoute, []dtoCommon.BaseResponse{})
 	defer ts.Close()
 
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.AddDeviceProfileResource(context.Background(), []requests.AddDeviceResourceRequest{})
 
 	require.NoError(t, err)
@@ -267,7 +273,7 @@ func TestUpdateDeviceProfileResource(t *testing.T) {
 	ts := newTestServer(http.MethodPatch, common.ApiDeviceProfileResourceRoute, []dtoCommon.BaseResponse{})
 	defer ts.Close()
 
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.UpdateDeviceProfileResource(context.Background(), []requests.UpdateDeviceResourceRequest{})
 	require.NoError(t, err)
 	require.IsType(t, []dtoCommon.BaseResponse{}, res)
@@ -276,11 +282,11 @@ func TestUpdateDeviceProfileResource(t *testing.T) {
 func TestDeleteDeviceResourceByName(t *testing.T) {
 	profileName := "testProfile"
 	resourceName := "testResource"
-	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Name, profileName, common.Resource, resourceName)
+	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Name, profileName, common.Resource, resourceName)
 	ts := newTestServer(http.MethodDelete, urlPath, dtoCommon.BaseResponse{})
 	defer ts.Close()
 
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.DeleteDeviceResourceByName(context.Background(), profileName, resourceName)
 	require.NoError(t, err)
 	require.NotNil(t, res)
@@ -290,7 +296,7 @@ func TestAddDeviceProfileDeviceCommand(t *testing.T) {
 	ts := newTestServer(http.MethodPost, common.ApiDeviceProfileDeviceCommandRoute, []dtoCommon.BaseResponse{})
 	defer ts.Close()
 
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.AddDeviceProfileDeviceCommand(context.Background(), []requests.AddDeviceCommandRequest{})
 
 	require.NoError(t, err)
@@ -301,7 +307,7 @@ func TestUpdateDeviceProfileDeviceCommand(t *testing.T) {
 	ts := newTestServer(http.MethodPatch, common.ApiDeviceProfileDeviceCommandRoute, []dtoCommon.BaseResponse{})
 	defer ts.Close()
 
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.UpdateDeviceProfileDeviceCommand(context.Background(), []requests.UpdateDeviceCommandRequest{})
 	require.NoError(t, err)
 	require.IsType(t, []dtoCommon.BaseResponse{}, res)
@@ -310,11 +316,11 @@ func TestUpdateDeviceProfileDeviceCommand(t *testing.T) {
 func TestDeleteDeviceCommandByName(t *testing.T) {
 	profileName := "testProfile"
 	commandName := "testCommand"
-	urlPath := utils.EscapeAndJoinPath(common.ApiDeviceProfileRoute, common.Name, profileName, common.DeviceCommand, commandName)
+	urlPath := path.Join(common.ApiDeviceProfileRoute, common.Name, profileName, common.DeviceCommand, commandName)
 	ts := newTestServer(http.MethodDelete, urlPath, dtoCommon.BaseResponse{})
 	defer ts.Close()
 
-	client := NewDeviceProfileClient(ts.URL)
+	client := NewDeviceProfileClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.DeleteDeviceCommandByName(context.Background(), profileName, commandName)
 	require.NoError(t, err)
 	require.NotNil(t, res)

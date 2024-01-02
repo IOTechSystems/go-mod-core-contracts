@@ -6,15 +6,13 @@
 package dtos
 
 import (
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
-// Interval and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/support-scheduler/2.1.0#/Interval
 type Interval struct {
 	DBTimestamp `json:",inline"`
 	Id          string `json:"id,omitempty" validate:"omitempty,uuid"`
-	Name        string `json:"name" validate:"edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	Name        string `json:"name" validate:"edgex-dto-none-empty-string"`
 	Start       string `json:"start,omitempty" validate:"omitempty,edgex-dto-interval-datetime"`
 	End         string `json:"end,omitempty" validate:"omitempty,edgex-dto-interval-datetime"`
 	Interval    string `json:"interval" validate:"required,edgex-dto-duration=10ms"` // min/max can be defined as params, ex. edgex-dto-duration=10ms0x2C24h
@@ -25,11 +23,9 @@ func NewInterval(name, interval string) Interval {
 	return Interval{Name: name, Interval: interval}
 }
 
-// UpdateInterval and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/support-scheduler/2.1.0#/UpdateInterval
 type UpdateInterval struct {
 	Id       *string `json:"id" validate:"required_without=Name,edgex-dto-uuid"`
-	Name     *string `json:"name" validate:"required_without=Id,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	Name     *string `json:"name" validate:"required_without=Id,edgex-dto-none-empty-string"`
 	Start    *string `json:"start" validate:"omitempty,edgex-dto-interval-datetime"`
 	End      *string `json:"end" validate:"omitempty,edgex-dto-interval-datetime"`
 	Interval *string `json:"interval" validate:"omitempty,edgex-dto-duration=10ms"` // min/max can be defined as params, ex. edgex-dto-duration=10ms0x2C24h

@@ -1,5 +1,6 @@
 //
 // Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2023 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -12,26 +13,16 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
 )
 
 func Test_generalClient_FetchConfiguration(t *testing.T) {
 	ts := newTestServer(http.MethodGet, common.ApiConfigRoute, dtoCommon.ConfigResponse{})
 	defer ts.Close()
 
-	client := NewGeneralClient(ts.URL)
+	client := NewGeneralClient(ts.URL, NewNullAuthenticationInjector())
 	res, err := client.FetchConfiguration(context.Background())
 	require.NoError(t, err)
 	require.IsType(t, dtoCommon.ConfigResponse{}, res)
-}
-
-func Test_generalClient_FetchMetrics(t *testing.T) {
-	ts := newTestServer(http.MethodGet, common.ApiMetricsRoute, dtoCommon.MetricsResponse{})
-	defer ts.Close()
-
-	client := NewGeneralClient(ts.URL)
-	res, err := client.FetchMetrics(context.Background())
-	require.NoError(t, err)
-	require.IsType(t, dtoCommon.MetricsResponse{}, res)
 }

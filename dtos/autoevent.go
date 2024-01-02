@@ -6,15 +6,13 @@
 package dtos
 
 import (
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
-// AutoEvent and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/AutoEvent
 type AutoEvent struct {
-	Interval   string `json:"interval" validate:"required,edgex-dto-duration=1ms"` // min/max can be defined as params, ex. edgex-dto-duration=10ms0x2C24h
-	OnChange   bool   `json:"onChange"`
-	SourceName string `json:"sourceName" validate:"required"`
+	Interval   string `json:"interval" yaml:"interval" validate:"required,edgex-dto-duration=1ms"` // min/max can be defined as params, ex. edgex-dto-duration=10ms0x2C24h
+	OnChange   bool   `json:"onChange" yaml:"onChange"`
+	SourceName string `json:"sourceName" yaml:"sourceName" validate:"required"`
 }
 
 // ToAutoEventModel transforms the AutoEvent DTO to the AutoEvent model

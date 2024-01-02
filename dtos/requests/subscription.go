@@ -8,18 +8,16 @@ package requests
 import (
 	"encoding/json"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
 var supportedChannelTypes = []string{common.EMAIL, common.REST, common.MQTT, common.ZeroMQ}
 
 // AddSubscriptionRequest defines the Request Content for POST Subscription DTO.
-// This object and its properties correspond to the AddSubscriptionRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/support-notifications/2.1.0#/AddSubscriptionRequest
 type AddSubscriptionRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	Subscription          dtos.Subscription `json:"subscription"`
@@ -71,8 +69,6 @@ func AddSubscriptionReqToSubscriptionModels(reqs []AddSubscriptionRequest) (s []
 }
 
 // UpdateSubscriptionRequest defines the Request Content for PUT event as pushed DTO.
-// This object and its properties correspond to the UpdateSubscriptionRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/support-notifications/2.1.0#/UpdateSubscriptionRequest
 type UpdateSubscriptionRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	Subscription          dtos.UpdateSubscription `json:"subscription"`

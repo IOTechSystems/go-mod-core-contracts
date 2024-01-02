@@ -1,26 +1,22 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package dtos
 
-import (
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
-)
+import "github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
-// DeviceResource and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/DeviceResource
 type DeviceResource struct {
 	Description string                 `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        string                 `json:"name" yaml:"name" validate:"required,edgex-dto-none-empty-string"`
 	IsHidden    bool                   `json:"isHidden" yaml:"isHidden"`
-	Tag         string                 `json:"tag,omitempty" yaml:"tag,omitempty"`
-	Tags        map[string]interface{} `json:"tags,omitempty" yaml:"tags,omitempty"`
 	Properties  ResourceProperties     `json:"properties" yaml:"properties"`
 	Attributes  map[string]interface{} `json:"attributes,omitempty" yaml:"attributes,omitempty"`
+	Tags        map[string]any         `json:"tags,omitempty" yaml:"tags,omitempty"`
+
+	// Central
+	Tag         string                 `json:"tag,omitempty" yaml:"tag,omitempty"`
 }
 
 // Validate satisfies the Validator interface
@@ -33,8 +29,6 @@ func (dr *DeviceResource) Validate() error {
 	return nil
 }
 
-// UpdateDeviceResource and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceResource
 type UpdateDeviceResource struct {
 	Description *string `json:"description"`
 	Name        *string `json:"name" validate:"required,edgex-dto-none-empty-string"`
@@ -47,10 +41,12 @@ func ToDeviceResourceModel(d DeviceResource) models.DeviceResource {
 		Description: d.Description,
 		Name:        d.Name,
 		IsHidden:    d.IsHidden,
-		Tag:         d.Tag,
-		Tags:        d.Tags,
 		Properties:  ToResourcePropertiesModel(d.Properties),
 		Attributes:  d.Attributes,
+		Tags:        d.Tags,
+
+		// Central
+		Tag:         d.Tag,
 	}
 }
 
@@ -69,10 +65,12 @@ func FromDeviceResourceModelToDTO(d models.DeviceResource) DeviceResource {
 		Description: d.Description,
 		Name:        d.Name,
 		IsHidden:    d.IsHidden,
-		Tag:         d.Tag,
-		Tags:        d.Tags,
 		Properties:  FromResourcePropertiesModelToDTO(d.Properties),
 		Attributes:  d.Attributes,
+		Tags:        d.Tags,
+
+		// Central
+		Tag:         d.Tag,
 	}
 }
 

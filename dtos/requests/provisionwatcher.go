@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,23 +8,21 @@ package requests
 import (
 	"encoding/json"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
 // AddProvisionWatcherRequest defines the Request Content for POST ProvisionWatcher DTO.
-// This object and its properties correspond to the AddProvisionWatcherRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/AddProvisionWatcherRequest
 type AddProvisionWatcherRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	ProvisionWatcher      dtos.ProvisionWatcher `json:"provisionWatcher"`
 }
 
 // Validate satisfies the Validator interface
-func (pw AddProvisionWatcherRequest) Validate() error {
+func (pw *AddProvisionWatcherRequest) Validate() error {
 	err := common.Validate(pw)
 	return err
 }
@@ -58,15 +56,13 @@ func AddProvisionWatcherReqToProvisionWatcherModels(addRequests []AddProvisionWa
 }
 
 // UpdateProvisionWatcherRequest defines the Request Content for PUT event as pushed DTO.
-// This object and its properties correspond to the UpdateProvisionWatcherRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/UpdateProvisionWatcherRequest
 type UpdateProvisionWatcherRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	ProvisionWatcher      dtos.UpdateProvisionWatcher `json:"provisionWatcher"`
 }
 
 // Validate satisfies the Validator interface
-func (pw UpdateProvisionWatcherRequest) Validate() error {
+func (pw *UpdateProvisionWatcherRequest) Validate() error {
 	err := common.Validate(pw)
 	return err
 }
@@ -101,21 +97,27 @@ func ReplaceProvisionWatcherModelFieldsWithDTO(pw *models.ProvisionWatcher, patc
 	if patch.BlockingIdentifiers != nil {
 		pw.BlockingIdentifiers = patch.BlockingIdentifiers
 	}
-
-	if patch.DeviceNameTemplate != nil {
-		pw.DeviceNameTemplate = *patch.DeviceNameTemplate
+	if patch.AdminState != nil {
+		pw.AdminState = models.AdminState(*patch.AdminState)
 	}
-	if patch.ProfileName != nil {
-		pw.ProfileName = *patch.ProfileName
+	if patch.DiscoveredDevice.ProfileName != nil {
+		pw.DiscoveredDevice.ProfileName = *patch.DiscoveredDevice.ProfileName
 	}
 	if patch.ServiceName != nil {
 		pw.ServiceName = *patch.ServiceName
 	}
-	if patch.AdminState != nil {
-		pw.AdminState = models.AdminState(*patch.AdminState)
+	if patch.DiscoveredDevice.AdminState != nil {
+		pw.DiscoveredDevice.AdminState = models.AdminState(*patch.DiscoveredDevice.AdminState)
 	}
-	if patch.AutoEvents != nil {
-		pw.AutoEvents = dtos.ToAutoEventModels(patch.AutoEvents)
+	if patch.DiscoveredDevice.AutoEvents != nil {
+		pw.DiscoveredDevice.AutoEvents = dtos.ToAutoEventModels(patch.DiscoveredDevice.AutoEvents)
+	}
+	if patch.DiscoveredDevice.Properties != nil {
+		pw.DiscoveredDevice.Properties = patch.DiscoveredDevice.Properties
+	}
+
+	if patch.DeviceNameTemplate != nil {
+		pw.DeviceNameTemplate = *patch.DeviceNameTemplate
 	}
 	if patch.ProtocolName != nil {
 		pw.ProtocolName = *patch.ProtocolName
@@ -126,7 +128,6 @@ func ReplaceProvisionWatcherModelFieldsWithDTO(pw *models.ProvisionWatcher, patc
 	if patch.DeviceLabels != nil {
 		pw.DeviceLabels = patch.DeviceLabels
 	}
-
 	if patch.ProfileNameTemplate != nil {
 		pw.ProfileNameTemplate = *patch.ProfileNameTemplate
 	}

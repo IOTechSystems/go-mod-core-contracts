@@ -7,27 +7,23 @@ package dtos
 
 import (
 	"encoding/xml"
-	"fmt"
-	"strings"
 	"time"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/google/uuid"
 )
 
-// Event and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.1.0#/Event
 type Event struct {
 	common.Versionable `json:",inline"`
-	Id                 string                 `json:"id" validate:"required,uuid"`
-	DeviceName         string                 `json:"deviceName" validate:"required,edgex-dto-none-empty-string"`
-	ProfileName        string                 `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
-	SourceName         string                 `json:"sourceName" validate:"required,edgex-dto-none-empty-string"`
-	Origin             int64                  `json:"origin" validate:"required"`
-	Readings           []BaseReading          `json:"readings" validate:"gt=0,dive,required"`
-	Tags               map[string]interface{} `json:"tags,omitempty" xml:"-"` // Have to ignore since map not supported for XML
+	Id                 string        `json:"id" validate:"required,uuid"`
+	DeviceName         string        `json:"deviceName" validate:"required,edgex-dto-none-empty-string"`
+	ProfileName        string        `json:"profileName" validate:"required,edgex-dto-none-empty-string"`
+	SourceName         string        `json:"sourceName" validate:"required,edgex-dto-none-empty-string"`
+	Origin             int64         `json:"origin" validate:"required"`
+	Readings           []BaseReading `json:"readings" validate:"gt=0,dive,required"`
+	Tags               Tags          `json:"tags,omitempty"`
 }
 
 // NewEvent creates and returns an initialized Event with no Readings
@@ -86,11 +82,6 @@ func (e *Event) AddObjectReading(resourceName string, objectValue interface{}) {
 	e.Readings = append(e.Readings, NewObjectReading(e.ProfileName, e.DeviceName, resourceName, objectValue))
 }
 
-// AddObjectArrayReading adds a object array reading to the Event
-func (e *Event) AddObjectArrayReading(resourceName string, objectValue interface{}) {
-	e.Readings = append(e.Readings, NewObjectArrayReading(e.ProfileName, e.DeviceName, resourceName, objectValue))
-}
-
 // ToXML provides a XML representation of the Event as a string
 func (e *Event) ToXML() (string, error) {
 	eventXml, err := xml.Marshal(e)
@@ -125,4 +116,11 @@ func tagsToXmlString(tags map[string]interface{}) string {
 	}
 	tagsXmlElements = append(tagsXmlElements, "</Tags>")
 	return strings.Join(tagsXmlElements, "")
+}
+
+// Central
+
+// AddObjectArrayReading adds a object array reading to the Event
+func (e *Event) AddObjectArrayReading(resourceName string, objectValue interface{}) {
+	e.Readings = append(e.Readings, NewObjectArrayReading(e.ProfileName, e.DeviceName, resourceName, objectValue))
 }

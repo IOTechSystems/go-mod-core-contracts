@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2021-2022 IOTech Ltd
+// Copyright (C) 2021-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,8 +10,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -22,6 +22,8 @@ var testAttributes = map[string]interface{}{
 	"TestAttribute": "TestAttributeValue",
 }
 var testMappings = map[string]string{"0": "off", "1": "on"}
+var testTags = map[string]any{"TestTagsKey": "TestTagsValue"}
+var testOptional = map[string]any{"isVirtual": false}
 
 var testDeviceProfile = models.DeviceProfile{
 	ApiVersion:   common.ApiVersion,
@@ -33,13 +35,13 @@ var testDeviceProfile = models.DeviceProfile{
 	DeviceResources: []models.DeviceResource{{
 		Name:        TestDeviceResourceName,
 		Description: TestDescription,
-		Tag:         TestTag1,
-		Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		Attributes:  testAttributes,
 		Properties: models.ResourceProperties{
 			ValueType: common.ValueTypeInt16,
 			ReadWrite: common.ReadWrite_RW,
+			Optional:  testOptional,
 		},
+		Tags: testTags,
 	}},
 	DeviceCommands: []models.DeviceCommand{{
 		Name:      TestDeviceCommandName,
@@ -48,6 +50,7 @@ var testDeviceProfile = models.DeviceProfile{
 			DeviceResource: TestDeviceResourceName,
 			Mappings:       testMappings,
 		}},
+		Tags: testTags,
 	}},
 }
 
@@ -64,13 +67,13 @@ func profileData() DeviceProfile {
 		DeviceResources: []DeviceResource{{
 			Name:        TestDeviceResourceName,
 			Description: TestDescription,
-			Tag:         TestTag1,
-			Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 			Attributes:  testAttributes,
 			Properties: ResourceProperties{
 				ValueType: common.ValueTypeInt16,
 				ReadWrite: common.ReadWrite_RW,
+				Optional:  testOptional,
 			},
+			Tags: testTags,
 		}},
 		DeviceCommands: []DeviceCommand{{
 			Name:      TestDeviceCommandName,
@@ -79,6 +82,7 @@ func profileData() DeviceProfile {
 				DeviceResource: TestDeviceResourceName,
 				Mappings:       testMappings,
 			}},
+			Tags: testTags,
 		}},
 	}
 }
@@ -115,6 +119,7 @@ func TestDeviceProfileDTOValidation(t *testing.T) {
 		{"duplicated device command", duplicatedDeviceCommand, true},
 		{"mismatched resource", mismatchedResource, true},
 		{"invalid ReadWrite permission", invalidReadWrite, true},
+		{"write permission not support Binary value type", binaryWithWritePermission, true},
 	}
 
 	for _, tt := range tests {
