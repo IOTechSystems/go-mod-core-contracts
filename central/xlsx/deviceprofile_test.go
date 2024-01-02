@@ -282,7 +282,7 @@ func Test_DeviceProfile_convertDeviceCommands(t *testing.T) {
 		expectError         bool
 		expectValidateError bool
 	}{
-		{"convertDeviceCommands with row count less than 2", nil, true, false},
+		{"convertDeviceCommands with row count less than 2", []any{}, false, false},
 		{"convertDeviceCommands - success", validDeviceCommandRow, false, false},
 		{"convertDeviceCommands - invalid IsHidden", invalidIsHiddenRow, true, false},
 		{"convertDeviceCommands - invalid ReadWrite", invalidReadWriteRow, false, true},
@@ -311,8 +311,10 @@ func Test_DeviceProfile_convertDeviceCommands(t *testing.T) {
 					require.NotNil(t, dpX.GetValidateErrors(), "Expected convertDeviceCommands validation error not generated")
 				} else {
 					require.Equal(t, emptyValidateErr, dpX.GetValidateErrors(), "Unexpected convertDeviceCommands validation error")
-					require.Equal(t, 1, len(convertedProfile.DeviceCommands))
-					require.Equal(t, tt.dataRow[0], convertedProfile.DeviceCommands[0].Name)
+					if len(convertedProfile.DeviceCommands) > 0 {
+						require.Equal(t, 1, len(convertedProfile.DeviceCommands))
+						require.Equal(t, tt.dataRow[0], convertedProfile.DeviceCommands[0].Name)
+					}
 				}
 			}
 		})

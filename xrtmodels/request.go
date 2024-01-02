@@ -364,6 +364,7 @@ func NewComponentDiscoverRequest(clientName string, category string) DiscoverCom
 			RequestId: uuid.New().String(),
 			Op:        ComponentDiscoverOperation,
 		},
+		Category: category,
 	}
 	return req
 }
