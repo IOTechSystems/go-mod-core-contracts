@@ -3,10 +3,10 @@
 package v1models
 
 import (
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/v2models"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	v2Model "github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -191,8 +191,8 @@ func v1ProfileData() DeviceProfile {
 	}
 }
 
-func v2ProfileData() v2Model.DeviceProfile {
-	var testDeviceResources = []v2Model.DeviceResource{{
+func v2ProfileData() v2models.DeviceProfile {
+	var testDeviceResources = []v2models.DeviceResource{{
 		Name:        TestSourceSwitchName,
 		IsHidden:    true,
 		Description: TestSourceSwitchDescription,
@@ -200,7 +200,7 @@ func v2ProfileData() v2Model.DeviceProfile {
 		Attributes: map[string]interface{}{
 			"primaryTable": "COILS", "startingAddress": 0,
 		},
-		Properties: v2Model.ResourceProperties{
+		Properties: v2models.ResourceProperties{
 			ValueType:    "Bool",
 			ReadWrite:    common.ReadWrite_RW,
 			DefaultValue: "true",
@@ -214,7 +214,7 @@ func v2ProfileData() v2Model.DeviceProfile {
 		Attributes: map[string]interface{}{
 			"primaryTable": "HOLDING_REGISTERS", "startingAddress": 1,
 		},
-		Properties: v2Model.ResourceProperties{
+		Properties: v2models.ResourceProperties{
 			ValueType: "Int16",
 			ReadWrite: common.ReadWrite_RW,
 			Units:     "Operation Mode",
@@ -227,7 +227,7 @@ func v2ProfileData() v2Model.DeviceProfile {
 		Attributes: map[string]interface{}{
 			"primaryTable": "INPUT_REGISTERS", "startingAddress": 3,
 		},
-		Properties: v2Model.ResourceProperties{
+		Properties: v2models.ResourceProperties{
 			ValueType: "Float32",
 			ReadWrite: common.ReadWrite_R,
 			Scale:     "0.1",
@@ -241,7 +241,7 @@ func v2ProfileData() v2Model.DeviceProfile {
 		Attributes: map[string]interface{}{
 			"primaryTable": "HOLDING_REGISTERS", "startingAddress": 4,
 		},
-		Properties: v2Model.ResourceProperties{
+		Properties: v2models.ResourceProperties{
 			ValueType: "Float64",
 			ReadWrite: common.ReadWrite_RW,
 			Scale:     "0.1",
@@ -249,10 +249,10 @@ func v2ProfileData() v2Model.DeviceProfile {
 		},
 	}}
 
-	var testDeviceCommands = []v2Model.DeviceCommand{{
+	var testDeviceCommands = []v2models.DeviceCommand{{
 		Name:      TestDeviceCommandValuesName,
 		ReadWrite: common.ReadWrite_RW,
-		ResourceOperations: []v2Model.ResourceOperation{
+		ResourceOperations: []v2models.ResourceOperation{
 			{
 				DeviceResource: TestSourceSwitchName,
 				Mappings:       map[string]string{"true": "ON", "false": "OFF"},
@@ -266,7 +266,7 @@ func v2ProfileData() v2Model.DeviceProfile {
 			},
 		},
 	}}
-	return v2Model.DeviceProfile{
+	return v2models.DeviceProfile{
 		ApiVersion:   common.ApiVersion,
 		Name:         TestProfileName,
 		Manufacturer: TestManufacturer,
@@ -329,11 +329,11 @@ func TestTransformProfileFromV1ToV2(t *testing.T) {
 		},
 	}
 	expected := v2ProfileData()
-	expected.DeviceCommands = []v2Model.DeviceCommand{{
+	expected.DeviceCommands = []v2models.DeviceCommand{{
 		Name:      TestDeviceCommandValuesName,
 		IsHidden:  false,
 		ReadWrite: common.ReadWrite_R,
-		ResourceOperations: []v2Model.ResourceOperation{
+		ResourceOperations: []v2models.ResourceOperation{
 			{
 				DeviceResource: TestSourceSwitchName,
 				Mappings:       map[string]string{"true": "ON", "false": "OFF"},
@@ -343,7 +343,7 @@ func TestTransformProfileFromV1ToV2(t *testing.T) {
 		Name:      v2SetCommandName(TestDeviceCommandValuesName),
 		IsHidden:  false,
 		ReadWrite: common.ReadWrite_W,
-		ResourceOperations: []v2Model.ResourceOperation{
+		ResourceOperations: []v2models.ResourceOperation{
 			{
 				DeviceResource: TestSourceSwitchName,
 				Mappings:       map[string]string{"true": "ON", "false": "OFF"},
@@ -359,7 +359,7 @@ func TestTransformProfileFromV1ToV2(t *testing.T) {
 	var tests = []struct {
 		name     string
 		data     DeviceProfile
-		expected v2Model.DeviceProfile
+		expected v2models.DeviceProfile
 	}{
 		{"transform profile from v1 to v2", v1ProfileData(), v2ProfileData()},
 		{"get operation size is different to set operation", data, expected},

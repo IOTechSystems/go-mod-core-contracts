@@ -9,7 +9,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 // TLS file settings

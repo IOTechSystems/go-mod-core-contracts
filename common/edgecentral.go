@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 // ParseValueByDeviceResource parses value for the specified value type

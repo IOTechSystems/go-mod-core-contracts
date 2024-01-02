@@ -57,7 +57,7 @@ func (dc DeviceClient) UpdateWithQueryParams(ctx context.Context, reqs []request
 	for k, v := range queryParams {
 		requestParams.Set(k, v)
 	}
-	err = utils.PatchRequest(ctx, &res, dc.baseUrl, common.ApiDeviceRoute, requestParams, reqs)
+	err = utils.PatchRequest(ctx, &res, dc.baseUrl, common.ApiDeviceRoute, requestParams, reqs, dc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}

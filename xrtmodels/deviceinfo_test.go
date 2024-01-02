@@ -5,20 +5,21 @@ package xrtmodels
 import (
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 )
 
 func TestProcessEtherNetIP(t *testing.T) {
 	tests := []struct {
 		name     string
-		protocol map[string]map[string]interface{}
-		expected map[string]map[string]interface{}
+		protocol map[string]dtos.ProtocolProperties
+		expected map[string]dtos.ProtocolProperties
 	}{
 		{
 			name: "process O2T and T2O properties",
-			protocol: map[string]map[string]interface{}{
+			protocol: map[string]dtos.ProtocolProperties{
 				common.EtherNetIP: {
 					common.EtherNetIPAddress: "127.0.0.1",
 				},
@@ -35,16 +36,16 @@ func TestProcessEtherNetIP(t *testing.T) {
 					common.EtherNetIPOwnership:      "exclusive",
 				},
 			},
-			expected: map[string]map[string]interface{}{
+			expected: map[string]dtos.ProtocolProperties{
 				common.EtherNetIPXRT: {
 					common.EtherNetIPAddress: "127.0.0.1",
-					common.EtherNetIPO2T: map[string]interface{}{
+					common.EtherNetIPO2T: dtos.ProtocolProperties{
 						common.EtherNetIPConnectionType: "p2p",
 						common.EtherNetIPRPI:            10,
 						common.EtherNetIPPriority:       "low",
 						common.EtherNetIPOwnership:      "exclusive",
 					},
-					common.EtherNetIPT2O: map[string]interface{}{
+					common.EtherNetIPT2O: dtos.ProtocolProperties{
 						common.EtherNetIPConnectionType: "p2p",
 						common.EtherNetIPRPI:            10,
 						common.EtherNetIPPriority:       "low",
@@ -55,7 +56,7 @@ func TestProcessEtherNetIP(t *testing.T) {
 		},
 		{
 			name: "process ExplicitConnected and Key properties",
-			protocol: map[string]map[string]interface{}{
+			protocol: map[string]dtos.ProtocolProperties{
 				common.EtherNetIP: {
 					common.EtherNetIPAddress: "127.0.0.1",
 				},
@@ -73,15 +74,15 @@ func TestProcessEtherNetIP(t *testing.T) {
 					common.EtherNetIPMinorRevision: 2,
 				},
 			},
-			expected: map[string]map[string]interface{}{
+			expected: map[string]dtos.ProtocolProperties{
 				common.EtherNetIPXRT: {
 					common.EtherNetIPAddress: "127.0.0.1",
-					common.EtherNetIPExplicitConnected: map[string]interface{}{
+					common.EtherNetIPExplicitConnected: dtos.ProtocolProperties{
 						common.EtherNetIPDeviceResource: "VendorID",
 						common.EtherNetIPRPI:            10,
 						common.EtherNetIPSaveValue:      true,
 					},
-					common.EtherNetIPKey: map[string]interface{}{
+					common.EtherNetIPKey: dtos.ProtocolProperties{
 						common.EtherNetIPMethod:        "exact",
 						common.EtherNetIPVendorID:      10,
 						common.EtherNetIPDeviceType:    72,

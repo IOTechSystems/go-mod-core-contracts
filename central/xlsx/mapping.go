@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 
 	"github.com/xuri/excelize/v2"
 )

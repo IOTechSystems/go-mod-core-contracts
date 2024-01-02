@@ -137,7 +137,7 @@ func TestAddProvisionWatcherRequest_Validate(t *testing.T) {
 		{"valid AddProvisionWatcherRequest, no Request Id", noReqId, false},
 		{"invalid AddProvisionWatcherRequest, Request Id is not an uuid", invalidReqId, true},
 		{"invalid AddProvisionWatcherRequest, no ProvisionWatcherName", noProvisionWatcherName, true},
-		{"valid AddProvisionWatcherRequest, ProvisionWatcherName with reserved chars", provisionWatcherNameWithReservedChar, false},
+		{"valid AddProvisionWatcherRequest, ProvisionWatcherName with reserved chars", provisionWatcherNameWithReservedChar, true},
 		{"invalid AddProvisionWatcherRequest, no Identifiers", noIdentifiers, true},
 		{"invalid AddProvisionWatcherRequest, missing Identifiers key", missingIdentifiersKey, true},
 		{"invalid AddProvisionWatcherRequest, missing Identifiers value", missingIdentifiersValue, true},
@@ -147,8 +147,6 @@ func TestAddProvisionWatcherRequest_Validate(t *testing.T) {
 		{"invalid AddProvisionWatcherRequest, invalid autoEvent frequency", invalidFrequency, true},
 		{"invalid AddProvisionWatcherRequest, no AutoEvent frequency", noAutoEventFrequency, true},
 		{"invalid AddProvisionWatcherRequest, no AutoEvent resource", noAutoEventResource, true},
-
-		{"valid AddProvisionWatcherRequest, empty ProfileName", noProfileName, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -204,6 +202,7 @@ func TestAddProvisionWatcherReqToProvisionWatcherModels(t *testing.T) {
 				"port": {"397", "398", "399"},
 			},
 			AdminState: models.Locked,
+			AutoEvents: make([]models.AutoEvent, 0),
 			DiscoveredDevice: models.DiscoveredDevice{
 				ProfileName: TestDeviceProfileName,
 				AdminState:  models.Locked,
@@ -285,7 +284,7 @@ func TestUpdateProvisionWatcherRequest_Validate(t *testing.T) {
 		{"valid, only name", validOnlyName, false},
 		{"valid, name and empty Id", nameAndEmptyId, false},
 		{"invalid, empty name", invalidEmptyName, true},
-		{"valid, name with reserved chars", reservedName, false},
+		{"valid, name with reserved chars", reservedName, true},
 
 		{"invalid, no Id and name", noIdAndName, true},
 

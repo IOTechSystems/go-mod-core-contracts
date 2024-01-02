@@ -93,7 +93,7 @@ func TestDiscovery(t *testing.T) {
 	ts := newTestServer(http.MethodPost, common.ApiDiscoveryRoute, expectedResponse)
 	defer ts.Close()
 
-	client := NewDeviceServiceCommandClient()
+	client := NewDeviceServiceCommandClient(NewNullAuthenticationInjector(), false)
 	res, err := client.Discovery(context.Background(), ts.URL)
 
 	require.NoError(t, err)

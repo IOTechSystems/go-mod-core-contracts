@@ -10,9 +10,9 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"go.einride.tech/can/pkg/descriptor"
 )
@@ -50,10 +50,10 @@ func ConvertDBCtoProfile(data []byte) (profileDTOs []dtos.DeviceProfile, err err
 					ValueType:    valueType(s),
 					ReadWrite:    common.ReadWrite_R,
 					Units:        s.Unit,
-					Minimum:      strconv.FormatFloat(s.Min, 'f', -1, 64),
-					Maximum:      strconv.FormatFloat(s.Max, 'f', -1, 64),
-					Scale:        strconv.FormatFloat(s.Scale, 'f', -1, 64),
-					Offset:       strconv.FormatFloat(s.Offset, 'f', -1, 64),
+					Minimum:      &s.Min,
+					Maximum:      &s.Max,
+					Scale:        &s.Scale,
+					Offset:       &s.Offset,
 					DefaultValue: strconv.FormatInt(int64(s.DefaultValue), 10),
 				},
 				Attributes: map[string]interface{}{

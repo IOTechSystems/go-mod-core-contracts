@@ -5,7 +5,11 @@
 
 package dtos
 
-import "github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+import (
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+)
 
 type DeviceResource struct {
 	Description string                 `json:"description,omitempty" yaml:"description,omitempty"`
@@ -16,7 +20,7 @@ type DeviceResource struct {
 	Tags        map[string]any         `json:"tags,omitempty" yaml:"tags,omitempty"`
 
 	// Central
-	Tag         string                 `json:"tag,omitempty" yaml:"tag,omitempty"`
+	Tag string `json:"tag,omitempty" yaml:"tag,omitempty"`
 }
 
 // Validate satisfies the Validator interface
@@ -46,7 +50,7 @@ func ToDeviceResourceModel(d DeviceResource) models.DeviceResource {
 		Tags:        d.Tags,
 
 		// Central
-		Tag:         d.Tag,
+		Tag: d.Tag,
 	}
 }
 
@@ -70,7 +74,7 @@ func FromDeviceResourceModelToDTO(d models.DeviceResource) DeviceResource {
 		Tags:        d.Tags,
 
 		// Central
-		Tag:         d.Tag,
+		Tag: d.Tag,
 	}
 }
 

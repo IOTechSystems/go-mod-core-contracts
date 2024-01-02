@@ -359,18 +359,3 @@ func (_m *NotificationClient) UpdateNotificationAckStatusByIds(ctx context.Conte
 
 	return r0, r1
 }
-
-type mockConstructorTestingTNewNotificationClient interface {
-	mock.TestingT
-	Cleanup(func())
-}
-
-// NewNotificationClient creates a new instance of NotificationClient. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
-func NewNotificationClient(t mockConstructorTestingTNewNotificationClient) *NotificationClient {
-	mock := &NotificationClient{}
-	mock.Mock.Test(t)
-
-	t.Cleanup(func() { mock.AssertExpectations(t) })
-
-	return mock
-}

@@ -77,7 +77,7 @@ func TestTransmissionClient_TransmissionsBySubscriptionName(t *testing.T) {
 func TestTransmissionClient_TransmissionsByTimeRange(t *testing.T) {
 	start := int64(1)
 	end := int64(10)
-	urlPath := path.Join(common.ApiTransmissionRoute, common.Start, strconv.Itoa(start), common.End, strconv.Itoa(end))
+	urlPath := path.Join(common.ApiTransmissionRoute, common.Start, strconv.FormatInt(start, 10), common.End, strconv.FormatInt(end, 10))
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiTransmissionsResponse{})
 	defer ts.Close()
 	client := NewTransmissionClient(ts.URL, NewNullAuthenticationInjector(), false)

@@ -5,12 +5,12 @@ package xrtmodels
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/central/dbc"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/central/dbc"
 	"strconv"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 func toXrtProperties(protocol string, protocolProperties map[string]interface{}) errors.EdgeX {
@@ -54,7 +54,7 @@ func toXrtProperties(protocol string, protocolProperties map[string]interface{})
 	return nil
 }
 
-func toEdgeXProperties(protocol string, protocolProperties map[string]interface{}) map[string]string {
+func toEdgeXProperties(protocol string, protocolProperties map[string]any) map[string]string {
 	intProperties, floatProperties, boolProperties := propertyConversionList(protocol)
 
 	edgexProperties := make(map[string]string)

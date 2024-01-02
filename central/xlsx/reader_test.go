@@ -9,13 +9,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_readStruct(t *testing.T) {
 	testStr := "testString"
-	testInvalidDevice := dtos.Device{}
 	testValidDevice := dtos.Device{}
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
@@ -29,7 +28,6 @@ func Test_readStruct(t *testing.T) {
 		expectError bool
 	}{
 		{"readStruct with invalid ptr", nil, nil, nil, true},
-		{"readStruct with invalid value type", &testInvalidDevice, []string{"LastConnected"}, []string{"test"}, true},
 		{"readStruct with valid value type", &testValidDevice, []string{"Location"}, []string{"test"}, false},
 	}
 	for _, tt := range tests {
@@ -60,7 +58,6 @@ func Test_getStructFieldByHeader(t *testing.T) {
 
 func Test_setStdStructFieldValue(t *testing.T) {
 	rowElement := reflect.New(reflect.TypeOf(dtos.Device{})).Elem()
-	lastConnected := rowElement.FieldByName("LastConnected")
 	labels := rowElement.FieldByName("Labels")
 	tests := []struct {
 		name        string
@@ -68,7 +65,6 @@ func Test_setStdStructFieldValue(t *testing.T) {
 		field       reflect.Value
 		expectError bool
 	}{
-		{"setStdStructFieldValue - fail to parse cell to int64 field", "test", lastConnected, true},
 		{"setStdStructFieldValue - fail to parse cell to bool field", "invalid", reflect.ValueOf(true), true},
 		{"setStdStructFieldValue - success to parse cell to slice field", "a,b,c", labels, false},
 	}
@@ -86,7 +82,7 @@ func Test_setStdStructFieldValue(t *testing.T) {
 }
 
 func Test_setProtocolPropMap_WithoutMappingTableSheet(t *testing.T) {
-	_, err := setProtocolPropMap(map[string]string{"DataBits": "7"}, nil)
+	_, err := setProtocolPropMap(map[string]any{"DataBits": "7"}, nil)
 	require.Error(t, err, "Expected fieldMapping not defined error not occurred")
 }
 
@@ -99,12 +95,12 @@ func Test_setProtocolPropMap_WithMappingTableSheet(t *testing.T) {
 	invalidMappings["ProtocolName"] = mappingField{defaultValue: "invalidPrt"}
 	tests := []struct {
 		name          string
-		prtProps      map[string]string
+		prtProps      map[string]any
 		fieldMappings map[string]mappingField
 		expectError   bool
 	}{
-		{"setProtocolPropMap with valid protocol", map[string]string{"DataBits": "7"}, validMappings, false},
-		{"setProtocolPropMap with invalid protocol", map[string]string{}, invalidMappings, true},
+		{"setProtocolPropMap with valid protocol", map[string]any{"DataBits": "7"}, validMappings, false},
+		{"setProtocolPropMap with invalid protocol", map[string]any{}, invalidMappings, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -130,7 +126,6 @@ func Test_setProtocolPropMap_WithMappingTableSheet(t *testing.T) {
 func Test_convertDeviceFields(t *testing.T) {
 	rowElement := reflect.New(reflect.TypeOf(dtos.Device{})).Elem()
 	headerCol := []string{"Name", "LastConnected"}
-	invalidDataRow := []string{"TestDevice", "invalid"}
 	validDataRow := []string{"TestDevice", "0"}
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
@@ -146,7 +141,6 @@ func Test_convertDeviceFields(t *testing.T) {
 		expectError   bool
 	}{
 		{"Invalid convertDeviceFields - no fieldMappings", &rowElement, validDataRow, headerCol, nil, true},
-		{"Invalid convertDeviceFields - invalid LastConnected cell", &rowElement, invalidDataRow, headerCol, validMappings, true},
 		{"Valid convertDeviceFields", &rowElement, validDataRow, headerCol, validMappings, false},
 	}
 	for _, tt := range tests {

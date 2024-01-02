@@ -98,7 +98,7 @@ func (client *deviceServiceCommandClient) SetCommandWithObject(ctx context.Conte
 
 func (client *deviceServiceCommandClient) Discovery(ctx context.Context, baseUrl string) (dtoCommon.BaseResponse, errors.EdgeX) {
 	var response dtoCommon.BaseResponse
-	err := utils.PostRequest(ctx, &response, baseUrl, common.ApiDiscoveryRoute, nil, "")
+	err := utils.PostRequest(ctx, &response, baseUrl, common.ApiDiscoveryRoute, nil, "", client.authInjector)
 	if err != nil {
 		return response, errors.NewCommonEdgeXWrapper(err)
 	}

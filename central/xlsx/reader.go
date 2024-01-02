@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 func readStruct(structPtr any, headerCol []string, row []string, mapppingTable map[string]mappingField) (any, errors.EdgeX) {
@@ -122,7 +122,7 @@ func convertDTOStdTypeFields(rowElement *reflect.Value, xlsxRow []string, header
 }
 
 // setProtocolPropMap sets the ProtocolProperties outer map key based on protocol and returns the Protocols map
-func setProtocolPropMap(prtProps map[string]string, fieldMappings map[string]mappingField) (map[string]dtos.ProtocolProperties, errors.EdgeX) {
+func setProtocolPropMap(prtProps map[string]any, fieldMappings map[string]mappingField) (map[string]dtos.ProtocolProperties, errors.EdgeX) {
 	var protocol string
 	prtPropMap := make(map[string]dtos.ProtocolProperties)
 

@@ -75,14 +75,14 @@ const (
 	DeviceServiceName                     = "deviceServiceName"
 	TopicPatternFieldGroupName            = "GROUP_NAME"
 	TopicPatternFieldNodeName             = "NODE_NAME"
-	TopicPatternFieldXpertGroupName       = "XPERT_GROUP_NAME"
-	TopicPatternFieldXpertNodeName        = "XPERT_NODE_NAME"
+	TopicPatternFieldCentralGroupName     = "CENTRAL_GROUP_NAME"
+	TopicPatternFieldCentralNodeName      = "CENTRAL_NODE_NAME"
 	TopicPatternFieldDeviceServiceName    = "DEVICE_SERVICE_NAME"
-	TopicPatternFieldKeyXpertGroupName    = "${" + TopicPatternFieldXpertGroupName + "}"
-	TopicPatternFieldKeyXpertNodeName     = "${" + TopicPatternFieldXpertNodeName + "}"
+	TopicPatternFieldKeyCentralGroupName  = "${" + TopicPatternFieldCentralGroupName + "}"
+	TopicPatternFieldKeyCentralNodeName   = "${" + TopicPatternFieldCentralNodeName + "}"
 	TopicPatternFieldKeyDeviceServiceName = "${" + TopicPatternFieldDeviceServiceName + "}"
-	XpertNodeRequestTopicKey              = "RequestTopic"
-	XpertNodeReplyTopicKey                = "ReplyTopic"
+	CentralNodeRequestTopicKey            = "RequestTopic"
+	CentralNodeReplyTopicKey              = "ReplyTopic"
 )
 
 // constants relate to the service status error from sys-mgmt inspect operation

@@ -11,9 +11,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/stretchr/testify/require"
 )
@@ -74,6 +74,10 @@ func TestConvertDBCtoDevice(t *testing.T) {
 }
 
 func TestConvertDBCtoProfile(t *testing.T) {
+	testMinimum := float64(0)
+	testMaximum := float64(3)
+	testScale := float64(1)
+	testOffset := float64(0)
 	ioReader, err := os.Open("dbc_sample.dbc")
 	defer func() {
 		err := ioReader.Close()
@@ -106,10 +110,10 @@ func TestConvertDBCtoProfile(t *testing.T) {
 					ValueType:    common.ValueTypeUint64,
 					ReadWrite:    common.ReadWrite_R,
 					Units:        "bit",
-					Minimum:      "0",
-					Maximum:      "3",
-					Scale:        "1",
-					Offset:       "0",
+					Minimum:      &testMinimum,
+					Maximum:      &testMaximum,
+					Scale:        &testScale,
+					Offset:       &testOffset,
 					DefaultValue: "0",
 				},
 				Attributes: map[string]interface{}{

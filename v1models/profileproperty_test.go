@@ -17,7 +17,7 @@ package v1models
 import (
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 )
 
 var TestMediaType = common.ContentTypeCBOR
