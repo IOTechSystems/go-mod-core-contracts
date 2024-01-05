@@ -291,9 +291,12 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 	for colIndex, cell := range xlsxRow {
 		headerName, field := getStructFieldByHeader(rowElement, colIndex, headerCol)
 		fieldValue := strings.TrimSpace(cell)
-		if fieldValue == "" {
-			// set fieldValue to 'default value' defined in mapping Table if not empty
-			if mapping, ok := fieldMappings[headerName]; ok && mapping.defaultValue != "" {
+
+		var fieldMapping mappingField
+		// set fieldValue to 'default value' defined in mapping Table if not empty
+		if mapping, ok := fieldMappings[headerName]; ok {
+			fieldMapping = mapping
+			if fieldValue == "" && mapping.defaultValue != "" {
 				fieldValue = mapping.defaultValue
 			}
 		}
@@ -313,8 +316,8 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 					return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("error occurred on '%s' column", headerName), err)
 				}
 			} else {
-				// set the cell to Attributes map if header not belongs to Properties field
-				if fieldValue != "" {
+				// set the cell to Attributes map if header not belongs to Properties field and mapping path contains 'attributes'
+				if fieldValue != "" && strings.Contains(strings.ToLower(fieldMapping.path), strings.ToLower(attributes)) {
 					attrMapField := rowElement.FieldByName(attributes)
 					if attrMapField.Len() == 0 {
 						// initialize the Attributes map
