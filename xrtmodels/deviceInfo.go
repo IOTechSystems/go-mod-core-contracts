@@ -37,6 +37,7 @@ func ToEdgeXV2Device(device DeviceInfo, serviceName string) models.Device {
 		LastReported:   0,
 		Labels:         nil,
 		Location:       nil,
+		Tags:           device.Tags,
 		ServiceName:    serviceName,
 		ProfileName:    device.ProfileName,
 		AutoEvents:     nil,
