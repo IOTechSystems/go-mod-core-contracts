@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -76,6 +76,14 @@ func createProfileMappingTableSheet(f *excelize.File) error {
 	err = sw.SetRow("A3",
 		[]any{
 			"ReadWrite", "deviceResources[].properties.readWrite", "R",
+		})
+	if err != nil {
+		return err
+	}
+
+	err = sw.SetRow("A4",
+		[]any{
+			"ReadWrite", "deviceResources[].tags.severityLevel", "1",
 		})
 	if err != nil {
 		return err

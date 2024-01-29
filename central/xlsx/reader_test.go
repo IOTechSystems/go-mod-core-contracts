@@ -1,11 +1,12 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package xlsx
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -226,15 +227,17 @@ func Test_convertDeviceCommandFields(t *testing.T) {
 	}
 }
 
-func Test_convertResourcesFields_Invalid(t *testing.T) {
+func Test_convertResourcesFields(t *testing.T) {
 	rowElement := reflect.New(reflect.TypeOf(dtos.DeviceResource{})).Elem()
-	headerCol := []string{"Name", "IsHidden", "ValueType"}
-	invalidIsHiddenRow := []string{"testCommand", "invalid", "Int64"}
-	validDataRow := []string{"testCommand", "true", "Int64"}
-	deviceX, err := createDeviceXlsxInst()
+	headerCol := []string{"Name", "IsHidden", "ValueType", "severityLevel"}
+	invalidIsHiddenRow := []string{"testCommand", "invalid", "Int64", ""}
+	validDataRow := []string{"testCommand", "true", "Int64", ""}
+	validDataRowWithTags := []string{"testCommand", "true", "Int64", "1"}
+	deviceX, err := createDeviceProfileXlsxInst()
+
 	require.NoError(t, err)
 
-	validMappings := deviceX.(*deviceXlsx).fieldMappings
+	validMappings := deviceX.(*deviceProfileXlsx).fieldMappings
 	tests := []struct {
 		name          string
 		rowElement    *reflect.Value
@@ -246,6 +249,7 @@ func Test_convertResourcesFields_Invalid(t *testing.T) {
 		{"Invalid convertResourcesFields - no fieldMappings", &rowElement, validDataRow, headerCol, nil, true},
 		{"Invalid convertResourcesFields - invalid IsHidden cell", &rowElement, invalidIsHiddenRow, headerCol, validMappings, true},
 		{"Valid convertResourcesFields", &rowElement, validDataRow, headerCol, validMappings, false},
+		{"Valid convertResourcesFields with Tags", &rowElement, validDataRowWithTags, headerCol, validMappings, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -257,4 +261,30 @@ func Test_convertResourcesFields_Invalid(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_convertCellToAny(t *testing.T) {
+	expectedInt8Value := 8
+	convertedValue := convertCellToAny(fmt.Sprintf("%d", expectedInt8Value))
+	require.Equal(t, int64(expectedInt8Value), convertedValue)
+
+	expectedInt64Value := 2147483648
+	convertedValue = convertCellToAny(fmt.Sprintf("%d", expectedInt64Value))
+	require.Equal(t, int64(expectedInt64Value), convertedValue)
+
+	expectedFloat32Value := 123.56
+	convertedValue = convertCellToAny(fmt.Sprintf("%g", expectedFloat32Value))
+	require.Equal(t, expectedFloat32Value, convertedValue)
+
+	expectedFloat64Value := 1.7e+308
+	convertedValue = convertCellToAny(fmt.Sprintf("%g", expectedFloat64Value))
+	require.Equal(t, expectedFloat64Value, convertedValue)
+
+	expectedBoolValue := true
+	convertedValue = convertCellToAny(fmt.Sprintf("%t", expectedBoolValue))
+	require.Equal(t, expectedBoolValue, convertedValue)
+
+	expectedStrValue := "test"
+	convertedValue = convertCellToAny(expectedStrValue)
+	require.Equal(t, expectedStrValue, convertedValue)
 }

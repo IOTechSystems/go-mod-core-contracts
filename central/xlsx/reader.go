@@ -352,7 +352,7 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 // if not, keep the cell value as string
 func convertCellToAny(fieldValue string) any {
 	var convertedValue any
-	if intValue, err := strconv.ParseInt(fieldValue, 10, 16); err == nil {
+	if intValue, err := strconv.ParseInt(fieldValue, 10, 64); err == nil {
 		convertedValue = intValue
 	} else if floatValue, err := strconv.ParseFloat(fieldValue, 64); err == nil {
 		convertedValue = floatValue
