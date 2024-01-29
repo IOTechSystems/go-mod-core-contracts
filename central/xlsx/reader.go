@@ -308,6 +308,19 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("error occurred on '%s' column", headerName), err)
 			}
 		} else {
+			if fieldValue != "" && strings.Contains(strings.ToLower(fieldMapping.path), strings.ToLower(tags)) {
+				// set the cell to Device Resource tags map
+				tagsMapField := rowElement.FieldByName(tags)
+				if tagsMapField.Len() == 0 {
+					// initialize the Attributes map
+					tagsMap := make(map[string]any)
+					tagsMapField.Set(reflect.MakeMap(reflect.TypeOf(tagsMap)))
+				}
+
+				tagValue := convertCellToAny(fieldValue)
+				tagsMapField.SetMapIndex(reflect.ValueOf(headerName), reflect.ValueOf(tagValue))
+			}
+
 			resPropField := rowElement.FieldByName(properties).FieldByName(headerName)
 			if resPropField.Kind() != reflect.Invalid {
 				// header matches the ResourceProperties DTO field name (one of the ValueType, ReadWrite, Units, etc)
@@ -325,16 +338,7 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 						attrMapField.Set(reflect.MakeMap(reflect.TypeOf(attrMap)))
 					}
 
-					var attrValue any
-					if intValue, err := strconv.ParseInt(fieldValue, 10, 16); err == nil {
-						attrValue = intValue
-					} else if floatValue, err := strconv.ParseFloat(fieldValue, 64); err == nil {
-						attrValue = floatValue
-					} else if boolValue, err := strconv.ParseBool(fieldValue); err == nil {
-						attrValue = boolValue
-					} else {
-						attrValue = fieldValue
-					}
+					attrValue := convertCellToAny(fieldValue)
 					attrMapField.SetMapIndex(reflect.ValueOf(headerName), reflect.ValueOf(attrValue))
 				}
 			}
@@ -342,4 +346,20 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 	}
 
 	return nil
+}
+
+// to check if the cell value can be converted to int, float, bool data types
+// if not, keep the cell value as string
+func convertCellToAny(fieldValue string) any {
+	var convertedValue any
+	if intValue, err := strconv.ParseInt(fieldValue, 10, 16); err == nil {
+		convertedValue = intValue
+	} else if floatValue, err := strconv.ParseFloat(fieldValue, 64); err == nil {
+		convertedValue = floatValue
+	} else if boolValue, err := strconv.ParseBool(fieldValue); err == nil {
+		convertedValue = boolValue
+	} else {
+		convertedValue = fieldValue
+	}
+	return convertedValue
 }
