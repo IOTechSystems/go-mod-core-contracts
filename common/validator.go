@@ -2,7 +2,7 @@
 // +build !no_dto_validator
 
 //
-// Copyright (C) 2020-2023 IOTech Ltd
+// Copyright (C) 2020-2021 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -18,22 +18,23 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 var val *validator.Validate
 
 const (
-	dtoDurationTag              = "edgex-dto-duration"
-	dtoUuidTag                  = "edgex-dto-uuid"
-	dtoNoneEmptyStringTag       = "edgex-dto-none-empty-string"
-	dtoValueType                = "edgex-dto-value-type"
-	dtoRFC3986UnreservedCharTag = "edgex-dto-rfc3986-unreserved-chars"
-	dtoInterDatetimeTag         = "edgex-dto-interval-datetime"
-	dtoNoReservedCharTag        = "edgex-dto-no-reserved-chars"
-
+	dtoDurationTag                     = "edgex-dto-duration"
+	dtoUuidTag                         = "edgex-dto-uuid"
+	dtoNoneEmptyStringTag              = "edgex-dto-none-empty-string"
+	dtoValueType                       = "edgex-dto-value-type"
+	dtoRFC3986UnreservedCharTag        = "edgex-dto-rfc3986-unreserved-chars"
 	emptyOrDtoRFC3986UnreservedCharTag = "len=0|" + dtoRFC3986UnreservedCharTag
-	emptyOrDtoNoReservedCharTag        = "len=0|" + dtoNoReservedCharTag
+	dtoInterDatetimeTag                = "edgex-dto-interval-datetime"
+
+	// Central
+	dtoNoReservedCharTag        = "edgex-dto-no-reserved-chars"
+	emptyOrDtoNoReservedCharTag = "len=0|" + dtoNoReservedCharTag
 )
 
 const (
@@ -42,11 +43,15 @@ const (
 	rFC3986UnreservedCharsRegexString = "^[a-zA-Z0-9-_~:;=]+$"
 	intervalDatetimeLayout            = "20060102T150405"
 	name                              = "Name"
+
+	// Central
 	reservedCharsRegexString          = "^[^/#+$]+$"
 )
 
 var (
 	rFC3986UnreservedCharsRegex = regexp.MustCompile(rFC3986UnreservedCharsRegexString)
+
+	// Central
 	reservedCharsRegex          = regexp.MustCompile(reservedCharsRegexString)
 )
 
@@ -58,6 +63,8 @@ func init() {
 	_ = val.RegisterValidation(dtoValueType, ValidateValueType)
 	_ = val.RegisterValidation(dtoRFC3986UnreservedCharTag, ValidateDtoRFC3986UnreservedChars)
 	_ = val.RegisterValidation(dtoInterDatetimeTag, ValidateIntervalDatetime)
+
+	// Central
 	_ = val.RegisterValidation(dtoNoReservedCharTag, ValidateDtoNoReservedChars)
 }
 
@@ -104,6 +111,7 @@ func getErrorMessage(e validator.FieldError) string {
 		msg = fmt.Sprintf("%s field should not be empty string", fieldName)
 	case dtoRFC3986UnreservedCharTag, emptyOrDtoRFC3986UnreservedCharTag:
 		msg = fmt.Sprintf("%s field only allows unreserved characters which are ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_~:;=", fieldName)
+	// Central
 	case dtoNoReservedCharTag, emptyOrDtoNoReservedCharTag:
 		msg = fmt.Sprintf("%s field does not allow reserved characters which are /#+$", fieldName)
 	default:

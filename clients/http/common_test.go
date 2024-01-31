@@ -1,5 +1,6 @@
 //
 // Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2023 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,13 +9,13 @@ package http
 import (
 	"context"
 	"encoding/json"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -26,19 +27,8 @@ func TestGetConfig(t *testing.T) {
 	ts := newTestServer(http.MethodGet, common.ApiConfigRoute, dtoCommon.ConfigResponse{})
 	defer ts.Close()
 
-	gc := NewCommonClient(ts.URL)
+	gc := NewCommonClient(ts.URL, NewNullAuthenticationInjector())
 	response, err := gc.Configuration(context.Background())
-	require.NoError(t, err)
-	require.Equal(t, expected, response)
-}
-
-func TestGetMetrics(t *testing.T) {
-	expected := dtoCommon.MetricsResponse{}
-	ts := newTestServer(http.MethodGet, common.ApiMetricsRoute, dtoCommon.MetricsResponse{})
-	defer ts.Close()
-
-	gc := NewCommonClient(ts.URL)
-	response, err := gc.Metrics(context.Background())
 	require.NoError(t, err)
 	require.Equal(t, expected, response)
 }
@@ -48,7 +38,7 @@ func TestPing(t *testing.T) {
 	ts := newTestServer(http.MethodGet, common.ApiPingRoute, dtoCommon.PingResponse{})
 	defer ts.Close()
 
-	gc := NewCommonClient(ts.URL)
+	gc := NewCommonClient(ts.URL, NewNullAuthenticationInjector())
 	response, err := gc.Ping(context.Background())
 	require.NoError(t, err)
 	require.Equal(t, expected, response)
@@ -59,7 +49,7 @@ func TestVersion(t *testing.T) {
 	ts := newTestServer(http.MethodGet, common.ApiVersionRoute, dtoCommon.VersionResponse{})
 	defer ts.Close()
 
-	gc := NewCommonClient(ts.URL)
+	gc := NewCommonClient(ts.URL, NewNullAuthenticationInjector())
 	response, err := gc.Version(context.Background())
 	require.NoError(t, err)
 	require.Equal(t, expected, response)
@@ -68,7 +58,7 @@ func TestVersion(t *testing.T) {
 func TestAddSecret(t *testing.T) {
 	expected := dtoCommon.BaseResponse{}
 	req := dtoCommon.NewSecretRequest(
-		"testPath",
+		"testSecretName",
 		[]dtoCommon.SecretDataKeyValue{
 			{Key: "username", Value: "tester"},
 			{Key: "password", Value: "123"},
@@ -77,7 +67,7 @@ func TestAddSecret(t *testing.T) {
 	ts := newTestServer(http.MethodPost, common.ApiSecretRoute, expected)
 	defer ts.Close()
 
-	client := NewCommonClient(ts.URL)
+	client := NewCommonClient(ts.URL, NewNullAuthenticationInjector())
 	res, err := client.AddSecret(context.Background(), req)
 	require.NoError(t, err)
 	require.IsType(t, expected, res)

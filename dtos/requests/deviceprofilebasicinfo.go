@@ -8,16 +8,14 @@ package requests
 import (
 	"encoding/json"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
 // DeviceProfileBasicInfoRequest defines the Request Content for PATCH UpdateDeviceProfileBasicInfo DTO.
-// This object and its properties correspond to the DeviceProfileBasicInfoRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceProfileBasicInfoRequest
 type DeviceProfileBasicInfoRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	BasicInfo             dtos.UpdateDeviceProfileBasicInfo `json:"basicinfo"`

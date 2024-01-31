@@ -8,16 +8,14 @@ package requests
 import (
 	"encoding/json"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
 // AddDeviceCommandRequest defines the Request Content for POST DeviceCommand DTO.
-// This object and its properties correspond to the DeviceCommandRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceCommandRequest
 type AddDeviceCommandRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	ProfileName           string             `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
@@ -51,8 +49,6 @@ func (dc *AddDeviceCommandRequest) UnmarshalJSON(b []byte) error {
 }
 
 // UpdateDeviceCommandRequest defines the Request Content for PATCH DeviceCommand DTO.
-// This object and its properties correspond to the DeviceCommandRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceCommandRequest
 type UpdateDeviceCommandRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	ProfileName           string                   `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`

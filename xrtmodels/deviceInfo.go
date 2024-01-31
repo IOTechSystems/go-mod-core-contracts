@@ -6,24 +6,20 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
 type DeviceInfo struct {
 	dtos.Device
-	Protocols map[string]map[string]interface{} `json:"protocols"`
 }
 
 // ToEdgeXV2Device converts the XRT model to EdgeX model
 func ToEdgeXV2Device(device DeviceInfo, serviceName string) models.Device {
-	// Convert all properties to string for EdgeX
-	protocols := make(map[string]models.ProtocolProperties)
 	protocolName := ""
-	for protocol, protocolProperties := range device.Protocols {
-		protocols[protocol] = toEdgeXProperties(protocol, protocolProperties)
+	for protocol, _ := range device.Protocols {
 		protocolName = strings.ToLower(protocol)
 	}
 	return models.Device{
@@ -32,15 +28,12 @@ func ToEdgeXV2Device(device DeviceInfo, serviceName string) models.Device {
 		AdminState:     models.Unlocked,
 		OperatingState: models.Up,
 		ProtocolName:   protocolName,
-		Protocols:      protocols,
-		LastConnected:  0,
-		LastReported:   0,
+		Protocols:      dtos.ToProtocolModels(device.Protocols),
 		Labels:         nil,
 		Location:       nil,
 		ServiceName:    serviceName,
 		ProfileName:    device.ProfileName,
 		AutoEvents:     nil,
-		Notify:         false,
 		Properties:     device.Properties,
 	}
 }
@@ -75,7 +68,7 @@ func ToXrtDevice(device models.Device) (deviceInfo DeviceInfo, edgexErr errors.E
 	return deviceInfo, nil
 }
 
-func processEtherNetIP(protocolProperties map[string]map[string]interface{}) {
+func processEtherNetIP(protocolProperties map[string]dtos.ProtocolProperties) {
 	// Combine ExplicitConnected, O2T, T2O and Key into EtherNet-IP
 	if v, ok := protocolProperties[common.EtherNetIP]; ok {
 		protocolProperties[common.EtherNetIPXRT] = v

@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 	"github.com/fxamacker/cbor/v2"
 
 	"github.com/stretchr/testify/assert"
@@ -155,7 +155,7 @@ func TestAddEventRequest_Validate(t *testing.T) {
 	}
 
 	// Following tests verify if name fields containing reserved characters should be detected with an error
-	for _, n := range namesWithReservedCharEdgeX {
+	for _, n := range namesWithReservedChar {
 		deviceNameWithReservedChar := eventRequestData()
 		deviceNameWithReservedChar.Event.DeviceName = n
 		profileNameWithReservedChar := eventRequestData()
@@ -170,8 +170,12 @@ func TestAddEventRequest_Validate(t *testing.T) {
 		readingProfileNameWithReservedChar.Event.Readings[0].ProfileName = n
 
 		testsForNameFields = append(testsForNameFields,
-			testForNameField{"Invalid AddEventRequest with profile name containing reserved char", profileNameWithReservedChar, true},
-			testForNameField{"Invalid AddEventRequest with reading profile name containing reserved char", readingProfileNameWithReservedChar, true},
+			testForNameField{"Valid AddEventRequest with device name containing reserved char", deviceNameWithReservedChar, false},
+			testForNameField{"Valid AddEventRequest with profile name containing reserved char", profileNameWithReservedChar, false},
+			testForNameField{"Valid AddEventRequest with source name containing reserved char", sourceNameWithReservedChar, false},
+			testForNameField{"Valid AddEventRequest with reading device name containing reserved char", readingDeviceNameWithReservedChar, false},
+			testForNameField{"Valid AddEventRequest with reading resource name containing reserved char", readingResourceNameWithReservedChar, false},
+			testForNameField{"Valid AddEventRequest with reading profile name containing reserved char", readingProfileNameWithReservedChar, false},
 		)
 	}
 

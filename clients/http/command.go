@@ -1,5 +1,6 @@
 //
-// Copyright (C) 2021-2022 IOTech Ltd
+// Copyright (C) 2021-2023 IOTech Ltd
+// Copyright (C) 2023 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,22 +11,26 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/interfaces"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/http/utils"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 type CommandClient struct {
-	baseUrl string
+	baseUrl               string
+	authInjector          interfaces.AuthenticationInjector
+	enableNameFieldEscape bool
 }
 
 // NewCommandClient creates an instance of CommandClient
-func NewCommandClient(baseUrl string) interfaces.CommandClient {
+func NewCommandClient(baseUrl string, authInjector interfaces.AuthenticationInjector, enableNameFieldEscape bool) interfaces.CommandClient {
 	return &CommandClient{
-		baseUrl: baseUrl,
+		baseUrl:               baseUrl,
+		authInjector:          authInjector,
+		enableNameFieldEscape: enableNameFieldEscape,
 	}
 }
 
@@ -35,7 +40,7 @@ func (client *CommandClient) AllDeviceCoreCommands(ctx context.Context, offset i
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
-	err = utils.GetRequest(ctx, &res, client.baseUrl, common.ApiAllDeviceRoute, requestParams)
+	err = utils.GetRequest(ctx, &res, client.baseUrl, common.ApiAllDeviceRoute, requestParams, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -45,8 +50,9 @@ func (client *CommandClient) AllDeviceCoreCommands(ctx context.Context, offset i
 // DeviceCoreCommandsByDeviceName returns all commands associated with the specified device name.
 func (client *CommandClient) DeviceCoreCommandsByDeviceName(ctx context.Context, name string) (
 	res responses.DeviceCoreCommandResponse, err errors.EdgeX) {
-	path := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, name)
-	err = utils.GetRequest(ctx, &res, client.baseUrl, path, nil)
+	path := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
+		SetPath(common.ApiDeviceRoute).SetPath(common.Name).SetNameFieldPath(name).BuildPath()
+	err = utils.GetRequest(ctx, &res, client.baseUrl, path, nil, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -54,12 +60,13 @@ func (client *CommandClient) DeviceCoreCommandsByDeviceName(ctx context.Context,
 }
 
 // IssueGetCommandByName issues the specified read command referenced by the command name to the device/sensor that is also referenced by name.
-func (client *CommandClient) IssueGetCommandByName(ctx context.Context, deviceName string, commandName string, dsPushEvent string, dsReturnEvent string) (res *responses.EventResponse, err errors.EdgeX) {
+func (client *CommandClient) IssueGetCommandByName(ctx context.Context, deviceName string, commandName string, dsPushEvent bool, dsReturnEvent bool) (res *responses.EventResponse, err errors.EdgeX) {
 	requestParams := url.Values{}
-	requestParams.Set(common.PushEvent, dsPushEvent)
-	requestParams.Set(common.ReturnEvent, dsReturnEvent)
-	requestPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, commandName)
-	err = utils.GetRequest(ctx, &res, client.baseUrl, requestPath, requestParams)
+	requestParams.Set(common.PushEvent, strconv.FormatBool(dsPushEvent))
+	requestParams.Set(common.ReturnEvent, strconv.FormatBool(dsReturnEvent))
+	requestPath := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
+		SetPath(common.ApiDeviceRoute).SetPath(common.Name).SetNameFieldPath(deviceName).SetNameFieldPath(commandName).BuildPath()
+	err = utils.GetRequest(ctx, &res, client.baseUrl, requestPath, requestParams, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -71,9 +78,9 @@ func (client *CommandClient) IssueGetCommandByNameWithQueryParams(ctx context.Co
 	for k, v := range queryParams {
 		requestParams.Set(k, v)
 	}
-
-	requestPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, commandName)
-	err = utils.GetRequest(ctx, &res, client.baseUrl, requestPath, requestParams)
+	requestPath := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
+		SetPath(common.ApiDeviceRoute).SetPath(common.Name).SetNameFieldPath(deviceName).SetNameFieldPath(commandName).BuildPath()
+	err = utils.GetRequest(ctx, &res, client.baseUrl, requestPath, requestParams, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -82,8 +89,9 @@ func (client *CommandClient) IssueGetCommandByNameWithQueryParams(ctx context.Co
 
 // IssueSetCommandByName issues the specified write command referenced by the command name to the device/sensor that is also referenced by name.
 func (client *CommandClient) IssueSetCommandByName(ctx context.Context, deviceName string, commandName string, settings map[string]string) (res dtoCommon.BaseResponse, err errors.EdgeX) {
-	requestPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, commandName)
-	err = utils.PutRequest(ctx, &res, client.baseUrl, requestPath, nil, settings)
+	requestPath := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
+		SetPath(common.ApiDeviceRoute).SetPath(common.Name).SetNameFieldPath(deviceName).SetNameFieldPath(commandName).BuildPath()
+	err = utils.PutRequest(ctx, &res, client.baseUrl, requestPath, nil, settings, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -92,8 +100,9 @@ func (client *CommandClient) IssueSetCommandByName(ctx context.Context, deviceNa
 
 // IssueSetCommandByNameWithObject issues the specified write command and the settings supports object value type
 func (client *CommandClient) IssueSetCommandByNameWithObject(ctx context.Context, deviceName string, commandName string, settings map[string]interface{}) (res dtoCommon.BaseResponse, err errors.EdgeX) {
-	requestPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, commandName)
-	err = utils.PutRequest(ctx, &res, client.baseUrl, requestPath, nil, settings)
+	requestPath := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
+		SetPath(common.ApiDeviceRoute).SetPath(common.Name).SetNameFieldPath(deviceName).SetNameFieldPath(commandName).BuildPath()
+	err = utils.PutRequest(ctx, &res, client.baseUrl, requestPath, nil, settings, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}

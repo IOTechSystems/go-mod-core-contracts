@@ -1,5 +1,6 @@
 //
 // Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2023 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,14 +9,14 @@ package http
 import (
 	"context"
 	"net/http"
+	"path"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -26,7 +27,7 @@ func TestAddIntervals(t *testing.T) {
 	defer ts.Close()
 	dto := dtos.NewInterval(TestIntervalName, TestFrequency)
 	request := []requests.AddIntervalRequest{requests.NewAddIntervalRequest(dto)}
-	client := NewIntervalClient(ts.URL)
+	client := NewIntervalClient(ts.URL, NewNullAuthenticationInjector(), false)
 
 	res, err := client.Add(context.Background(), request)
 
@@ -39,7 +40,7 @@ func TestPatchIntervals(t *testing.T) {
 	defer ts.Close()
 	dto := dtos.NewUpdateInterval(TestIntervalName)
 	request := []requests.UpdateIntervalRequest{requests.NewUpdateIntervalRequest(dto)}
-	client := NewIntervalClient(ts.URL)
+	client := NewIntervalClient(ts.URL, NewNullAuthenticationInjector(), false)
 
 	res, err := client.Update(context.Background(), request)
 
@@ -50,7 +51,7 @@ func TestPatchIntervals(t *testing.T) {
 func TestQueryAllIntervals(t *testing.T) {
 	ts := newTestServer(http.MethodGet, common.ApiAllIntervalRoute, responses.MultiIntervalsResponse{})
 	defer ts.Close()
-	client := NewIntervalClient(ts.URL)
+	client := NewIntervalClient(ts.URL, NewNullAuthenticationInjector(), false)
 
 	res, err := client.AllIntervals(context.Background(), 0, 10)
 
@@ -59,11 +60,11 @@ func TestQueryAllIntervals(t *testing.T) {
 }
 
 func TestQueryIntervalByName(t *testing.T) {
-	path := utils.EscapeAndJoinPath(common.ApiIntervalRoute, common.Name, TestIntervalName)
+	path := path.Join(common.ApiIntervalRoute, common.Name, TestIntervalName)
 	ts := newTestServer(http.MethodGet, path, responses.DeviceResponse{})
 	defer ts.Close()
 
-	client := NewIntervalClient(ts.URL)
+	client := NewIntervalClient(ts.URL, NewNullAuthenticationInjector(), false)
 
 	res, err := client.IntervalByName(context.Background(), TestIntervalName)
 	require.NoError(t, err)
@@ -71,10 +72,10 @@ func TestQueryIntervalByName(t *testing.T) {
 }
 
 func TestDeleteIntervalByName(t *testing.T) {
-	path := utils.EscapeAndJoinPath(common.ApiIntervalRoute, common.Name, TestIntervalName)
+	path := path.Join(common.ApiIntervalRoute, common.Name, TestIntervalName)
 	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
 	defer ts.Close()
-	client := NewIntervalClient(ts.URL)
+	client := NewIntervalClient(ts.URL, NewNullAuthenticationInjector(), false)
 
 	res, err := client.DeleteIntervalByName(context.Background(), TestIntervalName)
 

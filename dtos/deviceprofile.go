@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2022 IOTech Ltd
+// Copyright (C) 2020-2021 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,19 +10,19 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	edgexErrors "github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	edgexErrors "github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
-// DeviceProfile and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/DeviceProfile
 type DeviceProfile struct {
 	DBTimestamp            `json:",inline" yaml:"dbTimestamp,omitempty"`
-	ApiVersion             string `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
 	DeviceProfileBasicInfo `json:",inline" yaml:",inline"`
 	DeviceResources        []DeviceResource `json:"deviceResources" yaml:"deviceResources" validate:"dive"`
 	DeviceCommands         []DeviceCommand  `json:"deviceCommands" yaml:"deviceCommands" validate:"dive"`
+
+	// Central
+	ApiVersion             string `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
 }
 
 // Validate satisfies the Validator interface
@@ -41,10 +41,12 @@ func (dp *DeviceProfile) Validate() error {
 func (dp *DeviceProfile) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var alias struct {
 		DBTimestamp
-		ApiVersion             string `yaml:"apiVersion"`
 		DeviceProfileBasicInfo `yaml:",inline"`
 		DeviceResources        []DeviceResource `yaml:"deviceResources"`
 		DeviceCommands         []DeviceCommand  `yaml:"deviceCommands"`
+
+		// Central
+		ApiVersion             string `yaml:"apiVersion"`
 	}
 	if err := unmarshal(&alias); err != nil {
 		return edgexErrors.NewCommonEdgeX(edgexErrors.KindContractInvalid, "failed to unmarshal request body as YAML.", err)
@@ -70,7 +72,6 @@ func (dp *DeviceProfile) UnmarshalYAML(unmarshal func(interface{}) error) error 
 func ToDeviceProfileModel(deviceProfileDTO DeviceProfile) models.DeviceProfile {
 	return models.DeviceProfile{
 		DBTimestamp:     models.DBTimestamp(deviceProfileDTO.DBTimestamp),
-		ApiVersion:      deviceProfileDTO.ApiVersion,
 		Id:              deviceProfileDTO.Id,
 		Name:            deviceProfileDTO.Name,
 		Description:     deviceProfileDTO.Description,
@@ -79,6 +80,9 @@ func ToDeviceProfileModel(deviceProfileDTO DeviceProfile) models.DeviceProfile {
 		Labels:          deviceProfileDTO.Labels,
 		DeviceResources: ToDeviceResourceModels(deviceProfileDTO.DeviceResources),
 		DeviceCommands:  ToDeviceCommandModels(deviceProfileDTO.DeviceCommands),
+
+		// Central
+		ApiVersion:      deviceProfileDTO.ApiVersion,
 	}
 }
 
@@ -89,7 +93,6 @@ func FromDeviceProfileModelToDTO(deviceProfile models.DeviceProfile) DeviceProfi
 	}
 	return DeviceProfile{
 		DBTimestamp: DBTimestamp(deviceProfile.DBTimestamp),
-		ApiVersion:  deviceProfile.ApiVersion,
 		DeviceProfileBasicInfo: DeviceProfileBasicInfo{
 			Id:           deviceProfile.Id,
 			Name:         deviceProfile.Name,
@@ -100,6 +103,9 @@ func FromDeviceProfileModelToDTO(deviceProfile models.DeviceProfile) DeviceProfi
 		},
 		DeviceResources: FromDeviceResourceModelsToDTOs(deviceProfile.DeviceResources),
 		DeviceCommands:  FromDeviceCommandModelsToDTOs(deviceProfile.DeviceCommands),
+
+		// Central
+		ApiVersion:  deviceProfile.ApiVersion,
 	}
 }
 
@@ -107,6 +113,10 @@ func ValidateDeviceProfileDTO(profile DeviceProfile) error {
 	// deviceResources validation
 	dupCheck := make(map[string]bool)
 	for _, resource := range profile.DeviceResources {
+		if resource.Properties.ValueType == common.ValueTypeBinary &&
+			strings.Contains(resource.Properties.ReadWrite, common.ReadWrite_W) {
+			return edgexErrors.NewCommonEdgeX(edgexErrors.KindContractInvalid, fmt.Sprintf("write permission not support %s value type for resource '%s'", common.ValueTypeBinary, resource.Name), nil)
+		}
 		// deviceResource name should not duplicated
 		if dupCheck[resource.Name] {
 			return edgexErrors.NewCommonEdgeX(edgexErrors.KindContractInvalid, fmt.Sprintf("device resource %s is duplicated", resource.Name), nil)

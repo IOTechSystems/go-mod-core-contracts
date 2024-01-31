@@ -10,10 +10,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/v2dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/v2models"
 )
 
 const (
@@ -22,8 +22,8 @@ const (
 )
 
 // TransformProfileFromV2ToV1 transform v2 profile to v1
-func TransformProfileFromV2ToV1(profile models.DeviceProfile) (DeviceProfile, errors.EdgeX) {
-	v2dpDto := dtos.FromDeviceProfileModelToDTO(profile)
+func TransformProfileFromV2ToV1(profile v2models.DeviceProfile) (DeviceProfile, errors.EdgeX) {
+	v2dpDto := FromDeviceProfileModelToDTO(profile)
 	err := v2dpDto.Validate()
 	if err != nil {
 		return DeviceProfile{}, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v2 device profile", err)
@@ -47,7 +47,28 @@ func TransformProfileFromV2ToV1(profile models.DeviceProfile) (DeviceProfile, er
 	return v1dp, nil
 }
 
-func toV1DeviceResources(deviceResources []models.DeviceResource) []DeviceResource {
+// FromDeviceProfileModelToDTO transforms the DeviceProfile Model to the DeviceProfile DTO
+func FromDeviceProfileModelToDTO(deviceProfile v2models.DeviceProfile) v2dtos.DeviceProfile {
+	if deviceProfile.ApiVersion == "" {
+		deviceProfile.ApiVersion = common.ApiVersion
+	}
+	return v2dtos.DeviceProfile{
+		DBTimestamp: v2dtos.DBTimestamp(deviceProfile.DBTimestamp),
+		ApiVersion:  deviceProfile.ApiVersion,
+		DeviceProfileBasicInfo: v2dtos.DeviceProfileBasicInfo{
+			Id:           deviceProfile.Id,
+			Name:         deviceProfile.Name,
+			Description:  deviceProfile.Description,
+			Manufacturer: deviceProfile.Manufacturer,
+			Model:        deviceProfile.Model,
+			Labels:       deviceProfile.Labels,
+		},
+		DeviceResources: v2dtos.FromDeviceResourceModelsToDTOs(deviceProfile.DeviceResources),
+		DeviceCommands:  v2dtos.FromDeviceCommandModelsToDTOs(deviceProfile.DeviceCommands),
+	}
+}
+
+func toV1DeviceResources(deviceResources []v2models.DeviceResource) []DeviceResource {
 	resources := make([]DeviceResource, len(deviceResources))
 	for i, r := range deviceResources {
 		resources[i] = DeviceResource{
@@ -107,7 +128,7 @@ const (
 	ResourceOperationSet = "set"
 )
 
-func toV1DeviceCommands(deviceCommands []models.DeviceCommand) []ProfileResource {
+func toV1DeviceCommands(deviceCommands []v2models.DeviceCommand) []ProfileResource {
 	commands := make([]ProfileResource, len(deviceCommands))
 	for i, c := range deviceCommands {
 		commands[i] = ProfileResource{
@@ -124,7 +145,7 @@ func toV1DeviceCommands(deviceCommands []models.DeviceCommand) []ProfileResource
 	return commands
 }
 
-func toV1Operation(op string, resourceOperations []models.ResourceOperation) []ResourceOperation {
+func toV1Operation(op string, resourceOperations []v2models.ResourceOperation) []ResourceOperation {
 	operations := make([]ResourceOperation, len(resourceOperations))
 	for i, ro := range resourceOperations {
 		valueMappings := ro.Mappings
@@ -149,7 +170,7 @@ func reverseMapKeyValue(mappings map[string]string) map[string]string {
 	return valueMappings
 }
 
-func toV1CoreCommand(v2DeviceResources []models.DeviceResource, v2DeviceCommands []models.DeviceCommand) []Command {
+func toV1CoreCommand(v2DeviceResources []v2models.DeviceResource, v2DeviceCommands []v2models.DeviceCommand) []Command {
 	var commands []Command
 
 	// Create v1 CoreCommands by v2DeviceCommands
@@ -183,10 +204,10 @@ func toV1CoreCommand(v2DeviceResources []models.DeviceResource, v2DeviceCommands
 			Name: resource.Name,
 		}
 		if strings.Contains(resource.Properties.ReadWrite, common.ReadWrite_R) {
-			v1Command.Get = toV1GetAction(resource.Name, []models.ResourceOperation{{DeviceResource: resource.Name}})
+			v1Command.Get = toV1GetAction(resource.Name, []v2models.ResourceOperation{{DeviceResource: resource.Name}})
 		}
 		if strings.Contains(resource.Properties.ReadWrite, common.ReadWrite_W) {
-			v1Command.Put = toV1PutAction(resource.Name, []models.ResourceOperation{{DeviceResource: resource.Name}})
+			v1Command.Put = toV1PutAction(resource.Name, []v2models.ResourceOperation{{DeviceResource: resource.Name}})
 		}
 		commands = append(commands, v1Command)
 	}
@@ -194,7 +215,7 @@ func toV1CoreCommand(v2DeviceResources []models.DeviceResource, v2DeviceCommands
 	return commands
 }
 
-func existFromV2DeviceCommands(resourceName string, v2DeviceCommands []models.DeviceCommand) bool {
+func existFromV2DeviceCommands(resourceName string, v2DeviceCommands []v2models.DeviceCommand) bool {
 	for _, cmd := range v2DeviceCommands {
 		if resourceName == cmd.Name {
 			return true
@@ -203,7 +224,7 @@ func existFromV2DeviceCommands(resourceName string, v2DeviceCommands []models.De
 	return false
 }
 
-func toV1GetAction(cmdName string, resourceOperations []models.ResourceOperation) Get {
+func toV1GetAction(cmdName string, resourceOperations []v2models.ResourceOperation) Get {
 	expectedValues := make([]string, len(resourceOperations))
 	for i, ro := range resourceOperations {
 		expectedValues[i] = ro.DeviceResource
@@ -224,7 +245,7 @@ func toV1GetAction(cmdName string, resourceOperations []models.ResourceOperation
 	return Get{Action: action}
 }
 
-func toV1PutAction(cmdName string, resourceOperations []models.ResourceOperation) Put {
+func toV1PutAction(cmdName string, resourceOperations []v2models.ResourceOperation) Put {
 	parameterNames := make([]string, len(resourceOperations))
 	for i, ro := range resourceOperations {
 		parameterNames[i] = ro.DeviceResource
@@ -248,13 +269,13 @@ func toV1PutAction(cmdName string, resourceOperations []models.ResourceOperation
 }
 
 // TransformProfileFromV1ToV2 transform v1 profile to v2
-func TransformProfileFromV1ToV2(profile DeviceProfile) (models.DeviceProfile, errors.EdgeX) {
+func TransformProfileFromV1ToV2(profile DeviceProfile) (v2models.DeviceProfile, errors.EdgeX) {
 	_, err := profile.Validate()
 	if err != nil {
-		return models.DeviceProfile{}, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v1 device profile", err)
+		return v2models.DeviceProfile{}, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v1 device profile", err)
 	}
 
-	v2dp := models.DeviceProfile{
+	v2dp := v2models.DeviceProfile{
 		ApiVersion:   common.ApiVersion,
 		Description:  profile.Description,
 		Name:         profile.Name,
@@ -264,7 +285,7 @@ func TransformProfileFromV1ToV2(profile DeviceProfile) (models.DeviceProfile, er
 	}
 	v2dp.DeviceResources, err = toV2DeviceResources(profile)
 	if err != nil {
-		return models.DeviceProfile{}, errors.NewCommonEdgeXWrapper(err)
+		return v2models.DeviceProfile{}, errors.NewCommonEdgeXWrapper(err)
 	}
 
 	v2dp.DeviceCommands = toV2DeviceCommands(profile.DeviceCommands)
@@ -279,7 +300,7 @@ func TransformProfileFromV1ToV2(profile DeviceProfile) (models.DeviceProfile, er
 	if err != nil {
 		return v2dp, errors.NewCommonEdgeX(errors.KindContractInvalid, "convert startingAddress from string to int for v2 failed", err)
 	}
-	v2dpDto := dtos.FromDeviceProfileModelToDTO(v2dp)
+	v2dpDto := v2dtos.FromDeviceProfileModelToDTO(v2dp)
 	err = v2dpDto.Validate()
 	if err != nil {
 		return v2dp, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v2 device profile after transforming from v1 to v2", err)
@@ -287,13 +308,13 @@ func TransformProfileFromV1ToV2(profile DeviceProfile) (models.DeviceProfile, er
 	return v2dp, nil
 }
 
-func TransformResourceFromV1ToV2(r DeviceResource) (models.DeviceResource, errors.EdgeX) {
-	v2dr := models.DeviceResource{
+func TransformResourceFromV1ToV2(r DeviceResource) (v2models.DeviceResource, errors.EdgeX) {
+	v2dr := v2models.DeviceResource{
 		Description: r.Description,
 		Name:        r.Name,
 		IsHidden:    false,
 		Tags:        toV2Tags(r.Tags),
-		Properties: models.ResourceProperties{
+		Properties: v2models.ResourceProperties{
 			// In go 1.18, function strings.Title has been deprecated.
 			// The alternative is to use the cases.Title function with the cases.NoLower option to get the same effect as strings.title.
 			ValueType:    cases.Title(language.English, cases.NoLower).String(strings.ToLower(r.Properties.Value.Type)),
@@ -313,7 +334,7 @@ func TransformResourceFromV1ToV2(r DeviceResource) (models.DeviceResource, error
 		Attributes: toV2Attributes(r.Attributes),
 	}
 
-	v2drDTO := dtos.FromDeviceResourceModelToDTO(v2dr)
+	v2drDTO := v2dtos.FromDeviceResourceModelToDTO(v2dr)
 	err := v2drDTO.Validate()
 	if err != nil {
 		return v2dr, errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid v2 device resource after transforming from v1 to v2", err)
@@ -322,8 +343,8 @@ func TransformResourceFromV1ToV2(r DeviceResource) (models.DeviceResource, error
 	return v2dr, nil
 }
 
-func toV2DeviceResources(profile DeviceProfile) ([]models.DeviceResource, errors.EdgeX) {
-	resources := make([]models.DeviceResource, len(profile.DeviceResources))
+func toV2DeviceResources(profile DeviceProfile) ([]v2models.DeviceResource, errors.EdgeX) {
+	resources := make([]v2models.DeviceResource, len(profile.DeviceResources))
 	for i, r := range profile.DeviceResources {
 		v2, err := TransformResourceFromV1ToV2(r)
 		if err != nil {
@@ -375,11 +396,11 @@ func toV2Attributes(attributes map[string]string) map[string]interface{} {
 	return dto
 }
 
-func toV2DeviceCommands(deviceCommands []ProfileResource) []models.DeviceCommand {
-	var commands []models.DeviceCommand
+func toV2DeviceCommands(deviceCommands []ProfileResource) []v2models.DeviceCommand {
+	var commands []v2models.DeviceCommand
 	for _, c := range deviceCommands {
 		if len(c.Get) > 0 && len(c.Set) > 0 && len(c.Get) == len(c.Set) {
-			command := models.DeviceCommand{
+			command := v2models.DeviceCommand{
 				Name:               c.Name,
 				IsHidden:           true,
 				ReadWrite:          common.ReadWrite_RW,
@@ -388,7 +409,7 @@ func toV2DeviceCommands(deviceCommands []ProfileResource) []models.DeviceCommand
 			commands = append(commands, command)
 
 		} else if len(c.Get) > 0 && len(c.Set) > 0 && len(c.Get) != len(c.Set) {
-			readCommand := models.DeviceCommand{
+			readCommand := v2models.DeviceCommand{
 				Name:               c.Name,
 				IsHidden:           true,
 				ReadWrite:          common.ReadWrite_R,
@@ -396,7 +417,7 @@ func toV2DeviceCommands(deviceCommands []ProfileResource) []models.DeviceCommand
 			}
 			commands = append(commands, readCommand)
 
-			writeCommand := models.DeviceCommand{
+			writeCommand := v2models.DeviceCommand{
 				Name:               v2SetCommandName(c.Name),
 				IsHidden:           true,
 				ReadWrite:          common.ReadWrite_W,
@@ -405,7 +426,7 @@ func toV2DeviceCommands(deviceCommands []ProfileResource) []models.DeviceCommand
 			commands = append(commands, writeCommand)
 
 		} else if len(c.Set) > 0 {
-			command := models.DeviceCommand{
+			command := v2models.DeviceCommand{
 				Name:               c.Name,
 				IsHidden:           true,
 				ReadWrite:          common.ReadWrite_W,
@@ -414,7 +435,7 @@ func toV2DeviceCommands(deviceCommands []ProfileResource) []models.DeviceCommand
 			commands = append(commands, command)
 
 		} else if len(c.Get) > 0 {
-			command := models.DeviceCommand{
+			command := v2models.DeviceCommand{
 				Name:               c.Name,
 				IsHidden:           true,
 				ReadWrite:          common.ReadWrite_R,
@@ -428,10 +449,10 @@ func toV2DeviceCommands(deviceCommands []ProfileResource) []models.DeviceCommand
 	return commands
 }
 
-func toV2ResourceOperations(readWrite string, v1ros []ResourceOperation) []models.ResourceOperation {
-	var v2ros []models.ResourceOperation
+func toV2ResourceOperations(readWrite string, v1ros []ResourceOperation) []v2models.ResourceOperation {
+	var v2ros []v2models.ResourceOperation
 	for _, v1ro := range v1ros {
-		v2ro := models.ResourceOperation{
+		v2ro := v2models.ResourceOperation{
 			DeviceResource: v1ro.DeviceResource,
 			DefaultValue:   v1ro.Parameter,
 			Mappings:       v1ro.Mappings,
@@ -466,7 +487,7 @@ func ConvertStartingAddressToOneBased(profile *DeviceProfile) errors.EdgeX {
 }
 
 // ConvertStartingAddressToZeroBased convert startingAddress attribute from one-based to zero-based when transforming from v1 to v2 profile
-func ConvertStartingAddressToZeroBased(profile *models.DeviceProfile) errors.EdgeX {
+func ConvertStartingAddressToZeroBased(profile *v2models.DeviceProfile) errors.EdgeX {
 	if len(profile.DeviceResources) == 0 {
 		return nil
 	}

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2022 IOTech Ltd
+// Copyright (C) 2020-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,10 +10,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -23,18 +23,21 @@ var testLabels = []string{"MODBUS", "TEMP"}
 var testAttributes = map[string]interface{}{
 	"TestAttribute": "TestAttributeValue",
 }
+var testTags = map[string]any{
+	"TestTagsKey": "TestTagsValue",
+}
 
 func profileData() DeviceProfileRequest {
 	var testDeviceResources = []dtos.DeviceResource{{
 		Name:        TestDeviceResourceName,
 		Description: TestDescription,
-		Tag:         TestTag1,
-		Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		Attributes:  testAttributes,
 		Properties: dtos.ResourceProperties{
 			ValueType: common.ValueTypeInt16,
 			ReadWrite: common.ReadWrite_RW,
 		},
+		Tags: testTags,
+		Tag:  TestTag1,
 	}}
 	var testDeviceCommands = []dtos.DeviceCommand{{
 		Name:      TestDeviceCommandName,
@@ -42,6 +45,7 @@ func profileData() DeviceProfileRequest {
 		ResourceOperations: []dtos.ResourceOperation{{
 			DeviceResource: TestDeviceResourceName,
 		}},
+		Tags: testTags,
 	}}
 	return DeviceProfileRequest{
 		BaseRequest: dtoCommon.BaseRequest{
@@ -73,13 +77,13 @@ var expectedDeviceProfile = models.DeviceProfile{
 	DeviceResources: []models.DeviceResource{{
 		Name:        TestDeviceResourceName,
 		Description: TestDescription,
-		Tag:         TestTag1,
-		Tags:        map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		Attributes:  testAttributes,
 		Properties: models.ResourceProperties{
 			ValueType: common.ValueTypeInt16,
 			ReadWrite: common.ReadWrite_RW,
 		},
+		Tags: testTags,
+		Tag:  TestTag1,
 	}},
 	DeviceCommands: []models.DeviceCommand{{
 		Name:      TestDeviceCommandName,
@@ -87,6 +91,7 @@ var expectedDeviceProfile = models.DeviceProfile{
 		ResourceOperations: []models.ResourceOperation{{
 			DeviceResource: TestDeviceResourceName,
 		}},
+		Tags: testTags,
 	}},
 }
 

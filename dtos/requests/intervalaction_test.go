@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -9,10 +9,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -90,7 +90,7 @@ func TestAddIntervalActionRequest_Validate(t *testing.T) {
 		{"valid AddIntervalActionRequest", valid, false},
 		{"valid AddIntervalActionRequest, no Request Id", noReqId, false},
 		{"valid AddIntervalActionRequest, interval name containing unreserved chars", intervalNameWithUnreservedChars, false},
-		{"invalid AddIntervalActionRequest, interval name containing reserved chars", intervalNameWithReservedChars, true},
+		{"valid AddIntervalActionRequest, interval name containing reserved chars", intervalNameWithReservedChars, false},
 		{"invalid AddIntervalActionRequest, Request Id is not an uuid", invalidReqId, true},
 		{"invalid AddIntervalActionRequest, no IntervalActionName", noIntervalActionName, true},
 		{"invalid AddIntervalActionRequest, no IntervalActionName", noIntervalName, true},
@@ -245,9 +245,9 @@ func TestUpdateIntervalActionRequest_Validate(t *testing.T) {
 
 func TestUpdateIntervalActionRequest_UnmarshalJSON_NilField(t *testing.T) {
 	reqJson := `{
-		"apiVersion" : "v2",
+		"apiVersion" : "v3",
         "requestId":"7a1707f0-166f-4c4b-bc9d-1d54c74e0137",
-		"action":{"apiVersion":"v2", "name":"TestIntervalAction", "intervalName": "afternoon"}
+		"action":{"apiVersion":"v3", "name":"TestIntervalAction", "intervalName": "afternoon"}
 	}`
 	var req UpdateIntervalActionRequest
 

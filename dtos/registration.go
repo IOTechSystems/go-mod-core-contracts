@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
 type Registration struct {

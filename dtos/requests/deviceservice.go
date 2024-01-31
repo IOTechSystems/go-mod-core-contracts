@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,16 +8,14 @@ package requests
 import (
 	"encoding/json"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
 // AddDeviceServiceRequest defines the Request Content for POST DeviceService DTO.
-// This object and its properties correspond to the AddDeviceServiceRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/AddDeviceServiceRequest
 type AddDeviceServiceRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	Service               dtos.DeviceService `json:"service"`
@@ -58,8 +56,6 @@ func AddDeviceServiceReqToDeviceServiceModels(addRequests []AddDeviceServiceRequ
 }
 
 // UpdateDeviceServiceRequest defines the Request Content for PUT event as pushed DTO.
-// This object and its properties correspond to the UpdateDeviceServiceRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/UpdateDeviceServiceRequest
 type UpdateDeviceServiceRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	Service               dtos.UpdateDeviceService `json:"service"`
@@ -94,12 +90,6 @@ func (ds *UpdateDeviceServiceRequest) UnmarshalJSON(b []byte) error {
 func ReplaceDeviceServiceModelFieldsWithDTO(ds *models.DeviceService, patch dtos.UpdateDeviceService) {
 	if patch.Description != nil {
 		ds.Description = *patch.Description
-	}
-	if patch.LastConnected != nil {
-		ds.LastConnected = *patch.LastConnected
-	}
-	if patch.LastReported != nil {
-		ds.LastReported = *patch.LastReported
 	}
 	if patch.AdminState != nil {
 		ds.AdminState = models.AdminState(*patch.AdminState)

@@ -1,5 +1,6 @@
 //
-// Copyright (C) 2020-2022 IOTech Ltd
+// Copyright (C) 2020-2023 IOTech Ltd
+// Copyright (C) 2023 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -9,27 +10,25 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	errs "errors"
 	"fmt"
 	"io"
 	"mime/multipart"
-	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"path"
 	"path/filepath"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	commonDTO "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 
 	"github.com/google/uuid"
 )
 
 // FromContext allows for the retrieval of the specified key's value from the supplied Context.
 // If the value is not found, an empty string is returned.
-func FromContext(ctx context.Context, key interface{}) string {
+func FromContext(ctx context.Context, key any) string {
 	hdr, ok := ctx.Value(key).(string)
 	if !ok {
 		hdr = ""
@@ -57,16 +56,17 @@ func getBody(resp *http.Response) ([]byte, errors.EdgeX) {
 }
 
 // Helper method to make the request and return the response
-func makeRequest(req *http.Request) (*http.Response, errors.EdgeX) {
+func makeRequest(req *http.Request, authInjector interfaces.AuthenticationInjector) (*http.Response, errors.EdgeX) {
+	if authInjector != nil {
+		if err := authInjector.AddAuthenticationData(req); err != nil {
+			return nil, errors.NewCommonEdgeXWrapper(err)
+		}
+	}
+
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		var netErr *net.OpError
-		if errs.As(err, &netErr) {
-			return nil, errors.NewCommonEdgeX(errors.KindServiceUnavailable, fmt.Sprintf("%s cannot be reached, this service is not available.", req.URL.Host), err)
-		} else {
-			return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to send a http request", err)
-		}
+		return nil, errors.NewCommonEdgeX(errors.KindServiceUnavailable, "failed to send a http request", err)
 	}
 	if resp == nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "the response should not be a nil", nil)
@@ -75,16 +75,14 @@ func makeRequest(req *http.Request) (*http.Response, errors.EdgeX) {
 }
 
 func createRequest(ctx context.Context, httpMethod string, baseUrl string, requestPath string, requestParams url.Values) (*http.Request, errors.EdgeX) {
-	u, err := url.Parse(baseUrl)
+	u, err := parseBaseUrlAndRequestPath(baseUrl, requestPath)
 	if err != nil {
-		return nil, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse baseUrl", err)
+		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to parse baseUrl and requestPath", err)
 	}
-	u.Path = path.Join(u.Path, requestPath)
 	if requestParams != nil {
 		u.RawQuery = requestParams.Encode()
 	}
-
-	req, err := http.NewRequest(httpMethod, edgeXClientReqURI(u), nil)
+	req, err := http.NewRequest(httpMethod, u.String(), nil)
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to create a http request", err)
 	}
@@ -94,11 +92,10 @@ func createRequest(ctx context.Context, httpMethod string, baseUrl string, reque
 }
 
 func createRequestWithRawDataAndParams(ctx context.Context, httpMethod string, baseUrl string, requestPath string, requestParams url.Values, data interface{}) (*http.Request, errors.EdgeX) {
-	u, err := url.Parse(baseUrl)
+	u, err := parseBaseUrlAndRequestPath(baseUrl, requestPath)
 	if err != nil {
-		return nil, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse baseUrl", err)
+		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to parse baseUrl and requestPath", err)
 	}
-	u.Path = path.Join(u.Path, requestPath)
 	if requestParams != nil {
 		u.RawQuery = requestParams.Encode()
 	}
@@ -112,7 +109,7 @@ func createRequestWithRawDataAndParams(ctx context.Context, httpMethod string, b
 		content = common.ContentTypeJSON
 	}
 
-	req, err := http.NewRequest(httpMethod, edgeXClientReqURI(u), bytes.NewReader(jsonEncodedData))
+	req, err := http.NewRequest(httpMethod, u.String(), bytes.NewReader(jsonEncodedData))
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to create a http request", err)
 	}
@@ -122,11 +119,10 @@ func createRequestWithRawDataAndParams(ctx context.Context, httpMethod string, b
 }
 
 func createRequestWithRawData(ctx context.Context, httpMethod string, baseUrl string, requestPath string, requestParams url.Values, data interface{}) (*http.Request, errors.EdgeX) {
-	u, err := url.Parse(baseUrl)
+	u, err := parseBaseUrlAndRequestPath(baseUrl, requestPath)
 	if err != nil {
-		return nil, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse baseUrl", err)
+		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to parse baseUrl and requestPath", err)
 	}
-	u.Path = path.Join(u.Path, requestPath)
 	if requestParams != nil {
 		u.RawQuery = requestParams.Encode()
 	}
@@ -141,7 +137,7 @@ func createRequestWithRawData(ctx context.Context, httpMethod string, baseUrl st
 		content = common.ContentTypeJSON
 	}
 
-	req, err := http.NewRequest(httpMethod, edgeXClientReqURI(u), bytes.NewReader(jsonEncodedData))
+	req, err := http.NewRequest(httpMethod, u.String(), bytes.NewReader(jsonEncodedData))
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to create a http request", err)
 	}
@@ -151,18 +147,17 @@ func createRequestWithRawData(ctx context.Context, httpMethod string, baseUrl st
 }
 
 func createRequestWithEncodedData(ctx context.Context, httpMethod string, baseUrl string, requestPath string, data []byte, encoding string) (*http.Request, errors.EdgeX) {
-	u, err := url.Parse(baseUrl)
+	u, err := parseBaseUrlAndRequestPath(baseUrl, requestPath)
 	if err != nil {
-		return nil, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse baseUrl", err)
+		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to parse baseUrl and requestPath", err)
 	}
-	u.Path = path.Join(u.Path, requestPath)
 
 	content := encoding
 	if content == "" {
 		content = FromContext(ctx, common.ContentType)
 	}
 
-	req, err := http.NewRequest(httpMethod, edgeXClientReqURI(u), bytes.NewReader(data))
+	req, err := http.NewRequest(httpMethod, u.String(), bytes.NewReader(data))
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to create a http request", err)
 	}
@@ -173,11 +168,10 @@ func createRequestWithEncodedData(ctx context.Context, httpMethod string, baseUr
 
 // createRequestFromFilePath creates multipart/form-data request with the specified file
 func createRequestFromFilePath(ctx context.Context, httpMethod string, baseUrl string, requestPath string, filePath string) (*http.Request, errors.EdgeX) {
-	u, err := url.Parse(baseUrl)
+	u, err := parseBaseUrlAndRequestPath(baseUrl, requestPath)
 	if err != nil {
-		return nil, errors.NewCommonEdgeX(errors.KindServerError, "fail to parse baseUrl", err)
+		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to parse baseUrl and requestPath", err)
 	}
-	u.Path = path.Join(u.Path, requestPath)
 
 	fileContents, err := os.ReadFile(filePath)
 	if err != nil {
@@ -196,7 +190,7 @@ func createRequestFromFilePath(ctx context.Context, httpMethod string, baseUrl s
 	}
 	writer.Close()
 
-	req, err := http.NewRequest(httpMethod, edgeXClientReqURI(u), body)
+	req, err := http.NewRequest(httpMethod, u.String(), body)
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to create a http request", err)
 	}
@@ -207,8 +201,8 @@ func createRequestFromFilePath(ctx context.Context, httpMethod string, baseUrl s
 
 // sendRequest will make a request with raw data to the specified URL.
 // It returns the body as a byte array if successful and an error otherwise.
-func sendRequest(ctx context.Context, req *http.Request) ([]byte, errors.EdgeX) {
-	resp, err := makeRequest(req)
+func sendRequest(ctx context.Context, req *http.Request, authInjector interfaces.AuthenticationInjector) ([]byte, errors.EdgeX) {
+	resp, err := makeRequest(req, authInjector)
 	if err != nil {
 		return nil, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -224,14 +218,25 @@ func sendRequest(ctx context.Context, req *http.Request) ([]byte, errors.EdgeX) 
 	}
 
 	// Handle error response
-	if !json.Valid(bodyBytes) {
-		return nil, errors.NewCommonEdgeX(errors.KindMapping(resp.StatusCode), fmt.Sprintf("request failed on %s, status code: %d, err: %s", req.URL, resp.StatusCode, string(bodyBytes)), nil)
-	}
-	var errResponse commonDTO.BaseResponse
-	e := json.Unmarshal(bodyBytes, &errResponse)
-	if e != nil {
-		return nil, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to decode the error response: %s", string(bodyBytes)), e)
-	}
+	msg := fmt.Sprintf("request failed, status code: %d, err: %s", resp.StatusCode, string(bodyBytes))
+	errKind := errors.KindMapping(resp.StatusCode)
+	return nil, errors.NewCommonEdgeX(errKind, msg, nil)
+}
 
-	return nil, errors.NewCommonEdgeX(errors.KindMapping(errResponse.StatusCode), errResponse.Message, nil)
+// EscapeAndJoinPath escape and join the path variables
+func EscapeAndJoinPath(apiRoutePath string, pathVariables ...string) string {
+	elements := make([]string, len(pathVariables)+1)
+	elements[0] = apiRoutePath // we don't need to escape the route path like /device, /reading, ...,etc.
+	for i, e := range pathVariables {
+		elements[i+1] = common.URLEncode(e)
+	}
+	return path.Join(elements...)
+}
+
+func parseBaseUrlAndRequestPath(baseUrl, requestPath string) (*url.URL, error) {
+	fullPath, err := url.JoinPath(baseUrl, requestPath)
+	if err != nil {
+		return nil, err
+	}
+	return url.Parse(fullPath)
 }

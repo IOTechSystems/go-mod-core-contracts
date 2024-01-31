@@ -6,6 +6,7 @@
 package dtos
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -14,42 +15,34 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	edgexErrors "github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	edgexErrors "github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
-// BaseReading and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.1.0#/BaseReading
 type BaseReading struct {
-	Id            string                 `json:"id,omitempty"`
-	Origin        int64                  `json:"origin" validate:"required"`
-	DeviceName    string                 `json:"deviceName" validate:"required,edgex-dto-none-empty-string"`
-	ResourceName  string                 `json:"resourceName" validate:"required,edgex-dto-none-empty-string"`
-	ProfileName   string                 `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
-	ValueType     string                 `json:"valueType" validate:"required,edgex-dto-value-type"`
-	Units         string                 `json:"units,omitempty"`
-	Tags          map[string]interface{} `json:"tags,omitempty" xml:"-"` // Have to ignore since map not supported for XML
+	Id            string `json:"id,omitempty"`
+	Origin        int64  `json:"origin" validate:"required"`
+	DeviceName    string `json:"deviceName" validate:"required,edgex-dto-none-empty-string"`
+	ResourceName  string `json:"resourceName" validate:"required,edgex-dto-none-empty-string"`
+	ProfileName   string `json:"profileName" validate:"required,edgex-dto-none-empty-string"`
+	ValueType     string `json:"valueType" validate:"required,edgex-dto-value-type"`
+	Units         string `json:"units,omitempty"`
+	Tags          Tags   `json:"tags,omitempty"`
 	BinaryReading `json:",inline" validate:"-"`
 	SimpleReading `json:",inline" validate:"-"`
 	ObjectReading `json:",inline" validate:"-"`
 }
 
-// SimpleReading and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.1.0#/SimpleReading
 type SimpleReading struct {
 	Value string `json:"value"`
 }
 
-// BinaryReading and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.1.0#/BinaryReading
 type BinaryReading struct {
 	BinaryValue []byte `json:"binaryValue,omitempty" validate:"gt=0,required"`
 	MediaType   string `json:"mediaType,omitempty" validate:"required"`
 }
 
-// ObjectReading and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.1.0#/ObjectReading
 type ObjectReading struct {
 	ObjectValue interface{} `json:"objectValue,omitempty" validate:"required"`
 }
@@ -92,15 +85,6 @@ func NewBinaryReading(profileName string, deviceName string, resourceName string
 // NewObjectReading creates and returns a new initialized BaseReading with its ObjectReading initialized
 func NewObjectReading(profileName string, deviceName string, resourceName string, objectValue interface{}) BaseReading {
 	reading := newBaseReading(profileName, deviceName, resourceName, common.ValueTypeObject)
-	reading.ObjectReading = ObjectReading{
-		ObjectValue: objectValue,
-	}
-	return reading
-}
-
-// NewObjectArrayReading creates and returns a new initialized BaseReading with its ObjectArrayReading initialized
-func NewObjectArrayReading(profileName string, deviceName string, resourceName string, objectValue interface{}) BaseReading {
-	reading := newBaseReading(profileName, deviceName, resourceName, common.ValueTypeObjectArray)
 	reading.ObjectReading = ObjectReading{
 		ObjectValue: objectValue,
 	}
@@ -301,7 +285,7 @@ func (b BaseReading) Validate() error {
 	return nil
 }
 
-// Convert Reading DTO to Reading model
+// ToReadingModel converts Reading DTO to Reading Model
 func ToReadingModel(r BaseReading) models.Reading {
 	var readingModel models.Reading
 	br := models.BaseReading{
@@ -423,9 +407,10 @@ func parseSimpleValue(valueType string, value string) (err error) {
 }
 
 func parseArrayValue(valueType string, value string) (err error) {
-	arrayValue := strings.Split(value[1:len(value)-1], ", ") // trim "[" and "]"
+	arrayValue := strings.Split(value[1:len(value)-1], ",") // trim "[" and "]"
 
 	for _, v := range arrayValue {
+		v = strings.TrimSpace(v)
 		switch valueType {
 		case common.ValueTypeBoolArray:
 			err = parseSimpleValue(common.ValueTypeBool, v)
@@ -459,4 +444,37 @@ func parseArrayValue(valueType string, value string) (err error) {
 		}
 	}
 	return nil
+}
+
+// UnmarshalObjectValue is a helper function used to unmarshal the ObjectValue of a reading to the passed in target type.
+// Note that this function will only work on readings with 'Object' valueType.  An error will be returned when invoking
+// this function on a reading with valueType other than 'Object'.
+func (b BaseReading) UnmarshalObjectValue(target any) error {
+	if b.ValueType == common.ValueTypeObject {
+		// marshal the current reading ObjectValue to JSON
+		jsonEncodedData, err := json.Marshal(b.ObjectValue)
+		if err != nil {
+			return edgexErrors.NewCommonEdgeX(edgexErrors.KindContractInvalid, "failed to encode the object value of reading to JSON", err)
+		}
+		// unmarshal the JSON into the passed in target
+		err = json.Unmarshal(jsonEncodedData, target)
+		if err != nil {
+			return edgexErrors.NewCommonEdgeX(edgexErrors.KindContractInvalid, fmt.Sprintf("failed to unmarshall the object value of reading into type %v", reflect.TypeOf(target).String()), err)
+		}
+	} else {
+		return edgexErrors.NewCommonEdgeX(edgexErrors.KindContractInvalid, fmt.Sprintf("invalid usage of UnmarshalObjectValue function invocation on reading with %v valueType", b.ValueType), nil)
+	}
+
+	return nil
+}
+
+// Central
+
+// NewObjectArrayReading creates and returns a new initialized BaseReading with its ObjectArrayReading initialized
+func NewObjectArrayReading(profileName string, deviceName string, resourceName string, objectValue interface{}) BaseReading {
+	reading := newBaseReading(profileName, deviceName, resourceName, common.ValueTypeObjectArray)
+	reading.ObjectReading = ObjectReading{
+		ObjectValue: objectValue,
+	}
+	return reading
 }

@@ -7,23 +7,13 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
-	"path"
-
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
 
 	"github.com/pelletier/go-toml/v2"
-)
 
-// EscapeAndJoinPath escape and join the path variables
-func EscapeAndJoinPath(apiRoutePath string, pathVariables ...string) string {
-	elements := make([]string, len(pathVariables)+1)
-	elements[0] = apiRoutePath // we don't need to escape the route path like /device, /reading, ...,etc.
-	for i, e := range pathVariables {
-		elements[i+1] = url.PathEscape(e)
-	}
-	return path.Join(elements...)
-}
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+)
 
 // edgeXClientReqURI returns the non-encoded path?query that would be used in an HTTP request for u.
 func edgeXClientReqURI(u *url.URL) string {
@@ -34,14 +24,14 @@ func edgeXClientReqURI(u *url.URL) string {
 	return result
 }
 
-// XpertGetRequest makes the get request and return the body
-func XpertGetRequest(ctx context.Context, returnValuePointer interface{}, baseUrl string, requestPath string, requestParams url.Values) errors.EdgeX {
+// CentralGetRequest makes the get request and return the body
+func CentralGetRequest(ctx context.Context, returnValuePointer interface{}, baseUrl string, requestPath string, requestParams url.Values, authInjector interfaces.AuthenticationInjector) errors.EdgeX {
 	req, edgexErr := createRequest(ctx, http.MethodGet, baseUrl, requestPath, requestParams)
 	if edgexErr != nil {
 		return errors.NewCommonEdgeXWrapper(edgexErr)
 	}
 
-	res, edgexErr := sendRequest(ctx, req)
+	res, edgexErr := sendRequest(ctx, req, authInjector)
 	if edgexErr != nil {
 		return errors.NewCommonEdgeXWrapper(edgexErr)
 	}

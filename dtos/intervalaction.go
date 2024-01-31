@@ -6,20 +6,19 @@
 package dtos
 
 import (
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
-// IntervalAction and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/support-scheduler/2.1.0#/IntervalAction
 type IntervalAction struct {
 	DBTimestamp  `json:",inline"`
 	Id           string  `json:"id,omitempty" validate:"omitempty,uuid"`
-	Name         string  `json:"name" validate:"edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	IntervalName string  `json:"intervalName" validate:"edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	Name         string  `json:"name" validate:"edgex-dto-none-empty-string"`
+	IntervalName string  `json:"intervalName" validate:"edgex-dto-none-empty-string"`
 	Address      Address `json:"address" validate:"required"`
 	Content      string  `json:"content,omitempty"`
 	ContentType  string  `json:"contentType,omitempty"`
 	AdminState   string  `json:"adminState" validate:"oneof='LOCKED' 'UNLOCKED'"`
+	AuthMethod   string  `json:"authMethod" validate:"oneof='' 'NONE' 'JWT'"`
 }
 
 // NewIntervalAction creates intervalAction DTO with required fields
@@ -32,16 +31,15 @@ func NewIntervalAction(name string, intervalName string, address Address) Interv
 	}
 }
 
-// UpdateIntervalAction and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/support-scheduler/2.1.0#/UpdateIntervalAction
 type UpdateIntervalAction struct {
 	Id           *string  `json:"id" validate:"required_without=Name,edgex-dto-uuid"`
-	Name         *string  `json:"name" validate:"required_without=Id,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
-	IntervalName *string  `json:"intervalName" validate:"omitempty,edgex-dto-none-empty-string,edgex-dto-rfc3986-unreserved-chars"`
+	Name         *string  `json:"name" validate:"required_without=Id,edgex-dto-none-empty-string"`
+	IntervalName *string  `json:"intervalName" validate:"omitempty,edgex-dto-none-empty-string"`
 	Content      *string  `json:"content"`
 	ContentType  *string  `json:"contentType"`
 	Address      *Address `json:"address"`
 	AdminState   *string  `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
+	AuthMethod   *string  `json:"authMethod" validate:"omitempty,oneof='' 'NONE' 'JWT'"`
 }
 
 // NewUpdateIntervalAction creates updateIntervalAction DTO with required field
@@ -59,6 +57,7 @@ func ToIntervalActionModel(dto IntervalAction) models.IntervalAction {
 	model.ContentType = dto.ContentType
 	model.Address = ToAddressModel(dto.Address)
 	model.AdminState = models.AdminState(dto.AdminState)
+	model.AuthMethod = models.AuthMethod(dto.AuthMethod)
 	return model
 }
 
@@ -73,5 +72,6 @@ func FromIntervalActionModelToDTO(model models.IntervalAction) IntervalAction {
 	dto.ContentType = model.ContentType
 	dto.Address = FromAddressModelToDTO(model.Address)
 	dto.AdminState = string(model.AdminState)
+	dto.AuthMethod = string(model.AuthMethod)
 	return dto
 }

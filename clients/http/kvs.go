@@ -8,23 +8,25 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/interfaces"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/http/utils"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 // KVSClient is the REST client for invoking the key-value APIs(/kvs/*) from Core Keeper
 type KVSClient struct {
-	baseUrl string
+	baseUrl      string
+	authInjector interfaces.AuthenticationInjector
 }
 
 // NewKVSClient creates an instance of KVSClient
-func NewKVSClient(baseUrl string) interfaces.KVSClient {
+func NewKVSClient(baseUrl string, authInjector interfaces.AuthenticationInjector) interfaces.KVSClient {
 	return &KVSClient{
-		baseUrl: baseUrl,
+		baseUrl:      baseUrl,
+		authInjector: authInjector,
 	}
 }
 
@@ -34,7 +36,7 @@ func (kc KVSClient) UpdateValuesByKey(ctx context.Context, key string, req reque
 	path := utils.EscapeAndJoinPath(common.ApiKVSRoute, common.Key, key)
 	queryParams := url.Values{}
 	queryParams.Set(common.Flatten, common.ValueTrue)
-	err = utils.PutRequest(ctx, &res, kc.baseUrl, path, queryParams, req)
+	err = utils.PutRequest(ctx, &res, kc.baseUrl, path, queryParams, req, kc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -46,7 +48,7 @@ func (kc KVSClient) ValuesByKey(ctx context.Context, key string) (res responses.
 	path := utils.EscapeAndJoinPath(common.ApiKVSRoute, common.Key, key)
 	queryParams := url.Values{}
 	queryParams.Set(common.Plaintext, common.ValueTrue)
-	err = utils.GetRequest(ctx, &res, kc.baseUrl, path, queryParams)
+	err = utils.GetRequest(ctx, &res, kc.baseUrl, path, queryParams, kc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -58,7 +60,7 @@ func (kc KVSClient) ListKeys(ctx context.Context, key string) (res responses.Key
 	path := utils.EscapeAndJoinPath(common.ApiKVSRoute, common.Key, key)
 	queryParams := url.Values{}
 	queryParams.Set(common.KeyOnly, common.ValueTrue)
-	err = utils.GetRequest(ctx, &res, kc.baseUrl, path, queryParams)
+	err = utils.GetRequest(ctx, &res, kc.baseUrl, path, queryParams, kc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -68,7 +70,7 @@ func (kc KVSClient) ListKeys(ctx context.Context, key string) (res responses.Key
 // DeleteKey deletes the specified key.
 func (kc KVSClient) DeleteKey(ctx context.Context, key string) (res responses.KeysResponse, err errors.EdgeX) {
 	path := utils.EscapeAndJoinPath(common.ApiKVSRoute, common.Key, key)
-	err = utils.DeleteRequest(ctx, &res, kc.baseUrl, path)
+	err = utils.DeleteRequest(ctx, &res, kc.baseUrl, path, kc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -80,7 +82,7 @@ func (kc KVSClient) DeleteKeysByPrefix(ctx context.Context, key string) (res res
 	path := utils.EscapeAndJoinPath(common.ApiKVSRoute, common.Key, key)
 	queryParams := url.Values{}
 	queryParams.Set("prefixMatch", common.ValueTrue)
-	err = utils.DeleteRequestWithParams(ctx, &res, kc.baseUrl, path, queryParams)
+	err = utils.DeleteRequestWithParams(ctx, &res, kc.baseUrl, path, queryParams, kc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}

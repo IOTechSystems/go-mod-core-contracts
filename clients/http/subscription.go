@@ -1,5 +1,6 @@
 //
 // Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2023 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,31 +9,36 @@ package http
 import (
 	"context"
 	"net/url"
+	"path"
 	"strconv"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/interfaces"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/http/utils"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 type SubscriptionClient struct {
-	baseUrl string
+	baseUrl               string
+	authInjector          interfaces.AuthenticationInjector
+	enableNameFieldEscape bool
 }
 
 // NewSubscriptionClient creates an instance of SubscriptionClient
-func NewSubscriptionClient(baseUrl string) interfaces.SubscriptionClient {
+func NewSubscriptionClient(baseUrl string, authInjector interfaces.AuthenticationInjector, enableNameFieldEscape bool) interfaces.SubscriptionClient {
 	return &SubscriptionClient{
-		baseUrl: baseUrl,
+		baseUrl:               baseUrl,
+		authInjector:          authInjector,
+		enableNameFieldEscape: enableNameFieldEscape,
 	}
 }
 
 // Add adds new subscriptions.
 func (client *SubscriptionClient) Add(ctx context.Context, reqs []requests.AddSubscriptionRequest) (res []dtoCommon.BaseWithIdResponse, err errors.EdgeX) {
-	err = utils.PostRequestWithRawData(ctx, &res, client.baseUrl, common.ApiSubscriptionRoute, nil, reqs)
+	err = utils.PostRequestWithRawData(ctx, &res, client.baseUrl, common.ApiSubscriptionRoute, nil, reqs, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -41,7 +47,7 @@ func (client *SubscriptionClient) Add(ctx context.Context, reqs []requests.AddSu
 
 // Update updates subscriptions.
 func (client *SubscriptionClient) Update(ctx context.Context, reqs []requests.UpdateSubscriptionRequest) (res []dtoCommon.BaseResponse, err errors.EdgeX) {
-	err = utils.PatchRequest(ctx, &res, client.baseUrl, common.ApiSubscriptionRoute, nil, reqs)
+	err = utils.PatchRequest(ctx, &res, client.baseUrl, common.ApiSubscriptionRoute, nil, reqs, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -53,7 +59,7 @@ func (client *SubscriptionClient) AllSubscriptions(ctx context.Context, offset i
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
-	err = utils.GetRequest(ctx, &res, client.baseUrl, common.ApiAllSubscriptionRoute, requestParams)
+	err = utils.GetRequest(ctx, &res, client.baseUrl, common.ApiAllSubscriptionRoute, requestParams, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -62,11 +68,11 @@ func (client *SubscriptionClient) AllSubscriptions(ctx context.Context, offset i
 
 // SubscriptionsByCategory queries subscriptions with category, offset and limit
 func (client *SubscriptionClient) SubscriptionsByCategory(ctx context.Context, category string, offset int, limit int) (res responses.MultiSubscriptionsResponse, err errors.EdgeX) {
-	requestPath := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Category, category)
+	requestPath := path.Join(common.ApiSubscriptionRoute, common.Category, category)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
-	err = utils.GetRequest(ctx, &res, client.baseUrl, requestPath, requestParams)
+	err = utils.GetRequest(ctx, &res, client.baseUrl, requestPath, requestParams, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -75,11 +81,11 @@ func (client *SubscriptionClient) SubscriptionsByCategory(ctx context.Context, c
 
 // SubscriptionsByLabel queries subscriptions with label, offset and limit
 func (client *SubscriptionClient) SubscriptionsByLabel(ctx context.Context, label string, offset int, limit int) (res responses.MultiSubscriptionsResponse, err errors.EdgeX) {
-	requestPath := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Label, label)
+	requestPath := path.Join(common.ApiSubscriptionRoute, common.Label, label)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
-	err = utils.GetRequest(ctx, &res, client.baseUrl, requestPath, requestParams)
+	err = utils.GetRequest(ctx, &res, client.baseUrl, requestPath, requestParams, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -88,11 +94,11 @@ func (client *SubscriptionClient) SubscriptionsByLabel(ctx context.Context, labe
 
 // SubscriptionsByReceiver queries subscriptions with receiver, offset and limit
 func (client *SubscriptionClient) SubscriptionsByReceiver(ctx context.Context, receiver string, offset int, limit int) (res responses.MultiSubscriptionsResponse, err errors.EdgeX) {
-	requestPath := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Receiver, receiver)
+	requestPath := path.Join(common.ApiSubscriptionRoute, common.Receiver, receiver)
 	requestParams := url.Values{}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
-	err = utils.GetRequest(ctx, &res, client.baseUrl, requestPath, requestParams)
+	err = utils.GetRequest(ctx, &res, client.baseUrl, requestPath, requestParams, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -101,8 +107,9 @@ func (client *SubscriptionClient) SubscriptionsByReceiver(ctx context.Context, r
 
 // SubscriptionByName query subscription by name.
 func (client *SubscriptionClient) SubscriptionByName(ctx context.Context, name string) (res responses.SubscriptionResponse, err errors.EdgeX) {
-	path := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Name, name)
-	err = utils.GetRequest(ctx, &res, client.baseUrl, path, nil)
+	path := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
+		SetPath(common.ApiSubscriptionRoute).SetPath(common.Name).SetNameFieldPath(name).BuildPath()
+	err = utils.GetRequest(ctx, &res, client.baseUrl, path, nil, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -111,8 +118,9 @@ func (client *SubscriptionClient) SubscriptionByName(ctx context.Context, name s
 
 // DeleteSubscriptionByName deletes a subscription by name.
 func (client *SubscriptionClient) DeleteSubscriptionByName(ctx context.Context, name string) (res dtoCommon.BaseResponse, err errors.EdgeX) {
-	path := utils.EscapeAndJoinPath(common.ApiSubscriptionRoute, common.Name, name)
-	err = utils.DeleteRequest(ctx, &res, client.baseUrl, path)
+	path := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
+		SetPath(common.ApiSubscriptionRoute).SetPath(common.Name).SetNameFieldPath(name).BuildPath()
+	err = utils.DeleteRequest(ctx, &res, client.baseUrl, path, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}

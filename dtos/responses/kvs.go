@@ -5,8 +5,8 @@
 package responses
 
 import (
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
 // MultiKVResponse defines the Response Content for GET Keys of core-keeper (GET /kvs/key/{key} API).

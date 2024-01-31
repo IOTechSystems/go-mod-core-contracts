@@ -22,12 +22,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 )
 
 var expectedApiVersion = common.ApiVersion
 var expectedType = common.DeviceSystemEventType
-var expectedAction = common.DeviceSystemEventActionAdd
+var expectedAction = common.SystemEventActionAdd
 var expectedSoonerTimestamp = time.Now().UnixNano()
 var expectedSource = "core-metadata"
 var expectedOwner = "device-onvif-camera"

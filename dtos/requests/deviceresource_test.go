@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2022 IOTech Ltd
+// Copyright (C) 2022-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -9,10 +9,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,12 +27,12 @@ var testDeviceResource = AddDeviceResourceRequest{
 	Resource: dtos.DeviceResource{
 		Name:        TestDeviceCommandName,
 		Description: TestDescription,
-		Tag:         TestTag1,
 		Attributes:  testAttributes,
 		Properties: dtos.ResourceProperties{
 			ValueType: common.ValueTypeInt16,
 			ReadWrite: common.ReadWrite_RW,
 		},
+		Tag: TestTag1,
 	},
 }
 
@@ -147,7 +147,7 @@ func TestUpdateDeviceResourceRequest_Validate(t *testing.T) {
 
 func TestUpdateDeviceResourceRequest_UnmarshalJSON_NilField(t *testing.T) {
 	reqJson := `{
-	    "apiVersion" : "v2",
+	    "apiVersion" : "v3",
         "requestId":"7a1707f0-166f-4c4b-bc9d-1d54c74e0137",
         "profileName": "TestProfile",
 		"resource":{"name":"TestResource"}
@@ -166,12 +166,12 @@ func TestReplaceDeviceResourceModelFieldsWithDTO(t *testing.T) {
 	resource := models.DeviceResource{
 		Name:        TestDeviceResourceName,
 		Description: emptyString,
-		Tag:         emptyString,
 		Attributes:  testAttributes,
 		Properties: models.ResourceProperties{
 			ValueType: common.ValueTypeInt16,
 			ReadWrite: common.ReadWrite_R,
 		},
+		Tags: testTags,
 	}
 
 	patch := mockUpdateDeviceResourceDTO()
@@ -179,8 +179,8 @@ func TestReplaceDeviceResourceModelFieldsWithDTO(t *testing.T) {
 	ReplaceDeviceResourceModelFieldsWithDTO(&resource, patch)
 
 	assert.Equal(t, TestDescription, resource.Description)
-	assert.Equal(t, emptyString, resource.Tag)
 	assert.Equal(t, true, resource.IsHidden)
 	assert.Equal(t, testAttributes, resource.Attributes)
 	assert.Equal(t, common.ReadWrite_R, resource.Properties.ReadWrite)
+	assert.Equal(t, testTags, resource.Tags)
 }

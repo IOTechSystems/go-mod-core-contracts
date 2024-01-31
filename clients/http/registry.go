@@ -9,31 +9,35 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/interfaces"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/http/utils"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 var emptyResponse any
 
 // RegistryClient is the REST client for invoking the registry APIs(/registry/*) from Core Keeper
 type registryClient struct {
-	baseUrl string
+	baseUrl               string
+	authInjector          interfaces.AuthenticationInjector
+	enableNameFieldEscape bool
 }
 
 // NewRegistryClient creates an instance of RegistryClient
-func NewRegistryClient(baseUrl string) interfaces.RegistryClient {
+func NewRegistryClient(baseUrl string, authInjector interfaces.AuthenticationInjector, enableNameFieldEscape bool) interfaces.RegistryClient {
 	return &registryClient{
-		baseUrl: baseUrl,
+		baseUrl:               baseUrl,
+		authInjector:          authInjector,
+		enableNameFieldEscape: enableNameFieldEscape,
 	}
 }
 
 // Register registers a service instance
 func (rc *registryClient) Register(ctx context.Context, req requests.AddRegistrationRequest) errors.EdgeX {
-	err := utils.PostRequestWithRawData(ctx, &emptyResponse, rc.baseUrl, common.ApiRegisterRoute, nil, req)
+	err := utils.PostRequestWithRawData(ctx, &emptyResponse, rc.baseUrl, common.ApiRegisterRoute, nil, req, rc.authInjector)
 	if err != nil {
 		return errors.NewCommonEdgeXWrapper(err)
 	}
@@ -42,7 +46,7 @@ func (rc *registryClient) Register(ctx context.Context, req requests.AddRegistra
 
 // UpdateRegister updates the registration data of the service
 func (rc *registryClient) UpdateRegister(ctx context.Context, req requests.AddRegistrationRequest) errors.EdgeX {
-	err := utils.PutRequest(ctx, &emptyResponse, rc.baseUrl, common.ApiRegisterRoute, nil, req)
+	err := utils.PutRequest(ctx, &emptyResponse, rc.baseUrl, common.ApiRegisterRoute, nil, req, rc.authInjector)
 	if err != nil {
 		return errors.NewCommonEdgeXWrapper(err)
 	}
@@ -51,9 +55,10 @@ func (rc *registryClient) UpdateRegister(ctx context.Context, req requests.AddRe
 
 // RegistrationByServiceId returns the registration data by service id
 func (rc *registryClient) RegistrationByServiceId(ctx context.Context, serviceId string) (responses.RegistrationResponse, errors.EdgeX) {
-	requestPath := utils.EscapeAndJoinPath(common.ApiRegisterRoute, common.ServiceId, serviceId)
+	requestPath := common.NewPathBuilder().EnableNameFieldEscape(rc.enableNameFieldEscape).
+		SetPath(common.ApiRegisterRoute).SetPath(common.ServiceId).SetNameFieldPath(serviceId).BuildPath()
 	res := responses.RegistrationResponse{}
-	err := utils.GetRequest(ctx, &res, rc.baseUrl, requestPath, nil)
+	err := utils.GetRequest(ctx, &res, rc.baseUrl, requestPath, nil, rc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -66,7 +71,7 @@ func (rc *registryClient) AllRegistry(ctx context.Context, deregistered bool) (r
 	requestParams.Set(common.Deregistered, strconv.FormatBool(deregistered))
 
 	res := responses.MultiRegistrationsResponse{}
-	err := utils.GetRequest(ctx, &res, rc.baseUrl, common.ApiAllRegistrationsRoute, requestParams)
+	err := utils.GetRequest(ctx, &res, rc.baseUrl, common.ApiAllRegistrationsRoute, requestParams, rc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -75,8 +80,9 @@ func (rc *registryClient) AllRegistry(ctx context.Context, deregistered bool) (r
 
 // Deregister deregisters a service by service id
 func (rc *registryClient) Deregister(ctx context.Context, serviceId string) errors.EdgeX {
-	requestPath := utils.EscapeAndJoinPath(common.ApiRegisterRoute, common.ServiceId, serviceId)
-	err := utils.DeleteRequest(ctx, &emptyResponse, rc.baseUrl, requestPath)
+	requestPath := common.NewPathBuilder().EnableNameFieldEscape(rc.enableNameFieldEscape).
+		SetPath(common.ApiRegisterRoute).SetPath(common.ServiceId).SetNameFieldPath(serviceId).BuildPath()
+	err := utils.DeleteRequest(ctx, &emptyResponse, rc.baseUrl, requestPath, rc.authInjector)
 	if err != nil {
 		return errors.NewCommonEdgeXWrapper(err)
 	}

@@ -8,15 +8,13 @@ package interfaces
 import (
 	"context"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 type CommonClient interface {
 	// Configuration obtains configuration information from the target service.
 	Configuration(ctx context.Context) (common.ConfigResponse, errors.EdgeX)
-	// Metrics obtains metrics information from the target service.
-	Metrics(ctx context.Context) (common.MetricsResponse, errors.EdgeX)
 	// Ping tests whether the service is working
 	Ping(ctx context.Context) (common.PingResponse, errors.EdgeX)
 	// Version obtains version information from the target service.

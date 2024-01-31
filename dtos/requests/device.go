@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2020-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,16 +8,14 @@ package requests
 import (
 	"encoding/json"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
 // AddDeviceRequest defines the Request Content for POST Device DTO.
-// This object and its properties correspond to the AddDeviceRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/AddDeviceRequest
 type AddDeviceRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	Device                dtos.Device `json:"device"`
@@ -58,8 +56,6 @@ func AddDeviceReqToDeviceModels(addRequests []AddDeviceRequest) (Devices []model
 }
 
 // UpdateDeviceRequest defines the Request Content for PUT event as pushed DTO.
-// This object and its properties correspond to the UpdateDeviceRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/UpdateDeviceRequest
 type UpdateDeviceRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	Device                dtos.UpdateDevice `json:"device"`
@@ -101,12 +97,6 @@ func ReplaceDeviceModelFieldsWithDTO(device *models.Device, patch dtos.UpdateDev
 	if patch.OperatingState != nil {
 		device.OperatingState = models.OperatingState(*patch.OperatingState)
 	}
-	if patch.LastConnected != nil {
-		device.LastConnected = *patch.LastConnected
-	}
-	if patch.LastReported != nil {
-		device.LastReported = *patch.LastReported
-	}
 	if patch.ServiceName != nil {
 		device.ServiceName = *patch.ServiceName
 	}
@@ -119,20 +109,17 @@ func ReplaceDeviceModelFieldsWithDTO(device *models.Device, patch dtos.UpdateDev
 	if patch.Location != nil {
 		device.Location = patch.Location
 	}
-	if patch.Tags != nil {
-		device.Tags = patch.Tags
-	}
 	if patch.AutoEvents != nil {
 		device.AutoEvents = dtos.ToAutoEventModels(patch.AutoEvents)
 	}
 	if patch.Protocols != nil {
 		device.Protocols = dtos.ToProtocolModels(patch.Protocols)
 	}
+	if patch.Tags != nil {
+		device.Tags = patch.Tags
+	}
 	if patch.Properties != nil {
 		device.Properties = patch.Properties
-	}
-	if patch.Notify != nil {
-		device.Notify = *patch.Notify
 	}
 }
 

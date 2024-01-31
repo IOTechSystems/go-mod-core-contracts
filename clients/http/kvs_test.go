@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
 
 	"github.com/stretchr/testify/require"
 )
@@ -22,7 +22,7 @@ func TestUpdateValuesByKey(t *testing.T) {
 	ts := newTestServer(http.MethodPut, common.ApiKVSRoute+"/"+common.Key+"/"+TestKey, responses.KeysResponse{})
 	defer ts.Close()
 
-	client := NewKVSClient(ts.URL)
+	client := NewKVSClient(ts.URL, NewNullAuthenticationInjector())
 	res, err := client.UpdateValuesByKey(context.Background(), TestKey, requests.UpdateKeysRequest{})
 
 	require.NoError(t, err)
@@ -33,7 +33,7 @@ func TestValuesByKey(t *testing.T) {
 	ts := newTestServer(http.MethodGet, common.ApiKVSRoute+"/"+common.Key+"/"+TestKey, responses.MultiKeyValueResponse{})
 	defer ts.Close()
 
-	client := NewKVSClient(ts.URL)
+	client := NewKVSClient(ts.URL, NewNullAuthenticationInjector())
 	res, err := client.ValuesByKey(context.Background(), TestKey)
 
 	require.NoError(t, err)
@@ -44,7 +44,7 @@ func TestListKeys(t *testing.T) {
 	ts := newTestServer(http.MethodGet, common.ApiKVSRoute+"/"+common.Key+"/"+TestKey, responses.KeysResponse{})
 	defer ts.Close()
 
-	client := NewKVSClient(ts.URL)
+	client := NewKVSClient(ts.URL, NewNullAuthenticationInjector())
 	res, err := client.ListKeys(context.Background(), TestKey)
 
 	require.NoError(t, err)
@@ -55,7 +55,7 @@ func TestDeleteKeys(t *testing.T) {
 	ts := newTestServer(http.MethodDelete, common.ApiKVSRoute+"/"+common.Key+"/"+TestKey, responses.KeysResponse{})
 	defer ts.Close()
 
-	client := NewKVSClient(ts.URL)
+	client := NewKVSClient(ts.URL, NewNullAuthenticationInjector())
 	res, err := client.DeleteKey(context.Background(), TestKey)
 
 	require.NoError(t, err)
@@ -66,7 +66,7 @@ func TestDeleteKeysByPrefix(t *testing.T) {
 	ts := newTestServer(http.MethodDelete, common.ApiKVSRoute+"/"+common.Key+"/"+TestKey, responses.KeysResponse{})
 	defer ts.Close()
 
-	client := NewKVSClient(ts.URL)
+	client := NewKVSClient(ts.URL, NewNullAuthenticationInjector())
 	res, err := client.DeleteKeysByPrefix(context.Background(), TestKey)
 
 	require.NoError(t, err)

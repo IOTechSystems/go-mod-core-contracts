@@ -1,3 +1,9 @@
+//
+// Copyright (C) 2020-2021 Unknown author
+// Copyright (C) 2023 Intel Corporation
+//
+// SPDX-License-Identifier: Apache-2.0
+
 package http
 
 import (
@@ -6,29 +12,33 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/interfaces"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/http/utils"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 type DeviceServiceClient struct {
-	baseUrl string
+	baseUrl               string
+	authInjector          interfaces.AuthenticationInjector
+	enableNameFieldEscape bool
 }
 
 // NewDeviceServiceClient creates an instance of DeviceServiceClient
-func NewDeviceServiceClient(baseUrl string) interfaces.DeviceServiceClient {
+func NewDeviceServiceClient(baseUrl string, authInjector interfaces.AuthenticationInjector, enableNameFieldEscape bool) interfaces.DeviceServiceClient {
 	return &DeviceServiceClient{
-		baseUrl: baseUrl,
+		baseUrl:               baseUrl,
+		authInjector:          authInjector,
+		enableNameFieldEscape: enableNameFieldEscape,
 	}
 }
 
 func (dsc DeviceServiceClient) Add(ctx context.Context, reqs []requests.AddDeviceServiceRequest) (
 	res []dtoCommon.BaseWithIdResponse, err errors.EdgeX) {
-	err = utils.PostRequestWithRawData(ctx, &res, dsc.baseUrl, common.ApiDeviceServiceRoute, nil, reqs)
+	err = utils.PostRequestWithRawData(ctx, &res, dsc.baseUrl, common.ApiDeviceServiceRoute, nil, reqs, dsc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -37,7 +47,7 @@ func (dsc DeviceServiceClient) Add(ctx context.Context, reqs []requests.AddDevic
 
 func (dsc DeviceServiceClient) Update(ctx context.Context, reqs []requests.UpdateDeviceServiceRequest) (
 	res []dtoCommon.BaseResponse, err errors.EdgeX) {
-	err = utils.PatchRequest(ctx, &res, dsc.baseUrl, common.ApiDeviceServiceRoute, nil, reqs)
+	err = utils.PatchRequest(ctx, &res, dsc.baseUrl, common.ApiDeviceServiceRoute, nil, reqs, dsc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -52,7 +62,7 @@ func (dsc DeviceServiceClient) AllDeviceServices(ctx context.Context, labels []s
 	}
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
-	err = utils.GetRequest(ctx, &res, dsc.baseUrl, common.ApiAllDeviceServiceRoute, requestParams)
+	err = utils.GetRequest(ctx, &res, dsc.baseUrl, common.ApiAllDeviceServiceRoute, requestParams, dsc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -61,8 +71,9 @@ func (dsc DeviceServiceClient) AllDeviceServices(ctx context.Context, labels []s
 
 func (dsc DeviceServiceClient) DeviceServiceByName(ctx context.Context, name string) (
 	res responses.DeviceServiceResponse, err errors.EdgeX) {
-	path := utils.EscapeAndJoinPath(common.ApiDeviceServiceRoute, common.Name, name)
-	err = utils.GetRequest(ctx, &res, dsc.baseUrl, path, nil)
+	path := common.NewPathBuilder().EnableNameFieldEscape(dsc.enableNameFieldEscape).
+		SetPath(common.ApiDeviceServiceRoute).SetPath(common.Name).SetNameFieldPath(name).BuildPath()
+	err = utils.GetRequest(ctx, &res, dsc.baseUrl, path, nil, dsc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -71,8 +82,9 @@ func (dsc DeviceServiceClient) DeviceServiceByName(ctx context.Context, name str
 
 func (dsc DeviceServiceClient) DeleteByName(ctx context.Context, name string) (
 	res dtoCommon.BaseResponse, err errors.EdgeX) {
-	path := utils.EscapeAndJoinPath(common.ApiDeviceServiceRoute, common.Name, name)
-	err = utils.DeleteRequest(ctx, &res, dsc.baseUrl, path)
+	path := common.NewPathBuilder().EnableNameFieldEscape(dsc.enableNameFieldEscape).
+		SetPath(common.ApiDeviceServiceRoute).SetPath(common.Name).SetNameFieldPath(name).BuildPath()
+	err = utils.DeleteRequest(ctx, &res, dsc.baseUrl, path, dsc.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}

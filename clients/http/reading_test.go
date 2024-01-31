@@ -1,5 +1,6 @@
 //
 // Copyright (C) 2020-2021 IOTech Ltd
+// Copyright (C) 2023 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,23 +9,23 @@ package http
 import (
 	"context"
 	"net/http"
+	"path"
 	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
 )
 
 func TestQueryAllReadings(t *testing.T) {
 	ts := newTestServer(http.MethodGet, common.ApiAllReadingRoute, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
-	client := NewReadingClient(ts.URL)
+	client := NewReadingClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.AllReadings(context.Background(), 1, 10)
 	require.NoError(t, err)
 	assert.IsType(t, responses.MultiReadingsResponse{}, res)
@@ -34,7 +35,7 @@ func TestQueryReadingCount(t *testing.T) {
 	ts := newTestServer(http.MethodGet, common.ApiReadingCountRoute, dtoCommon.CountResponse{})
 	defer ts.Close()
 
-	client := NewReadingClient(ts.URL)
+	client := NewReadingClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.ReadingCount(context.Background())
 	require.NoError(t, err)
 	assert.IsType(t, dtoCommon.CountResponse{}, res)
@@ -42,11 +43,11 @@ func TestQueryReadingCount(t *testing.T) {
 
 func TestQueryReadingCountByDeviceName(t *testing.T) {
 	deviceName := "device"
-	path := utils.EscapeAndJoinPath(common.ApiReadingCountRoute, common.Device, common.Name, deviceName)
+	path := path.Join(common.ApiReadingCountRoute, common.Device, common.Name, deviceName)
 	ts := newTestServer(http.MethodGet, path, dtoCommon.CountResponse{})
 	defer ts.Close()
 
-	client := NewReadingClient(ts.URL)
+	client := NewReadingClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.ReadingCountByDeviceName(context.Background(), deviceName)
 	require.NoError(t, err)
 	require.IsType(t, dtoCommon.CountResponse{}, res)
@@ -54,11 +55,11 @@ func TestQueryReadingCountByDeviceName(t *testing.T) {
 
 func TestQueryReadingsByDeviceName(t *testing.T) {
 	deviceName := "device"
-	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.Device, common.Name, deviceName)
+	urlPath := path.Join(common.ApiReadingRoute, common.Device, common.Name, deviceName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
-	client := NewReadingClient(ts.URL)
+	client := NewReadingClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.ReadingsByDeviceName(context.Background(), deviceName, 1, 10)
 	require.NoError(t, err)
 	assert.IsType(t, responses.MultiReadingsResponse{}, res)
@@ -66,11 +67,11 @@ func TestQueryReadingsByDeviceName(t *testing.T) {
 
 func TestQueryReadingsByResourceName(t *testing.T) {
 	resourceName := "resource"
-	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.ResourceName, resourceName)
+	urlPath := path.Join(common.ApiReadingRoute, common.ResourceName, resourceName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
-	client := NewReadingClient(ts.URL)
+	client := NewReadingClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.ReadingsByResourceName(context.Background(), resourceName, 1, 10)
 	require.NoError(t, err)
 	assert.IsType(t, responses.MultiReadingsResponse{}, res)
@@ -79,11 +80,11 @@ func TestQueryReadingsByResourceName(t *testing.T) {
 func TestQueryReadingsByTimeRange(t *testing.T) {
 	start := int64(1)
 	end := int64(10)
-	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.Start, strconv.FormatInt(start, 10), common.End, strconv.FormatInt(end, 10))
+	urlPath := path.Join(common.ApiReadingRoute, common.Start, strconv.FormatInt(start, 10), common.End, strconv.FormatInt(end, 10))
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
-	client := NewReadingClient(ts.URL)
+	client := NewReadingClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.ReadingsByTimeRange(context.Background(), start, end, 1, 10)
 	require.NoError(t, err)
 	assert.IsType(t, responses.MultiReadingsResponse{}, res)
@@ -93,11 +94,11 @@ func TestQueryReadingsByResourceNameAndTimeRange(t *testing.T) {
 	resourceName := "resource"
 	start := int64(1)
 	end := int64(10)
-	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.ResourceName, resourceName, common.Start, strconv.FormatInt(start, 10), common.End, strconv.FormatInt(end, 10))
+	urlPath := path.Join(common.ApiReadingRoute, common.ResourceName, resourceName, common.Start, strconv.FormatInt(start, 10), common.End, strconv.FormatInt(end, 10))
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
-	client := NewReadingClient(ts.URL)
+	client := NewReadingClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.ReadingsByResourceNameAndTimeRange(context.Background(), resourceName, start, end, 1, 10)
 	require.NoError(t, err)
 	assert.IsType(t, responses.MultiReadingsResponse{}, res)
@@ -106,11 +107,11 @@ func TestQueryReadingsByResourceNameAndTimeRange(t *testing.T) {
 func TestQueryReadingsByDeviceNameAndResourceName(t *testing.T) {
 	deviceName := "device"
 	resourceName := "resource"
-	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.Device, common.Name, deviceName, common.ResourceName, resourceName)
+	urlPath := path.Join(common.ApiReadingRoute, common.Device, common.Name, deviceName, common.ResourceName, resourceName)
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
-	client := NewReadingClient(ts.URL)
+	client := NewReadingClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.ReadingsByDeviceNameAndResourceName(context.Background(), deviceName, resourceName, 1, 10)
 	require.NoError(t, err)
 	assert.IsType(t, responses.MultiReadingsResponse{}, res)
@@ -121,11 +122,11 @@ func TestQueryReadingsByDeviceNameAndResourceNameAndTimeRange(t *testing.T) {
 	resourceName := "resource"
 	start := int64(1)
 	end := int64(10)
-	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.Device, common.Name, deviceName, common.ResourceName, resourceName, common.Start, strconv.FormatInt(start, 10), common.End, strconv.FormatInt(end, 10))
+	urlPath := path.Join(common.ApiReadingRoute, common.Device, common.Name, deviceName, common.ResourceName, resourceName, common.Start, strconv.FormatInt(start, 10), common.End, strconv.FormatInt(end, 10))
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
-	client := NewReadingClient(ts.URL)
+	client := NewReadingClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.ReadingsByDeviceNameAndResourceNameAndTimeRange(context.Background(), deviceName, resourceName, start, end, 1, 10)
 	require.NoError(t, err)
 	assert.IsType(t, responses.MultiReadingsResponse{}, res)
@@ -136,11 +137,11 @@ func TestQueryReadingsByDeviceNameAndResourceNamesAndTimeRange(t *testing.T) {
 	resourceNames := []string{"resource01", "resource02"}
 	start := int64(1)
 	end := int64(10)
-	urlPath := utils.EscapeAndJoinPath(common.ApiReadingRoute, common.Device, common.Name, deviceName, common.Start, strconv.FormatInt(start, 10), common.End, strconv.FormatInt(end, 10))
+	urlPath := path.Join(common.ApiReadingRoute, common.Device, common.Name, deviceName, common.Start, strconv.FormatInt(start, 10), common.End, strconv.FormatInt(end, 10))
 	ts := newTestServer(http.MethodGet, urlPath, responses.MultiReadingsResponse{})
 	defer ts.Close()
 
-	client := NewReadingClient(ts.URL)
+	client := NewReadingClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.ReadingsByDeviceNameAndResourceNamesAndTimeRange(context.Background(), deviceName, resourceNames, start, end, 1, 10)
 	require.NoError(t, err)
 	assert.IsType(t, responses.MultiReadingsResponse{}, res)

@@ -8,9 +8,9 @@ package interfaces
 import (
 	"context"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 // CommandClient defines the interface for interactions with the command endpoints on the EdgeX Foundry core-command service.
@@ -23,9 +23,9 @@ type CommandClient interface {
 	// DeviceCoreCommandsByDeviceName returns all commands associated with the specified device name.
 	DeviceCoreCommandsByDeviceName(ctx context.Context, deviceName string) (responses.DeviceCoreCommandResponse, errors.EdgeX)
 	// IssueGetCommandByName issues the specified read command referenced by the command name to the device/sensor that is also referenced by name.
-	// dsPushEvent: If set to yes, a successful GET will result in an event being pushed to the EdgeX system. Default value is no.
-	// dsReturnEvent: If set to no, there will be no Event returned in the http response. Default value is yes.
-	IssueGetCommandByName(ctx context.Context, deviceName string, commandName string, dsPushEvent string, dsReturnEvent string) (*responses.EventResponse, errors.EdgeX)
+	// dsPushEvent: If set to true, a successful GET will result in an event being pushed to the EdgeX system. Default value is false.
+	// dsReturnEvent: If set to false, there will be no Event returned in the http response. Default value is true.
+	IssueGetCommandByName(ctx context.Context, deviceName string, commandName string, dsPushEvent bool, dsReturnEvent bool) (*responses.EventResponse, errors.EdgeX)
 	// IssueGetCommandByNameWithQueryParams issues the specified read command by deviceName and commandName with additional query parameters.
 	IssueGetCommandByNameWithQueryParams(ctx context.Context, deviceName string, commandName string, queryParams map[string]string) (*responses.EventResponse, errors.EdgeX)
 	// IssueSetCommandByName issues the specified write command referenced by the command name to the device/sensor that is also referenced by name.

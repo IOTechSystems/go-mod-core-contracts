@@ -5,9 +5,6 @@
 
 package models
 
-// BaseReading and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.x#/BaseReading
-// Model fields are same as the DTOs documented by this swagger. Exceptions, if any, are noted below.
 type BaseReading struct {
 	Id           string
 	Origin       int64
@@ -16,29 +13,20 @@ type BaseReading struct {
 	ProfileName  string
 	ValueType    string
 	Units        string
-	Tags         map[string]interface{}
+	Tags         map[string]any
 }
 
-// BinaryReading and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.x#/BinaryReading
-// Model fields are same as the DTOs documented by this swagger. Exceptions, if any, are noted below.
 type BinaryReading struct {
 	BaseReading `json:",inline"`
 	BinaryValue []byte
 	MediaType   string
 }
 
-// SimpleReading and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.x#/SimpleReading
-// Model fields are same as the DTOs documented by this swagger. Exceptions, if any, are noted below.
 type SimpleReading struct {
 	BaseReading `json:",inline"`
 	Value       string
 }
 
-// ObjectReading and its properties are defined in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.x#/ObjectReading
-// Model fields are same as the DTOs documented by this swagger. Exceptions, if any, are noted below.
 type ObjectReading struct {
 	BaseReading `json:",inline"`
 	ObjectValue interface{}

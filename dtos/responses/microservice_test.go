@@ -7,7 +7,7 @@ package responses
 import (
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -20,12 +20,12 @@ func TestNewMultiMicroServicesResponse(t *testing.T) {
 		{
 			ID:    "7102e1adab50bfc9894e88d0afe903c0f0cf69d5305cbac86b7f3c6ee28afde4",
 			Names: []string{"/core-data"},
-			Image: "iotechsys/dev-edgexpert-core-data:2.2.dev",
+			Image: "iotechsys/dev-edgecentral-core-data:2.2.dev",
 		},
 		{
 			ID:    "bbf4d4be01004080043a29185c8e5d01a3973f082fa069898c2432b0f44996ff",
 			Names: []string{"/core-command"},
-			Image: "iotechsys/dev-edgexpert-core-command:2.2.dev",
+			Image: "iotechsys/dev-edgecentral-core-command:2.2.dev",
 		},
 	}
 	actual := NewMultiMicroServicesResponse(expectedRequestId, expectedMessage, expectedStatusCode, expectedMicroServices)

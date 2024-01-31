@@ -1,5 +1,4 @@
 //go:build no_dto_validator
-// +build no_dto_validator
 
 //
 // Copyright (C) 2022 IOTech Ltd

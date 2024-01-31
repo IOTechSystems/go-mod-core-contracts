@@ -6,13 +6,11 @@
 package responses
 
 import (
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
 )
 
 // DeviceResourceResponse defines the Response Content for GET DeviceResource DTOs.
-// This object and its properties correspond to the DeviceResourceResponse object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.1.0#/DeviceResourceResponse
 type DeviceResourceResponse struct {
 	common.BaseResponse `json:",inline"`
 	Resource            dtos.DeviceResource `json:"resource"`

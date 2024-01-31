@@ -1,5 +1,6 @@
 //
 // Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2023 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,10 +11,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -47,7 +48,7 @@ func TestGetCommand(t *testing.T) {
 	ts := newTestServer(http.MethodGet, common.ApiDeviceRoute+"/"+common.Name+"/"+TestDeviceName+"/"+TestCommandName, expectedResponse)
 	defer ts.Close()
 
-	client := NewDeviceServiceCommandClient()
+	client := NewDeviceServiceCommandClient(NewNullAuthenticationInjector(), false)
 	res, err := client.GetCommand(context.Background(), ts.URL, TestDeviceName, TestCommandName, "")
 
 	require.NoError(t, err)
@@ -60,7 +61,7 @@ func TestSetCommand(t *testing.T) {
 	ts := newTestServer(http.MethodPut, common.ApiDeviceRoute+"/"+common.Name+"/"+TestDeviceName+"/"+TestCommandName, expectedResponse)
 	defer ts.Close()
 
-	client := NewDeviceServiceCommandClient()
+	client := NewDeviceServiceCommandClient(NewNullAuthenticationInjector(), false)
 	res, err := client.SetCommand(context.Background(), ts.URL, TestDeviceName, TestCommandName, "", nil)
 
 	require.NoError(t, err)
@@ -79,7 +80,7 @@ func TestSetCommandWithObject(t *testing.T) {
 		},
 	}
 
-	client := NewDeviceServiceCommandClient()
+	client := NewDeviceServiceCommandClient(NewNullAuthenticationInjector(), false)
 	res, err := client.SetCommandWithObject(context.Background(), ts.URL, TestDeviceName, TestCommandName, "", settings)
 
 	require.NoError(t, err)
@@ -92,7 +93,7 @@ func TestDiscovery(t *testing.T) {
 	ts := newTestServer(http.MethodPost, common.ApiDiscoveryRoute, expectedResponse)
 	defer ts.Close()
 
-	client := NewDeviceServiceCommandClient()
+	client := NewDeviceServiceCommandClient(NewNullAuthenticationInjector(), false)
 	res, err := client.Discovery(context.Background(), ts.URL)
 
 	require.NoError(t, err)

@@ -8,7 +8,7 @@ package xlsx
 import (
 	"fmt"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 
 	"github.com/xuri/excelize/v2"
 	"golang.org/x/exp/slices"

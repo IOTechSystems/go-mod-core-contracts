@@ -7,12 +7,12 @@ package interfaces
 import (
 	"context"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
-// KVSClient defines the interface for interactions with the kvs endpoint on the Edge Xpert core-keeper service.
+// KVSClient defines the interface for interactions with the kvs endpoint on the Edge Central core-keeper service.
 type KVSClient interface {
 	// UpdateValuesByKey updates values of the specified key and the child keys defined in the request payload.
 	// If no key exists at the given path, the key(s) will be created.

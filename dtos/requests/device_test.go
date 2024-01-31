@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020-2022 IOTech Ltd
+// Copyright (C) 2020-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -9,12 +9,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"testing"
-	"time"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -59,7 +58,6 @@ var testAddDevice = AddDeviceRequest{
 	},
 }
 
-var testNowTime = time.Now().Unix()
 var testUpdateDevice = UpdateDeviceRequest{
 	BaseRequest: dtoCommon.BaseRequest{
 		RequestId:   ExampleUUID,
@@ -82,13 +80,11 @@ func mockUpdateDevice() dtos.UpdateDevice {
 	d.Description = &testDescription
 	d.AdminState = &testAdminState
 	d.OperatingState = &testOperatingState
-	d.LastReported = &testNowTime
-	d.LastConnected = &testNowTime
 	d.ServiceName = &testDeviceServiceName
 	d.ProfileName = &testProfileName
 	d.Labels = testDeviceLabels
 	d.Location = testDeviceLocation
-	d.Tags = map[string]interface{}{"1": TestTag1, "2": TestTag2}
+	d.Tags = map[string]any{"1": TestTag1, "2": TestTag2}
 	d.AutoEvents = testAutoEvents
 	d.Protocols = testProtocols
 	d.Properties = testProperties
@@ -163,16 +159,19 @@ func TestAddDeviceRequest_Validate(t *testing.T) {
 		{"Valid AddDeviceRequest with service name containing unreserved chars", serviceNameWithUnreservedChars, false},
 	}
 
-	// Following tests verify if name fields containing reserved characters should be detected with an error
-	for _, n := range namesWithReservedCharEdgeX {
+	// Following tests verify if name fields containing reserved characters should not be detected with an error
+	for _, n := range namesWithReservedChar {
+		deviceNameWithReservedChar := testAddDevice
+		deviceNameWithReservedChar.Device.Name = n
 		profileNameWithReservedChar := testAddDevice
 		profileNameWithReservedChar.Device.ProfileName = n
 		serviceNameWithReservedChar := testAddDevice
 		serviceNameWithReservedChar.Device.ServiceName = n
 
 		testsForNameFields = append(testsForNameFields,
-			testForNameField{"Invalid AddDeviceRequest with device name containing reserved char", profileNameWithReservedChar, true},
-			testForNameField{"Invalid AddDeviceRequest with device name containing reserved char", serviceNameWithReservedChar, true},
+			testForNameField{"Valid AddDeviceRequest with device name containing reserved char", deviceNameWithReservedChar, false},
+			testForNameField{"Valid AddDeviceRequest with device name containing reserved char", profileNameWithReservedChar, false},
+			testForNameField{"Valid AddDeviceRequest with device name containing reserved char", serviceNameWithReservedChar, false},
 		)
 	}
 
@@ -230,7 +229,7 @@ func Test_AddDeviceReqToDeviceModels(t *testing.T) {
 			OperatingState: models.Up,
 			Labels:         testDeviceLabels,
 			Location:       testDeviceLocation,
-			Tags:           map[string]interface{}{"1": TestTag1, "2": TestTag2},
+			Tags:           map[string]any{"1": TestTag1, "2": TestTag2},
 			AutoEvents: []models.AutoEvent{
 				{SourceName: "TestDevice", Interval: "300ms", OnChange: true},
 			},
@@ -372,9 +371,9 @@ func TestUpdateDeviceRequest_Validate(t *testing.T) {
 
 func TestUpdateDeviceRequest_UnmarshalJSON_NilField(t *testing.T) {
 	reqJson := `{
-		"apiVersion" : "v2",
+		"apiVersion" : "v3",
         "requestId":"7a1707f0-166f-4c4b-bc9d-1d54c74e0137",
-		"device":{"apiVersion":"v2", "name":"TestDevice"}
+		"device":{"apiVersion":"v3", "name":"TestDevice"}
 	}`
 	var req UpdateDeviceRequest
 
@@ -385,23 +384,22 @@ func TestUpdateDeviceRequest_UnmarshalJSON_NilField(t *testing.T) {
 	assert.Nil(t, req.Device.Description)
 	assert.Nil(t, req.Device.AdminState)
 	assert.Nil(t, req.Device.OperatingState)
-	assert.Nil(t, req.Device.LastConnected)
-	assert.Nil(t, req.Device.LastReported)
 	assert.Nil(t, req.Device.ServiceName)
 	assert.Nil(t, req.Device.ProfileName)
 	assert.Nil(t, req.Device.Labels)
 	assert.Nil(t, req.Device.Location)
 	assert.Nil(t, req.Device.AutoEvents)
 	assert.Nil(t, req.Device.Protocols)
-	assert.Nil(t, req.Device.Notify)
+	assert.Nil(t, req.Device.Tags)
+	assert.Nil(t, req.Device.Properties)
 }
 
 func TestUpdateDeviceRequest_UnmarshalJSON_EmptySlice(t *testing.T) {
 	reqJson := `{
-		"apiVersion" : "v2",
+		"apiVersion" : "v3",
         "requestId":"7a1707f0-166f-4c4b-bc9d-1d54c74e0137",
 		"device":{
-			"apiVersion":"v2",
+			"apiVersion":"v3",
 			"name":"TestDevice",
 			"labels":[],
 			"autoEvents":[]
@@ -429,13 +427,11 @@ func TestReplaceDeviceModelFieldsWithDTO(t *testing.T) {
 	assert.Equal(t, TestDescription, device.Description)
 	assert.Equal(t, models.AdminState(models.Locked), device.AdminState)
 	assert.Equal(t, models.OperatingState(models.Up), device.OperatingState)
-	assert.Equal(t, testNowTime, device.LastConnected)
-	assert.Equal(t, testNowTime, device.LastReported)
 	assert.Equal(t, TestDeviceServiceName, device.ServiceName)
 	assert.Equal(t, TestDeviceProfileName, device.ProfileName)
 	assert.Equal(t, testLabels, device.Labels)
 	assert.Equal(t, testDeviceLocation, device.Location)
-	assert.Equal(t, map[string]interface{}{"1": TestTag1, "2": TestTag2}, device.Tags)
+	assert.Equal(t, map[string]any{"1": TestTag1, "2": TestTag2}, device.Tags)
 	assert.Equal(t, dtos.ToAutoEventModels(testAutoEvents), device.AutoEvents)
 	assert.Equal(t, dtos.ToProtocolModels(testProtocols), device.Protocols)
 	assert.Equal(t, testProperties, device.Properties)

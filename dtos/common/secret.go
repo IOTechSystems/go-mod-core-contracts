@@ -19,22 +19,20 @@ package common
 import (
 	"encoding/json"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 // SecretDataKeyValue is a key/value pair to be stored in the Secret Store as part of the Secret Data
-// See detail specified by the V2 API swagger in openapi/v2
 type SecretDataKeyValue struct {
 	Key   string `json:"key" validate:"required"`
 	Value string `json:"value" validate:"required"`
 }
 
-// SecretRequest is the request DTO for storing supplied secret at specified Path in the Secret Store
-// See detail specified by the V2 API swagger in openapi/v2
+// SecretRequest is the request DTO for storing supplied secret at a given SecretName in the Secret Store
 type SecretRequest struct {
 	BaseRequest `json:",inline"`
-	Path        string               `json:"path" validate:"required"`
+	SecretName  string               `json:"secretName" validate:"required"`
 	SecretData  []SecretDataKeyValue `json:"secretData" validate:"required,gt=0,dive"`
 }
 
@@ -48,7 +46,7 @@ func (sr *SecretRequest) Validate() error {
 func (sr *SecretRequest) UnmarshalJSON(b []byte) error {
 	var alias struct {
 		BaseRequest
-		Path       string
+		SecretName string
 		SecretData []SecretDataKeyValue
 	}
 
@@ -65,10 +63,10 @@ func (sr *SecretRequest) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func NewSecretRequest(path string, secretData []SecretDataKeyValue) SecretRequest {
+func NewSecretRequest(secretName string, secretData []SecretDataKeyValue) SecretRequest {
 	return SecretRequest{
 		BaseRequest: NewBaseRequest(),
-		Path:        path,
+		SecretName:  secretName,
 		SecretData:  secretData,
 	}
 }

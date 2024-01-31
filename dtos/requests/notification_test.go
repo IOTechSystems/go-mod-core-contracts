@@ -7,11 +7,11 @@ package requests
 
 import (
 	"encoding/json"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -135,7 +135,7 @@ func TestAddNotificationReqToNotificationModels(t *testing.T) {
 
 func buildTestGetNotificationRequest() GetNotificationRequest {
 	return GetNotificationRequest{
-		BaseRequest: common.NewBaseRequest(),
+		BaseRequest: dtoCommon.NewBaseRequest(),
 		QueryCondition: NotificationQueryCondition{
 			Category: []string{testNotificationCategory},
 			Start:    0,

@@ -9,8 +9,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -119,7 +119,7 @@ func TestAddSubscriptionRequest_Validate(t *testing.T) {
 		{"valid, no labels specified", noLabels, false},
 		{"invalid, request ID is not an UUID", invalidReqId, true},
 		{"invalid, no subscription name", noSubscriptionName, true},
-		{"invalid, subscription name containing reserved chars", subscriptionNameWithReservedChars, true},
+		{"valid, subscription name containing reserved chars", subscriptionNameWithReservedChars, false},
 		{"invalid, no channels specified", noChannel, true},
 		{"invalid, email address is invalid", invalidEmailAddress, true},
 		{"invalid, unsupported channel type", unsupportedChannelType, true},

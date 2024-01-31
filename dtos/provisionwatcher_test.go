@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2023 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,7 +8,7 @@ package dtos
 import (
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -18,17 +18,20 @@ func TestFromProvisionWatcherModelToUpdateDTO(t *testing.T) {
 	dto := FromProvisionWatcherModelToUpdateDTO(model)
 	assert.Equal(t, model.Id, *dto.Id)
 	assert.Equal(t, model.Name, *dto.Name)
+	assert.Equal(t, model.ServiceName, *dto.ServiceName)
 	assert.Equal(t, model.Labels, dto.Labels)
 	assert.Nil(t, model.Identifiers, dto.Identifiers)
 	assert.Nil(t, model.BlockingIdentifiers, dto.BlockingIdentifiers)
+	assert.EqualValues(t, model.AdminState, *dto.AdminState)
+	assert.Equal(t, model.DiscoveredDevice.ProfileName, *dto.DiscoveredDevice.ProfileName)
+	assert.EqualValues(t, model.DiscoveredDevice.AdminState, *dto.DiscoveredDevice.AdminState)
+	assert.Zero(t, model.DiscoveredDevice.AutoEvents)
+	assert.Equal(t, model.DiscoveredDevice.Properties, dto.DiscoveredDevice.Properties)
 
 	assert.Equal(t, model.DeviceNameTemplate, *dto.DeviceNameTemplate)
 	assert.Equal(t, model.ProfileName, *dto.ProfileName)
-	assert.Equal(t, model.ServiceName, *dto.ServiceName)
-	assert.EqualValues(t, model.AdminState, *dto.AdminState)
 	assert.EqualValues(t, model.ProtocolName, *dto.ProtocolName)
 	assert.EqualValues(t, model.DeviceDescription, *dto.DeviceDescription)
-
 	assert.Equal(t, model.ProfileNameTemplate, *dto.ProfileNameTemplate)
 	assert.Equal(t, model.ProfileLabels, dto.ProfileLabels)
 	assert.Equal(t, model.ProfileDescription, *dto.ProfileDescription)

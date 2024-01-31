@@ -3,8 +3,8 @@
 package xrtmodels
 
 import (
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/google/uuid"
 )
@@ -69,7 +69,7 @@ type AddDiscoveredDeviceRequest struct {
 }
 
 type DiscoveredDeviceInfo struct {
-	Protocols map[string]map[string]any `json:"protocols"`
+	Protocols map[string]dtos.ProtocolProperties `json:"protocols"`
 }
 
 type ScanDeviceRequest struct {

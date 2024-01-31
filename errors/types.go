@@ -213,6 +213,8 @@ func codeMapping(kind ErrKind) int {
 		return http.StatusForbidden
 	case KindUnauthorized:
 		return http.StatusUnauthorized
+	case KindUnsupportedMediaType:
+		return http.StatusUnsupportedMediaType
 	default:
 		return http.StatusInternalServerError
 	}
@@ -245,6 +247,8 @@ func KindMapping(code int) ErrKind {
 		return KindRangeNotSatisfiable
 	case http.StatusUnauthorized:
 		return KindUnauthorized
+	case http.StatusUnsupportedMediaType:
+		return KindUnsupportedMediaType
 	default:
 		return KindUnknown
 	}

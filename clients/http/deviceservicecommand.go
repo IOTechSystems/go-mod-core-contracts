@@ -1,5 +1,6 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2023 IOTech Ltd
+// Copyright (C) 2023 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,31 +11,38 @@ import (
 	"encoding/json"
 	"net/url"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/http/utils"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/clients/interfaces"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/responses"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/http/utils"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 
 	"github.com/fxamacker/cbor/v2"
 )
 
-type deviceServiceCommandClient struct{}
+type deviceServiceCommandClient struct {
+	authInjector          interfaces.AuthenticationInjector
+	enableNameFieldEscape bool
+}
 
 // NewDeviceServiceCommandClient creates an instance of deviceServiceCommandClient
-func NewDeviceServiceCommandClient() interfaces.DeviceServiceCommandClient {
-	return &deviceServiceCommandClient{}
+func NewDeviceServiceCommandClient(authInjector interfaces.AuthenticationInjector, enableNameFieldEscape bool) interfaces.DeviceServiceCommandClient {
+	return &deviceServiceCommandClient{
+		authInjector:          authInjector,
+		enableNameFieldEscape: enableNameFieldEscape,
+	}
 }
 
 // GetCommand sends HTTP request to execute the Get command
 func (client *deviceServiceCommandClient) GetCommand(ctx context.Context, baseUrl string, deviceName string, commandName string, queryParams string) (*responses.EventResponse, errors.EdgeX) {
-	requestPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, commandName)
+	requestPath := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
+		SetPath(common.ApiDeviceRoute).SetPath(common.Name).SetNameFieldPath(deviceName).SetNameFieldPath(commandName).BuildPath()
 	params, err := url.ParseQuery(queryParams)
 	if err != nil {
 		return nil, errors.NewCommonEdgeXWrapper(err)
 	}
-	res, contentType, edgeXerr := utils.GetRequestAndReturnBinaryRes(ctx, baseUrl, requestPath, params)
+	res, contentType, edgeXerr := utils.GetRequestAndReturnBinaryRes(ctx, baseUrl, requestPath, params, client.authInjector)
 	if edgeXerr != nil {
 		return nil, errors.NewCommonEdgeXWrapper(edgeXerr)
 	}
@@ -59,12 +67,13 @@ func (client *deviceServiceCommandClient) GetCommand(ctx context.Context, baseUr
 // SetCommand sends HTTP request to execute the Set command
 func (client *deviceServiceCommandClient) SetCommand(ctx context.Context, baseUrl string, deviceName string, commandName string, queryParams string, settings map[string]string) (dtoCommon.BaseResponse, errors.EdgeX) {
 	var response dtoCommon.BaseResponse
-	requestPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, commandName)
+	requestPath := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
+		SetPath(common.ApiDeviceRoute).SetPath(common.Name).SetNameFieldPath(deviceName).SetNameFieldPath(commandName).BuildPath()
 	params, err := url.ParseQuery(queryParams)
 	if err != nil {
 		return response, errors.NewCommonEdgeXWrapper(err)
 	}
-	err = utils.PutRequest(ctx, &response, baseUrl, requestPath, params, settings)
+	err = utils.PutRequest(ctx, &response, baseUrl, requestPath, params, settings, client.authInjector)
 	if err != nil {
 		return response, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -74,12 +83,13 @@ func (client *deviceServiceCommandClient) SetCommand(ctx context.Context, baseUr
 // SetCommandWithObject invokes device service's set command API and the settings supports object value type
 func (client *deviceServiceCommandClient) SetCommandWithObject(ctx context.Context, baseUrl string, deviceName string, commandName string, queryParams string, settings map[string]interface{}) (dtoCommon.BaseResponse, errors.EdgeX) {
 	var response dtoCommon.BaseResponse
-	requestPath := utils.EscapeAndJoinPath(common.ApiDeviceRoute, common.Name, deviceName, commandName)
+	requestPath := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
+		SetPath(common.ApiDeviceRoute).SetPath(common.Name).SetNameFieldPath(deviceName).SetNameFieldPath(commandName).BuildPath()
 	params, err := url.ParseQuery(queryParams)
 	if err != nil {
 		return response, errors.NewCommonEdgeXWrapper(err)
 	}
-	err = utils.PutRequest(ctx, &response, baseUrl, requestPath, params, settings)
+	err = utils.PutRequest(ctx, &response, baseUrl, requestPath, params, settings, client.authInjector)
 	if err != nil {
 		return response, errors.NewCommonEdgeXWrapper(err)
 	}
@@ -88,7 +98,7 @@ func (client *deviceServiceCommandClient) SetCommandWithObject(ctx context.Conte
 
 func (client *deviceServiceCommandClient) Discovery(ctx context.Context, baseUrl string) (dtoCommon.BaseResponse, errors.EdgeX) {
 	var response dtoCommon.BaseResponse
-	err := utils.PostRequest(ctx, &response, baseUrl, common.ApiDiscoveryRoute, nil, "")
+	err := utils.PostRequest(ctx, &response, baseUrl, common.ApiDiscoveryRoute, nil, "", client.authInjector)
 	if err != nil {
 		return response, errors.NewCommonEdgeXWrapper(err)
 	}

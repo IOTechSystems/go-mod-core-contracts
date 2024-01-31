@@ -23,7 +23,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
 const (
@@ -35,7 +35,7 @@ var validRequest = SecretRequest{
 		RequestId:   TestUUID,
 		Versionable: NewVersionable(),
 	},
-	Path: "something",
+	SecretName: "something",
 	SecretData: []SecretDataKeyValue{
 		{Key: "username", Value: "User1"},
 		{Key: "password", Value: "password"},
@@ -52,7 +52,7 @@ var missingValueSecretData = []SecretDataKeyValue{
 
 func TestSecretsRequest_Validate(t *testing.T) {
 	validNoPath := validRequest
-	validNoPath.Path = ""
+	validNoPath.SecretName = ""
 	validWithPath := validRequest
 	validNoRequestId := validRequest
 	validNoRequestId.RequestId = ""

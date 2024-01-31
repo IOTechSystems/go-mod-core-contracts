@@ -8,16 +8,14 @@ package requests
 import (
 	"encoding/json"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v2/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
-// DeviceResourceRequest defines the Request Content for POST DeviceResource DTO.
-// This object and its properties correspond to the DeviceResourceRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceResourceRequest
+// AddDeviceResourceRequest defines the Request Content for POST DeviceResource DTO.
 type AddDeviceResourceRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	ProfileName           string              `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
@@ -50,8 +48,6 @@ func (dr *AddDeviceResourceRequest) UnmarshalJSON(b []byte) error {
 }
 
 // UpdateDeviceResourceRequest defines the Request Content for PATCH DeviceResource DTO.
-// This object and its properties correspond to the DeviceResourceRequest object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-metadata/2.2.0#/DeviceResourceRequest
 type UpdateDeviceResourceRequest struct {
 	dtoCommon.BaseRequest `json:",inline"`
 	ProfileName           string                    `json:"profileName" validate:"required,edgex-dto-none-empty-string,edgex-dto-no-reserved-chars"`
