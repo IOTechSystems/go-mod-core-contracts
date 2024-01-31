@@ -225,6 +225,12 @@ func NewDiscoveredDeviceAddRequest(device DeviceInfo, clientName string) AddDisc
 
 // NewDeviceScanRequest creates a request to scan the device and generate the profile
 func NewDeviceScanRequest(device DeviceInfo, clientName string) ScanDeviceRequest {
+	// the device profile name might be empty so assign a uuid to profile name here
+	// otherwise, the xrt auto gen profile name will be an empty string
+	if device.ProfileName == "" {
+		device.ProfileName = uuid.NewString()
+	}
+
 	deviceRequest := ScanDeviceRequest{
 		BaseRequest: BaseRequest{
 			Client:    clientName,
