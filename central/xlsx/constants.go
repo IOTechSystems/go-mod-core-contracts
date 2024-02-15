@@ -39,8 +39,24 @@ const (
 
 // constants relates to the Device protocol property keys
 const (
-	modbusRTUKey = "modbus-rtu"
-	modbusTCPKey = "modbus-tcp"
+	bacnetIPKey   = "BACnet-IP"
+	bacnetMSTPKey = "BACnet-MSTP"
+	bleKey        = "BLE"
+	ethernetIPKey = "ethernet-ip"
+	modbusRTUKey  = "modbus-rtu"
+	modbusTCPKey  = "modbus-tcp"
+	mqttKey       = "MQTT"
+	onvifKey      = "onvif"
+	opcuaKey      = "OPC-UA"
+	s7Key         = "S7"
+	usbKey        = "usb"
+	wsKey         = "ws"
+)
+
+// constants relates to the Device Protocol Name
+const (
+	usbCamera = "usb-camera"
+	websocket = "websocket"
 )
 
 const mappingPathSeparator = "."
