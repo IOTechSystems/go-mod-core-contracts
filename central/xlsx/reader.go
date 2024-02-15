@@ -127,16 +127,39 @@ func setProtocolPropMap(prtProps map[string]any, fieldMappings map[string]mappin
 	prtPropMap := make(map[string]dtos.ProtocolProperties)
 
 	if mapping, ok := fieldMappings[protocolName]; ok {
+		if mapping.defaultValue == "" {
+			return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, "the default value of ProtocolName not defined in MappingTable sheet", nil)
+		}
 		protocol = mapping.defaultValue
 	} else {
-		return nil, errors.NewCommonEdgeX(errors.KindServerError, "ProtocolName not defined in fieldMappings", nil)
+		return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, "ProtocolName not defined in MappingTable sheet", nil)
 	}
 
-	switch protocol {
-	case modbusRTUKey:
+	switch strings.ToLower(protocol) {
+	case strings.ToLower(bacnetIPKey):
+		prtPropMap[bacnetIPKey] = prtProps
+	case strings.ToLower(bacnetMSTPKey):
+		prtPropMap[bacnetMSTPKey] = prtProps
+	case strings.ToLower(bleKey):
+		prtPropMap[bleKey] = prtProps
+	case strings.ToLower(ethernetIPKey):
+		prtPropMap[ethernetIPKey] = prtProps
+	case strings.ToLower(modbusRTUKey):
 		prtPropMap[modbusRTUKey] = prtProps
-	case modbusTCPKey:
+	case strings.ToLower(modbusTCPKey):
 		prtPropMap[modbusTCPKey] = prtProps
+	case strings.ToLower(mqttKey):
+		prtPropMap[mqttKey] = prtProps
+	case strings.ToLower(onvifKey):
+		prtPropMap[onvifKey] = prtProps
+	case strings.ToLower(opcuaKey):
+		prtPropMap[opcuaKey] = prtProps
+	case strings.ToLower(s7Key):
+		prtPropMap[s7Key] = prtProps
+	case strings.ToLower(usbCamera):
+		prtPropMap[usbKey] = prtProps
+	case strings.ToLower(websocket):
+		prtPropMap[wsKey] = prtProps
 	default:
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("unknown ProtocolProperties outer key for '%s' protocol", protocol), nil)
 	}
