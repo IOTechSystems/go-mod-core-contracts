@@ -129,25 +129,6 @@ const (
 	ApiOperationRoute   = ApiSystemRoute + "/operation"
 	ApiHealthRoute      = ApiSystemRoute + "/health"
 	ApiMultiConfigRoute = ApiSystemRoute + "/config"
-
-	// Central
-	ApiMetricsRoute      = ApiBase + "/metrics"
-	ApiMultiMetricsRoute = ApiSystemRoute + "/metrics"
-
-	ApiNotificationByIdsRoute              = ApiNotificationRoute + "/" + Ids + "/{" + Ids + "}"
-	ApiNotificationAcknowledgeByIdsRoute   = ApiNotificationRoute + "/" + Acknowledge + "/" + Ids + "/{" + Ids + "}"
-	ApiNotificationUnacknowledgeByIdsRoute = ApiNotificationRoute + "/" + Unacknowledge + "/" + Ids + "/{" + Ids + "}"
-
-	ApiRuleRoute       = ApiBase + "/rule"
-	ApiAllRulesRoute   = ApiRuleRoute + "/" + All
-	ApiRuleByNameRoute = ApiRuleRoute + "/" + Name + "/{" + Name + "}"
-
-	ApiKVSRoute                     = ApiBase + "/kvs"
-	ApiKVSByKeyRoute                = ApiKVSRoute + "/" + Key + "/{" + Key + "}"
-	ApiRegisterRoute                = ApiBase + "/registry"
-	ApiAllRegistrationsRoute        = ApiRegisterRoute + "/" + All
-	ApiRegistrationByServiceIdRoute = ApiRegisterRoute + "/" + ServiceId + "/{" + ServiceId + "}"
-
 )
 
 // Constants related to defined url path names and parameters in the v3 service APIs
@@ -202,22 +183,6 @@ const (
 	PushEvent    = "ds-pushevent"   //query string to specify if an event should be pushed to the EdgeX system
 	ReturnEvent  = "ds-returnevent" //query string to specify if an event should be returned from device service
 	RegexCommand = "ds-regexcmd"    //query string to specify if the command name is in regular expression format
-
-	// Central
-	Ids           = "ids"
-	User          = "user"
-	Group         = "group"
-	PublicKey     = "rsa_public_key"
-	Ack           = "ack"
-	Acknowledge   = "acknowledge"
-	Unacknowledge = "unacknowledge"
-	Key           = "key"
-	ServiceId     = "serviceId"
-	Flatten      = "flatten"        //query string to specify if the request json payload should be flattened to update multiple keys with the same prefix
-	KeyOnly      = "keyOnly"        //query string to specify if the response will only return the keys of the specified query key prefix, without values and metadata
-	Plaintext    = "plaintext"      //query string to specify if the response will return the stored plain text value of the key(s) without any encoding
-	Deregistered = "deregistered"   //query string to specify if the response will return the registries of deregistered services
-	NoCallback   = "nocallback"     //query string to ask core-metadata not to invoke DS callback
 )
 
 // Constants related to the default value of query strings in the v3 service APIs
@@ -257,9 +222,6 @@ const (
 	ValueTypeFloat32Array = "Float32Array"
 	ValueTypeFloat64Array = "Float64Array"
 	ValueTypeObject       = "Object"
-
-	// Central
-	ValueTypeObjectArray  = "ObjectArray"
 )
 
 // Constants related to configuration file's map key
@@ -274,12 +236,6 @@ const (
 	REST  = "REST"
 	MQTT  = "MQTT"
 	EMAIL = "EMAIL"
-
-	// Central
-	ZeroMQ = "ZeroMQ"
-	HTTP   = "http"
-	TCP    = "tcp"
-	TCPS   = "tcps"
 )
 
 // Constants for SMA Operation Action
@@ -325,14 +281,6 @@ const (
 	SecurityBootstrapperKey             = "security-bootstrapper"
 	SecurityBootstrapperRedisKey        = "security-bootstrapper-redis"
 	SecuritySpiffeTokenProviderKey      = "security-spiffe-token-provider" // nolint:gosec
-
-	// Central
-	CoreKeeperServiceKey                = "core-keeper"
-	SupportProvisionServiceKey          = "support-provision"
-	SupportSparkplugServiceKey          = "support-sparkplug"
-	SupportSparkplugHistorianServiceKey = "support-sparkplug-historian"
-	SupportRulesEngineServiceKey        = "support-rulesengine"
-
 )
 
 // Constants related to the possible content types supported by the APIs
@@ -346,9 +294,6 @@ const (
 	ContentTypeYAML = "application/x-yaml"
 	ContentTypeText = "text/plain"
 	ContentTypeXML  = "application/xml"
-
-	// Central
-	ContentTypeForm = "application/x-www-form-urlencoded"
 )
 
 // Constants related to System Events
@@ -360,11 +305,6 @@ const (
 	SystemEventActionAdd            = "add"
 	SystemEventActionUpdate         = "update"
 	SystemEventActionDelete         = "delete"
-
-	// Central
-	DeviceSystemEventActionAdd    = "add"
-	DeviceSystemEventActionUpdate = "update"
-	DeviceSystemEventActionDelete = "delete"
 )
 
 const (
@@ -417,20 +357,4 @@ const (
 
 	// App Service Topics
 	// App Service topics remain configurable inorder to filter by subscription.
-)
-
-// Central
-// Constants for Notification Category
-const (
-	DisconnectAlert      = "Disconnection"
-	DeviceOperatingState = "DeviceOperatingState"
-)
-
-// Constants for DeviceChangedNotification
-const (
-	DeviceCreateAction = "Device creation"
-	DeviceUpdateAction = "Device update"
-	DeviceRemoveAction = "Device removal"
-
-	DeviceChangedNotificationCategory = "DEVICE_CHANGED"
 )
