@@ -1,4 +1,4 @@
-// Copyright (C) 2022-2023 IOTech Ltd
+// Copyright (C) 2022-2024 IOTech Ltd
 
 package common
 
@@ -85,8 +85,52 @@ const (
 	CentralNodeReplyTopicKey              = "ReplyTopic"
 )
 
-// constants relate to the service status error from sys-mgmt inspect operation
+// Constants relate to the service status error from sys-mgmt inspect operation
 const (
 	ServiceIsNotRunningButShouldBe = "service is not running but should be"
 	ServiceIsRunningButShouldNotBe = "service is running but shouldn't be"
+)
+
+// Constants related to how services identify themselves in the Service Registry
+const (
+	CoreKeeperServiceKey                = "core-keeper"
+	SupportProvisionServiceKey          = "support-provision"
+	SupportSparkplugServiceKey          = "support-sparkplug"
+	SupportSparkplugHistorianServiceKey = "support-sparkplug-historian"
+	SupportRulesEngineServiceKey        = "support-rulesengine"
+)
+
+// Constants relate to data type
+const (
+	ValueTypeObjectArray = "ObjectArray"
+)
+
+// Constants related for Notification Category
+const (
+	DisconnectAlert      = "Disconnection"
+	DeviceOperatingState = "DeviceOperatingState"
+)
+
+// Constants related for DeviceChangedNotification
+const (
+	DeviceCreateAction = "Device creation"
+	DeviceUpdateAction = "Device update"
+	DeviceRemoveAction = "Device removal"
+
+	DeviceChangedNotificationCategory = "DEVICE_CHANGED"
+)
+
+// Constants related to System Events
+const (
+	DeviceSystemEventActionAdd    = "add"
+	DeviceSystemEventActionUpdate = "update"
+	DeviceSystemEventActionDelete = "delete"
+)
+
+// Constants related for Address
+const (
+	ZeroMQ = "ZeroMQ"
+	HTTP   = "http"
+	TCP    = "tcp"
+	TCPS   = "tcps"
 )
