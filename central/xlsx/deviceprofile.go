@@ -206,19 +206,31 @@ func (dpXlsx *deviceProfileXlsx) convertDeviceCommands(convertedProfile *dtos.De
 			continue
 		}
 
-		// parse the DeviceCommand data columns
-		convertedDC := dtos.DeviceCommand{}
-		_, err = readStruct(&convertedDC, header, col, dpXlsx.fieldMappings)
-		if err != nil {
-			return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to unmarshal an xlsx column into DeviceCommand DTO", err)
+		// check if the column has any non-empty cell
+		// if yes, convert the xlsx column to DeviceCommand DTO
+		nonEmptyCol := false
+		for _, rowCell := range col {
+			if rowCell != "" {
+				nonEmptyCol = true
+				break
+			}
 		}
 
-		// validate the DeviceCommand DTO
-		err = common.Validate(convertedDC)
-		if err != nil {
-			dpXlsx.validateErrors[validateErrCommandPrefix+convertedDC.Name] = err
-		} else {
-			convertedProfile.DeviceCommands = append(convertedProfile.DeviceCommands, convertedDC)
+		if nonEmptyCol {
+			// parse the DeviceCommand data columns
+			convertedDC := dtos.DeviceCommand{}
+			_, err = readStruct(&convertedDC, header, col, dpXlsx.fieldMappings)
+			if err != nil {
+				return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to unmarshal an xlsx column into DeviceCommand DTO", err)
+			}
+
+			// validate the DeviceCommand DTO
+			err = common.Validate(convertedDC)
+			if err != nil {
+				dpXlsx.validateErrors[validateErrCommandPrefix+convertedDC.Name] = err
+			} else {
+				convertedProfile.DeviceCommands = append(convertedProfile.DeviceCommands, convertedDC)
+			}
 		}
 	}
 	return nil
