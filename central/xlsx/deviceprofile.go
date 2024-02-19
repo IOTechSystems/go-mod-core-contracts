@@ -196,7 +196,8 @@ func (dpXlsx *deviceProfileXlsx) convertDeviceCommands(convertedProfile *dtos.De
 	if len(cols) >= 2 {
 		header = cols[0]
 	} else {
-		return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("at least 2 columns need to be defined in %s worksheet", deviceCommandSheetName), nil)
+		// not enough column defined in the DeviceCommand sheet, skip the following code and return
+		return nil
 	}
 
 	for colIndex, col := range cols {
