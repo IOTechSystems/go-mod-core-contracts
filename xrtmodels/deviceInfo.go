@@ -10,14 +10,39 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/v2models"
 )
 
 type DeviceInfo struct {
 	dtos.Device
 }
 
-// ToEdgeXV2Device converts the XRT model to EdgeX model
-func ToEdgeXV2Device(device DeviceInfo, serviceName string) models.Device {
+// ToEdgeXV2Device converts the XRT model to EdgeX v2 model
+func ToEdgeXV2Device(device DeviceInfo, serviceName string) v2models.Device {
+	protocols := make(map[string]v2models.ProtocolProperties)
+	protocolName := ""
+	for protocol, protocolProperties := range device.Protocols {
+		protocols[protocol] = toEdgeXProperties(protocol, protocolProperties)
+		protocolName = strings.ToLower(protocol)
+	}
+	return v2models.Device{
+		Name:           device.Name,
+		Description:    "",
+		AdminState:     models.Unlocked,
+		OperatingState: models.Up,
+		ProtocolName:   protocolName,
+		Protocols:      protocols,
+		Labels:         nil,
+		Location:       nil,
+		ServiceName:    serviceName,
+		ProfileName:    device.ProfileName,
+		AutoEvents:     nil,
+		Properties:     device.Properties,
+	}
+}
+
+// ToEdgeXV3Device converts the XRT model to EdgeX v3 model
+func ToEdgeXV3Device(device DeviceInfo, serviceName string) models.Device {
 	protocolName := ""
 	for protocol, _ := range device.Protocols {
 		protocolName = strings.ToLower(protocol)

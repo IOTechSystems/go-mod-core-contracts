@@ -3,6 +3,8 @@
 package common
 
 const (
+	IOTechPrefix = "IOTech_"
+
 	ContextKeyContentType contextKey = ContentType
 	ContentTypeCSV                   = "text/csv"
 
