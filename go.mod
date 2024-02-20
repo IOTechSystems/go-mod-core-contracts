@@ -6,7 +6,7 @@ require (
 	github.com/fxamacker/cbor/v2 v2.6.0
 	github.com/go-kit/log v0.2.1
 	github.com/go-playground/validator/v10 v10.15.5
-	github.com/google/uuid v1.3.1
+	github.com/google/uuid v1.6.0
 	github.com/pelletier/go-toml/v2 v2.1.1
 	github.com/stretchr/testify v1.8.4
 	github.com/xuri/excelize/v2 v2.8.0
