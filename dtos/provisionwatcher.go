@@ -19,17 +19,6 @@ type ProvisionWatcher struct {
 	BlockingIdentifiers map[string][]string `json:"blockingIdentifiers,omitempty" yaml:"blockingIdentifiers,omitempty"`
 	AdminState          string              `json:"adminState" yaml:"adminState" validate:"oneof='LOCKED' 'UNLOCKED'"`
 	DiscoveredDevice    DiscoveredDevice    `json:"discoveredDevice" yaml:"discoveredDevice"`
-
-	ProtocolName       string      `json:"protocolName,omitempty" validate:"omitempty,edgex-dto-rfc3986-unreserved-chars"`
-	AutoEvents         []AutoEvent `json:"autoEvents,omitempty" validate:"dive"`
-	DeviceNameTemplate string      `json:"deviceNameTemplate,omitempty" validate:"omitempty"`
-	DeviceDescription  string      `json:"deviceDescription,omitempty"`
-	DeviceLabels       []string    `json:"deviceLabels,omitempty"`
-
-	ProfileName         string   `json:"profileName" validate:"omitempty,edgex-dto-no-reserved-chars"`
-	ProfileNameTemplate string   `json:"profileNameTemplate,omitempty" validate:"omitempty,edgex-dto-no-reserved-chars"`
-	ProfileDescription  string   `json:"profileDescription,omitempty"`
-	ProfileLabels       []string `json:"profileLabels,omitempty"`
 }
 
 type UpdateProvisionWatcher struct {
@@ -41,17 +30,6 @@ type UpdateProvisionWatcher struct {
 	BlockingIdentifiers map[string][]string    `json:"blockingIdentifiers"`
 	AdminState          *string                `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
 	DiscoveredDevice    UpdateDiscoveredDevice `json:"discoveredDevice"`
-
-	ProtocolName       *string     `json:"protocolName" validate:"omitempty,len=0|edgex-dto-rfc3986-unreserved-chars"`
-	AutoEvents         []AutoEvent `json:"autoEvents" validate:"dive"`
-	DeviceNameTemplate *string     `json:"deviceNameTemplate" validate:"omitempty"`
-	DeviceDescription  *string     `json:"deviceDescription"`
-	DeviceLabels       []string    `json:"deviceLabels"`
-
-	ProfileName         *string  `json:"profileName" validate:"omitempty,len=0|edgex-dto-no-reserved-chars"`
-	ProfileNameTemplate *string  `json:"profileNameTemplate" validate:"omitempty,len=0|edgex-dto-no-reserved-chars"`
-	ProfileDescription  *string  `json:"profileDescription"`
-	ProfileLabels       []string `json:"profileLabels"`
 }
 
 // ToProvisionWatcherModel transforms the ProvisionWatcher DTO to the ProvisionWatcher model
@@ -66,17 +44,6 @@ func ToProvisionWatcherModel(dto ProvisionWatcher) models.ProvisionWatcher {
 		BlockingIdentifiers: dto.BlockingIdentifiers,
 		AdminState:          models.AdminState(dto.AdminState),
 		DiscoveredDevice:    ToDiscoveredDeviceModel(dto.DiscoveredDevice),
-
-		ProtocolName:       dto.ProtocolName,
-		AutoEvents:         ToAutoEventModels(dto.AutoEvents),
-		DeviceNameTemplate: dto.DeviceNameTemplate,
-		DeviceDescription:  dto.DeviceDescription,
-		DeviceLabels:       dto.DeviceLabels,
-
-		ProfileName:         dto.ProfileName,
-		ProfileNameTemplate: dto.ProfileNameTemplate,
-		ProfileDescription:  dto.ProfileDescription,
-		ProfileLabels:       dto.ProfileLabels,
 	}
 }
 
@@ -92,17 +59,6 @@ func FromProvisionWatcherModelToDTO(pw models.ProvisionWatcher) ProvisionWatcher
 		BlockingIdentifiers: pw.BlockingIdentifiers,
 		AdminState:          string(pw.AdminState),
 		DiscoveredDevice:    FromDiscoveredDeviceModelToDTO(pw.DiscoveredDevice),
-
-		ProtocolName:       pw.ProtocolName,
-		AutoEvents:         FromAutoEventModelsToDTOs(pw.AutoEvents),
-		DeviceNameTemplate: pw.DeviceNameTemplate,
-		DeviceDescription:  pw.DeviceDescription,
-		DeviceLabels:       pw.DeviceLabels,
-
-		ProfileName:         pw.ProfileName,
-		ProfileNameTemplate: pw.ProfileNameTemplate,
-		ProfileDescription:  pw.ProfileDescription,
-		ProfileLabels:       pw.ProfileLabels,
 	}
 }
 
@@ -118,17 +74,6 @@ func FromProvisionWatcherModelToUpdateDTO(pw models.ProvisionWatcher) UpdateProv
 		BlockingIdentifiers: pw.BlockingIdentifiers,
 		AdminState:          &adminState,
 		DiscoveredDevice:    FromDiscoveredDeviceModelToUpdateDTO(pw.DiscoveredDevice),
-
-		ProtocolName:       &pw.ProtocolName,
-		AutoEvents:         FromAutoEventModelsToDTOs(pw.AutoEvents),
-		DeviceNameTemplate: &pw.DeviceNameTemplate,
-		DeviceDescription:  &pw.DeviceDescription,
-		DeviceLabels:       pw.DeviceLabels,
-
-		ProfileName:         &pw.ProfileName,
-		ProfileNameTemplate: &pw.ProfileNameTemplate,
-		ProfileLabels:       pw.ProfileLabels,
-		ProfileDescription:  &pw.ProfileDescription,
 	}
 	return dto
 }

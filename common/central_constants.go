@@ -136,3 +136,14 @@ const (
 	TCP    = "tcp"
 	TCPS   = "tcps"
 )
+
+// Constants related for provisionWatcher discoveredDevice
+const (
+	ProtocolName       = IOTechPrefix + "ProtocolName"
+	DeviceNamePattern  = IOTechPrefix + "DeviceNamePattern"
+	DeviceDescription  = IOTechPrefix + "DeviceDescription"
+	DeviceLabels       = IOTechPrefix + "DeviceLabels"
+	ProfileNamePattern = IOTechPrefix + "ProfileNamePattern"
+	ProfileDescription = IOTechPrefix + "ProfileDescription"
+	ProfileLabels      = IOTechPrefix + "ProfileLabels"
+)

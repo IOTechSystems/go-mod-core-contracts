@@ -28,8 +28,8 @@ var testBlockingIdentifiers = map[string][]string{
 	"port": {"397", "398", "399"},
 }
 var testDeviceDescription = "test device description"
-var testDeviceNameTemplate = "device-name-{{Address}}-{{Port}}"
-var testProfileNameTemplate = "profile-name-{{Address}}-{{Port}}"
+var testDeviceNamePattern = "device-name-{{Address}}-{{Port}}"
+var testProfileNamePattern = "profile-name-{{Address}}-{{Port}}"
 var testProfileDescription = "test profile description"
 var testAddProvisionWatcher = AddProvisionWatcherRequest{
 	BaseRequest: common.BaseRequest{
@@ -76,14 +76,6 @@ func mockUpdateProvisionWatcher() dtos.UpdateProvisionWatcher {
 	d.DiscoveredDevice.ProfileName = &testProfileName
 	d.DiscoveredDevice.AdminState = &testAdminState
 	d.DiscoveredDevice.AutoEvents = testAutoEvents
-
-	d.DeviceNameTemplate = &testDeviceNameTemplate
-	d.ProtocolName = &testProtocolName
-	d.DeviceDescription = &testDeviceDescription
-	d.DeviceLabels = testDeviceLabels
-	d.ProfileNameTemplate = &testProfileNameTemplate
-	d.ProfileLabels = testLabels
-	d.ProfileDescription = &testProfileDescription
 	return d
 }
 
@@ -202,7 +194,6 @@ func TestAddProvisionWatcherReqToProvisionWatcherModels(t *testing.T) {
 				"port": {"397", "398", "399"},
 			},
 			AdminState: models.Locked,
-			AutoEvents: make([]models.AutoEvent, 0),
 			DiscoveredDevice: models.DiscoveredDevice{
 				ProfileName: TestDeviceProfileName,
 				AdminState:  models.Locked,
@@ -370,12 +361,4 @@ func TestReplaceProvisionWatcherModelFieldsWithDTO(t *testing.T) {
 	assert.Equal(t, TestDeviceProfileName, provisionWatcher.DiscoveredDevice.ProfileName)
 	assert.Equal(t, models.AdminState(models.Locked), provisionWatcher.AdminState)
 	assert.Equal(t, dtos.ToAutoEventModels(testAutoEvents), provisionWatcher.DiscoveredDevice.AutoEvents)
-
-	assert.Equal(t, testProtocolName, provisionWatcher.ProtocolName)
-	assert.Equal(t, testDeviceDescription, provisionWatcher.DeviceDescription)
-	assert.Equal(t, testDeviceNameTemplate, provisionWatcher.DeviceNameTemplate)
-	assert.Equal(t, testDeviceLabels, provisionWatcher.DeviceLabels)
-	assert.Equal(t, testProfileNameTemplate, provisionWatcher.ProfileNameTemplate)
-	assert.Equal(t, testLabels, provisionWatcher.ProfileLabels)
-	assert.Equal(t, testProfileDescription, provisionWatcher.ProfileDescription)
 }
