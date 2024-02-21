@@ -273,9 +273,14 @@ func convertAutoEventFields(rowElement *reflect.Value, xlsxRow []string, headerC
 }
 
 // convertDeviceCommandFields convert the xlsx row to the DeviceCommand DTO
-func convertDeviceCommandFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string) errors.EdgeX {
+func convertDeviceCommandFields(rowElement *reflect.Value, xlsxCol []string, headerCol []string) errors.EdgeX {
 	var resOpSlice []dtos.ResourceOperation
-	for colIndex, cell := range xlsxRow {
+	for colIndex, cell := range xlsxCol {
+		// skip the empty cell, all the cell should have value in DeviceCommand sheet
+		if cell == "" {
+			continue
+		}
+
 		headerName, field := getStructFieldByHeader(rowElement, colIndex, headerCol)
 		cell = strings.TrimSpace(cell)
 
@@ -283,7 +288,7 @@ func convertDeviceCommandFields(rowElement *reflect.Value, xlsxRow []string, hea
 			// header matches the DeviceCommand field name (one of the Name, IsHidden or ReadWrite field name)
 			err := setStdStructFieldValue(cell, field)
 			if err != nil {
-				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("error occurred on '%s' column", headerName), err)
+				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("error occurred on '%s' row", headerName), err)
 			}
 		} else {
 			// parse the rest ResourceName columns in the xlsx row and convert to the ResourceOperation DTO

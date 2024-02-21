@@ -186,37 +186,51 @@ func (dpXlsx *deviceProfileXlsx) parseDeviceResourceHeader(header *[]string, row
 // convertDeviceCommands parses the DeviceCommand sheet and convert the rows to DeviceCommand DTOs
 func (dpXlsx *deviceProfileXlsx) convertDeviceCommands(convertedProfile *dtos.DeviceProfile) errors.EdgeX {
 	var header []string
-	rows, err := dpXlsx.xlsFile.GetRows(deviceCommandSheetName)
+	cols, err := dpXlsx.xlsFile.GetCols(deviceCommandSheetName)
 	if err != nil {
-		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all rows from %s worksheet", deviceCommandSheetName), err)
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all columns from %s worksheet", deviceCommandSheetName), err)
 	}
 
-	// checks at least 2 rows exists in the DeviceCommand sheet (1 header and 1 data row)
-	if len(rows) >= 2 {
-		header = rows[0]
+	// checks at least 2 columns exists in the DeviceCommand sheet (1 header and 1 data column)
+	// and parses the header column
+	if len(cols) >= 2 {
+		header = cols[0]
 	} else {
-		// not enough row defined in the DeviceCommand sheet, skip the following code and return
+		// not enough column defined in the DeviceCommand sheet, skip the following code and return
 		return nil
 	}
 
-	// parse the Device Command data rows
-	for rowIndex, row := range rows {
-		if rowIndex == 0 {
+	for colIndex, col := range cols {
+		// skip the header column
+		if colIndex == 0 {
 			continue
 		}
 
-		convertedDC := dtos.DeviceCommand{}
-		_, err = readStruct(&convertedDC, header, row, nil)
-		if err != nil {
-			return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to unmarshal an xlsx row into DeviceCommand DTO", err)
+		// check if the column has any non-empty cell
+		// if yes, convert the xlsx column to DeviceCommand DTO
+		nonEmptyCol := false
+		for _, rowCell := range col {
+			if rowCell != "" {
+				nonEmptyCol = true
+				break
+			}
 		}
 
-		// validate the DeviceCommand DTO
-		err = common.Validate(convertedDC)
-		if err != nil {
-			dpXlsx.validateErrors[validateErrCommandPrefix+convertedDC.Name] = err
-		} else {
-			convertedProfile.DeviceCommands = append(convertedProfile.DeviceCommands, convertedDC)
+		if nonEmptyCol {
+			// parse the DeviceCommand data columns
+			convertedDC := dtos.DeviceCommand{}
+			_, err = readStruct(&convertedDC, header, col, dpXlsx.fieldMappings)
+			if err != nil {
+				return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to unmarshal an xlsx column into DeviceCommand DTO", err)
+			}
+
+			// validate the DeviceCommand DTO
+			err = common.Validate(convertedDC)
+			if err != nil {
+				dpXlsx.validateErrors[validateErrCommandPrefix+convertedDC.Name] = err
+			} else {
+				convertedProfile.DeviceCommands = append(convertedProfile.DeviceCommands, convertedDC)
+			}
 		}
 	}
 	return nil

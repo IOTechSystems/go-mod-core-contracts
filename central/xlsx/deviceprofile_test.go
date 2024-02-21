@@ -269,12 +269,12 @@ func Test_DeviceProfile_convertDeviceCommands_NoDeviceCommandSheet(t *testing.T)
 
 func Test_DeviceProfile_convertDeviceCommands(t *testing.T) {
 	validDeviceCommandHeader := []any{"Name", "IsHidden", "ReadWrite", "ResourceName"}
-	validDeviceCommandRow := []any{"Curing_time", "FALSE", "R", "IP_Curing_time_St_4"}
-	invalidIsHiddenRow := append([]any(nil), validDeviceCommandRow...)
-	invalidIsHiddenRow[1] = "invalid"
+	validDeviceCommandCol := []any{"Curing_time", "FALSE", "R", "IP_Curing_time_St_4"}
+	invalidIsHiddenCol := append([]any(nil), validDeviceCommandCol...)
+	invalidIsHiddenCol[1] = "invalid"
 
-	invalidReadWriteRow := append([]any(nil), validDeviceCommandRow...)
-	invalidReadWriteRow[2] = "invalid"
+	invalidReadWriteCol := append([]any(nil), validDeviceCommandCol...)
+	invalidReadWriteCol[2] = "invalid"
 
 	tests := []struct {
 		name                string
@@ -283,9 +283,9 @@ func Test_DeviceProfile_convertDeviceCommands(t *testing.T) {
 		expectValidateError bool
 	}{
 		{"convertDeviceCommands with row count less than 2", []any{}, false, false},
-		{"convertDeviceCommands - success", validDeviceCommandRow, false, false},
-		{"convertDeviceCommands - invalid IsHidden", invalidIsHiddenRow, true, false},
-		{"convertDeviceCommands - invalid ReadWrite", invalidReadWriteRow, false, true},
+		{"convertDeviceCommands - success", validDeviceCommandCol, false, false},
+		{"convertDeviceCommands - invalid IsHidden", invalidIsHiddenCol, true, false},
+		{"convertDeviceCommands - invalid ReadWrite", invalidReadWriteCol, false, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -297,10 +297,10 @@ func Test_DeviceProfile_convertDeviceCommands(t *testing.T) {
 			_, err = xlsFile.NewSheet(deviceCommandSheetName)
 			require.NoError(t, err)
 			convertedProfile := &dtos.DeviceProfile{}
-			err = xlsFile.SetSheetRow(deviceCommandSheetName, "A1", &validDeviceCommandHeader)
+			err = xlsFile.SetSheetCol(deviceCommandSheetName, "A1", &validDeviceCommandHeader)
 			require.NoError(t, err)
 			dataRow := tt.dataRow
-			err = xlsFile.SetSheetRow(deviceCommandSheetName, "A2", &dataRow)
+			err = xlsFile.SetSheetCol(deviceCommandSheetName, "B1", &dataRow)
 			require.NoError(t, err)
 			err = dpX.(*deviceProfileXlsx).convertDeviceCommands(convertedProfile)
 			if tt.expectError {
