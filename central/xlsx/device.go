@@ -96,7 +96,7 @@ func (deviceXlsx *deviceXlsx) ConvertToDTO() errors.EdgeX {
 			continue
 		}
 
-		convertedDevice := dtos.Device{ProtocolName: protocol}
+		convertedDevice := dtos.Device{Properties: map[string]any{common.ProtocolName: protocol}}
 		_, err = readStruct(&convertedDevice, header, row, deviceXlsx.fieldMappings)
 		if err != nil {
 			return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to unmarshal an xlsx row into Device DTO", err)

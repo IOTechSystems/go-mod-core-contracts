@@ -20,9 +20,6 @@ type Device struct {
 	AutoEvents     []AutoEvent
 	Tags           map[string]any
 	Properties     map[string]any
-
-	// Central
-	ProtocolName   string
 }
 
 // ProtocolProperties contains the device connection information in key/value pair

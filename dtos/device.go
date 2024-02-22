@@ -6,8 +6,10 @@
 package dtos
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
@@ -26,9 +28,6 @@ type Device struct {
 	Protocols      map[string]ProtocolProperties `json:"protocols" yaml:"protocols" validate:"required,gt=0"`
 	Tags           map[string]any                `json:"tags,omitempty" yaml:"tags,omitempty"`
 	Properties     map[string]any                `json:"properties,omitempty" yaml:"properties,omitempty"`
-
-	// Central
-	ProtocolName   string                        `json:"protocolName,omitempty"`
 }
 
 type UpdateDevice struct {
@@ -65,7 +64,9 @@ func ToDeviceModel(dto Device) models.Device {
 	d.Properties = dto.Properties
 
 	// Central
-	d.ProtocolName = strings.ToLower(dto.ProtocolName)
+	if protocolName, ok := dto.Properties[common.ProtocolName]; ok {
+		d.Properties[common.ProtocolName] = strings.ToLower(fmt.Sprintf("%v", protocolName))
+	}
 	return d
 }
 
@@ -86,9 +87,6 @@ func FromDeviceModelToDTO(d models.Device) Device {
 	dto.Protocols = FromProtocolModelsToDTOs(d.Protocols)
 	dto.Tags = d.Tags
 	dto.Properties = d.Properties
-
-	// Central
-	dto.ProtocolName = d.ProtocolName
 	return dto
 }
 

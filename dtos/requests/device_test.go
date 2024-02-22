@@ -53,8 +53,10 @@ var testAddDevice = AddDeviceRequest{
 		Location:       testDeviceLocation,
 		Tags:           map[string]interface{}{"1": TestTag1, "2": TestTag2},
 		AutoEvents:     testAutoEvents,
-		ProtocolName:   testProtocolName,
 		Protocols:      testProtocols,
+		Properties: map[string]any{
+			common.ProtocolName: testProtocolName,
+		},
 	},
 }
 
@@ -233,13 +235,15 @@ func Test_AddDeviceReqToDeviceModels(t *testing.T) {
 			AutoEvents: []models.AutoEvent{
 				{SourceName: "TestDevice", Interval: "300ms", OnChange: true},
 			},
-			ProtocolName: "modbus-ip",
 			Protocols: map[string]models.ProtocolProperties{
 				"modbus-ip": {
 					"Address": "localhost",
 					"Port":    "1502",
 					"UnitID":  "1",
 				},
+			},
+			Properties: map[string]any{
+				common.ProtocolName: "modbus-ip",
 			},
 		},
 	}
