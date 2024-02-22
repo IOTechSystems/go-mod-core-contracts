@@ -17,8 +17,7 @@ func TestToXrtDevice(t *testing.T) {
 	profileName := "test-profile"
 	serviceName := "device-bacnet-ip"
 	device := models.Device{
-		Name:         deviceName,
-		ProtocolName: common.BacnetIP,
+		Name: deviceName,
 		Protocols: map[string]models.ProtocolProperties{
 			common.BacnetIP: {
 				common.BacnetDeviceInstance: "1234",
@@ -28,12 +27,15 @@ func TestToXrtDevice(t *testing.T) {
 		ServiceName:    serviceName,
 		AdminState:     models.Unlocked,
 		OperatingState: models.Up,
+		Properties: map[string]any{
+			common.ProtocolName: common.BacnetIP,
+		},
 	}
 	xrtDevice, err := ToXrtDevice(device)
 	require.NoError(t, err)
 
 	assert.Equal(t, deviceName, xrtDevice.Name)
-	assert.Equal(t, common.BacnetIP, xrtDevice.ProtocolName)
+	assert.Equal(t, common.BacnetIP, xrtDevice.Properties[common.ProtocolName])
 	assert.Equal(t, 1234, xrtDevice.Protocols[common.BacnetIP][common.BacnetDeviceInstance])
 	assert.Equal(t, profileName, xrtDevice.ProfileName)
 	assert.Equal(t, serviceName, xrtDevice.ServiceName)
