@@ -27,10 +27,6 @@ var testIdentifiers = map[string]string{
 var testBlockingIdentifiers = map[string][]string{
 	"port": {"397", "398", "399"},
 }
-var testDeviceDescription = "test device description"
-var testDeviceNamePattern = "device-name-{{Address}}-{{Port}}"
-var testProfileNamePattern = "profile-name-{{Address}}-{{Port}}"
-var testProfileDescription = "test profile description"
 var testAddProvisionWatcher = AddProvisionWatcherRequest{
 	BaseRequest: common.BaseRequest{
 		RequestId:   ExampleUUID,

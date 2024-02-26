@@ -45,14 +45,14 @@ const (
 	name                              = "Name"
 
 	// Central
-	reservedCharsRegexString          = "^[^/#+$]+$"
+	reservedCharsRegexString = "^[^/#+$]+$"
 )
 
 var (
 	rFC3986UnreservedCharsRegex = regexp.MustCompile(rFC3986UnreservedCharsRegexString)
 
 	// Central
-	reservedCharsRegex          = regexp.MustCompile(reservedCharsRegexString)
+	reservedCharsRegex = regexp.MustCompile(reservedCharsRegexString)
 )
 
 func init() {
