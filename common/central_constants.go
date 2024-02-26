@@ -115,10 +115,6 @@ const (
 
 // Constants related for DeviceChangedNotification
 const (
-	DeviceCreateAction = "Device creation"
-	DeviceUpdateAction = "Device update"
-	DeviceRemoveAction = "Device removal"
-
 	DeviceChangedNotificationCategory = "DEVICE_CHANGED"
 )
 
