@@ -22,7 +22,7 @@ type DeviceProfile struct {
 	DeviceCommands         []DeviceCommand  `json:"deviceCommands" yaml:"deviceCommands" validate:"dive"`
 
 	// Central
-	ApiVersion             string `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
+	ApiVersion string `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
 }
 
 // Validate satisfies the Validator interface
@@ -46,7 +46,7 @@ func (dp *DeviceProfile) UnmarshalYAML(unmarshal func(interface{}) error) error 
 		DeviceCommands         []DeviceCommand  `yaml:"deviceCommands"`
 
 		// Central
-		ApiVersion             string `yaml:"apiVersion"`
+		ApiVersion string `yaml:"apiVersion"`
 	}
 	if err := unmarshal(&alias); err != nil {
 		return edgexErrors.NewCommonEdgeX(edgexErrors.KindContractInvalid, "failed to unmarshal request body as YAML.", err)
@@ -82,7 +82,7 @@ func ToDeviceProfileModel(deviceProfileDTO DeviceProfile) models.DeviceProfile {
 		DeviceCommands:  ToDeviceCommandModels(deviceProfileDTO.DeviceCommands),
 
 		// Central
-		ApiVersion:      deviceProfileDTO.ApiVersion,
+		ApiVersion: deviceProfileDTO.ApiVersion,
 	}
 }
 
@@ -105,7 +105,7 @@ func FromDeviceProfileModelToDTO(deviceProfile models.DeviceProfile) DeviceProfi
 		DeviceCommands:  FromDeviceCommandModelsToDTOs(deviceProfile.DeviceCommands),
 
 		// Central
-		ApiVersion:  deviceProfile.ApiVersion,
+		ApiVersion: deviceProfile.ApiVersion,
 	}
 }
 

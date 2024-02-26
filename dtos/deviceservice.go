@@ -19,7 +19,7 @@ type DeviceService struct {
 	AdminState  string   `json:"adminState" validate:"oneof='LOCKED' 'UNLOCKED'"`
 
 	// Central
-	TransformScript string   `json:"transformScript,omitempty"`
+	TransformScript string `json:"transformScript,omitempty"`
 }
 
 type UpdateDeviceService struct {
@@ -31,7 +31,7 @@ type UpdateDeviceService struct {
 	AdminState  *string  `json:"adminState" validate:"omitempty,oneof='LOCKED' 'UNLOCKED'"`
 
 	// Central
-	TransformScript *string  `json:"transformScript"`
+	TransformScript *string `json:"transformScript"`
 }
 
 // ToDeviceServiceModel transforms the DeviceService DTO to the DeviceService Model

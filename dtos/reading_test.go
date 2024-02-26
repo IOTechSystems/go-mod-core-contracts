@@ -429,7 +429,6 @@ func TestUnmarshalObjectValueError(t *testing.T) {
 
 // Central
 
-
 func TestNewObjectArrayReading(t *testing.T) {
 	expectedDeviceName := TestDeviceName
 	expectedProfileName := TestDeviceProfileName

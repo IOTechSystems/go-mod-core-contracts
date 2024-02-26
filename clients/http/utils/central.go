@@ -15,15 +15,6 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
-// edgeXClientReqURI returns the non-encoded path?query that would be used in an HTTP request for u.
-func edgeXClientReqURI(u *url.URL) string {
-	result := u.Scheme + "://" + u.Host + u.Path
-	if u.ForceQuery || u.RawQuery != "" {
-		result += "?" + u.RawQuery
-	}
-	return result
-}
-
 // CentralGetRequest makes the get request and return the body
 func CentralGetRequest(ctx context.Context, returnValuePointer interface{}, baseUrl string, requestPath string, requestParams url.Values, authInjector interfaces.AuthenticationInjector) errors.EdgeX {
 	req, edgexErr := createRequest(ctx, http.MethodGet, baseUrl, requestPath, requestParams)
