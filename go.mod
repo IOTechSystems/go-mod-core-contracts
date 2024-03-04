@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/fxamacker/cbor/v2 v2.6.0
 	github.com/go-kit/log v0.2.1
-	github.com/go-playground/validator/v10 v10.18.0
+	github.com/go-playground/validator/v10 v10.19.0
 	github.com/google/uuid v1.6.0
 	github.com/pelletier/go-toml/v2 v2.1.1
 	github.com/stretchr/testify v1.9.0
