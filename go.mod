@@ -8,7 +8,7 @@ require (
 	github.com/go-playground/validator/v10 v10.18.0
 	github.com/google/uuid v1.6.0
 	github.com/pelletier/go-toml/v2 v2.1.1
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/xuri/excelize/v2 v2.8.1
 	go.einride.tech/can v0.7.0
 	golang.org/x/exp v0.0.0-20231226003508-02704c960a9b
@@ -29,7 +29,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xuri/efp v0.0.0-20231025114914-d1ff6096ae53 // indirect
 	github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05 // indirect
