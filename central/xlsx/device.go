@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,6 +8,7 @@ package xlsx
 import (
 	"fmt"
 	"io"
+	"slices"
 	"strings"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
@@ -15,7 +16,6 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 
 	"github.com/xuri/excelize/v2"
-	"golang.org/x/exp/slices"
 )
 
 // requiredSheets defines the required worksheet names in the xlsx file

@@ -95,6 +95,8 @@ func Test_ConvertDeviceProfileXlsx_WithDeviceInfoSheet(t *testing.T) {
 	require.NoError(t, err)
 	err = sw.SetRow("A2", validResourceRow)
 	require.NoError(t, err)
+	err = sw.Flush()
+	require.NoError(t, err)
 
 	buffer, err := f.WriteToBuffer()
 	require.NoError(t, err)
