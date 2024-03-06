@@ -104,7 +104,10 @@ func TestEvent_ToXML(t *testing.T) {
 		"<Latitude>29.630771</Latitude>",
 		"<Longitude>-95.377603</Longitude>",
 		"</Tags></Event>",
-		"<Readings><Id>7a1707f0-166f-4c4b-bc9d-1d54c74e0137</Id><Origin>1594963842</Origin><DeviceName>TestDevice</DeviceName><Tags><1>TestTag1</1><2>TestTag2</2></Tags><ResourceName>TestSourceName</ResourceName><ProfileName>TestDeviceProfileName</ProfileName><ValueType>Int8</ValueType><Units></Units><Tags><1>TestTag1</1><2>TestTag2</2></Tags><BinaryValue></BinaryValue><MediaType></MediaType><Value></Value></Readings>",
+		"<Readings><Id>7a1707f0-166f-4c4b-bc9d-1d54c74e0137</Id><Origin>1594963842</Origin><DeviceName>TestDevice</DeviceName><Tags>",
+		"<1>TestTag1</1>",
+		"<2>TestTag2</2>",
+		"</Tags><ResourceName>TestSourceName</ResourceName><ProfileName>TestDeviceProfileName</ProfileName><ValueType>Int8</ValueType><Units></Units><Tags><1>TestTag1</1><2>TestTag2</2></Tags><BinaryValue></BinaryValue><MediaType></MediaType><Value></Value></Readings>",
 	}
 	actual, _ := expectedDTO.ToXML()
 	for _, item := range contains {
