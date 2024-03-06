@@ -125,7 +125,7 @@ func TestAddProvisionWatcherRequest_Validate(t *testing.T) {
 		{"valid AddProvisionWatcherRequest, no Request Id", noReqId, false},
 		{"invalid AddProvisionWatcherRequest, Request Id is not an uuid", invalidReqId, true},
 		{"invalid AddProvisionWatcherRequest, no ProvisionWatcherName", noProvisionWatcherName, true},
-		{"valid AddProvisionWatcherRequest, ProvisionWatcherName with reserved chars", provisionWatcherNameWithReservedChar, true},
+		{"valid AddProvisionWatcherRequest, ProvisionWatcherName with reserved chars", provisionWatcherNameWithReservedChar, false},
 		{"invalid AddProvisionWatcherRequest, no Identifiers", noIdentifiers, true},
 		{"invalid AddProvisionWatcherRequest, missing Identifiers key", missingIdentifiersKey, true},
 		{"invalid AddProvisionWatcherRequest, missing Identifiers value", missingIdentifiersValue, true},
@@ -271,7 +271,7 @@ func TestUpdateProvisionWatcherRequest_Validate(t *testing.T) {
 		{"valid, only name", validOnlyName, false},
 		{"valid, name and empty Id", nameAndEmptyId, false},
 		{"invalid, empty name", invalidEmptyName, true},
-		{"valid, name with reserved chars", reservedName, true},
+		{"valid, name with reserved chars", reservedName, false},
 
 		{"invalid, no Id and name", noIdAndName, true},
 
