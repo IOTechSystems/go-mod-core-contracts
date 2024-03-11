@@ -1,4 +1,4 @@
-// Copyright (C) 2022-2023 IOTech Ltd
+// Copyright (C) 2022-2024 IOTech Ltd
 
 package xrtmodels
 
@@ -12,47 +12,6 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
-
-func toXrtProperties(protocol string, protocolProperties map[string]interface{}) errors.EdgeX {
-	intProperties, floatProperties, boolProperties := propertyConversionList(protocol)
-
-	for _, p := range intProperties {
-		propertyValue, ok := protocolProperties[p]
-		if ok {
-			// convert property value from interface{} to string, then to int
-			val, err := strconv.Atoi(fmt.Sprintf("%v", propertyValue))
-			if err != nil {
-				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("fail to convert %v to int", p), err)
-			}
-			protocolProperties[p] = int(val)
-		}
-	}
-
-	for _, p := range floatProperties {
-		propertyValue, ok := protocolProperties[p]
-		if ok {
-			// convert property value from interface{} to string, then to float
-			val, err := strconv.ParseFloat(fmt.Sprintf("%v", propertyValue), 64)
-			if err != nil {
-				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("fail to convert %v to float", p), err)
-			}
-			protocolProperties[p] = val
-		}
-	}
-
-	for _, p := range boolProperties {
-		propertyValue, ok := protocolProperties[p]
-		if ok {
-			// convert property value from interface{} to string, then to bool
-			val, err := strconv.ParseBool(fmt.Sprintf("%v", propertyValue))
-			if err != nil {
-				return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("fail to convert %v to bool", p), err)
-			}
-			protocolProperties[p] = val
-		}
-	}
-	return nil
-}
 
 func toEdgeXProperties(protocol string, protocolProperties map[string]any) map[string]string {
 	intProperties, floatProperties, boolProperties := propertyConversionList(protocol)
