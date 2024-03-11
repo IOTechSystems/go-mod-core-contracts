@@ -1,4 +1,4 @@
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2024 IOTech Ltd
 
 package xrtmodels
 
@@ -70,14 +70,6 @@ func ToXrtDevice(device models.Device) (deviceInfo DeviceInfo, edgexErr errors.E
 	err = json.Unmarshal(deviceData, &deviceInfo)
 	if err != nil {
 		return deviceInfo, errors.NewCommonEdgeXWrapper(err)
-	}
-
-	// Convert the EdgeX protocol properties to xrt protocol properties
-	for protocol, v := range deviceInfo.Protocols {
-		err = toXrtProperties(protocol, v)
-		if err != nil {
-			return deviceInfo, errors.NewCommonEdgeXWrapper(err)
-		}
 	}
 
 	// Process the specified protocol for XRT
