@@ -272,7 +272,7 @@ const (
 	CoreCommonConfigServiceKey          = "core-common-config-bootstrapper"
 	SupportLoggingServiceKey            = "support-logging"
 	SupportNotificationsServiceKey      = "support-notifications"
-	SystemManagementAgentServiceKey     = "sys-mgmt"
+	SystemManagementServiceKey          = "sys-mgmt"
 	SupportSchedulerServiceKey          = "support-scheduler"
 	SecuritySecretStoreSetupServiceKey  = "security-secretstore-setup"
 	SecurityProxyAuthServiceKey         = "security-proxy-auth"
