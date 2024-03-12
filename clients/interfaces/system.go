@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -13,7 +13,7 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
-// SystemManagementClient defines the interface for interactions with the API endpoint on the EdgeX Foundry sys-mgmt-agent service.
+// SystemManagementClient defines the interface for interactions with the API endpoint on the IOTech sys-mgmt service.
 type SystemManagementClient interface {
 	// GetHealth obtain health information of services via registry by their name
 	GetHealth(ctx context.Context, services []string) ([]common.BaseWithServiceNameResponse, errors.EdgeX)

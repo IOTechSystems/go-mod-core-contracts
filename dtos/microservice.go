@@ -1,10 +1,10 @@
 //
-// Copyright (C) 2022 IOTech Ltd
+// Copyright (C) 2022-2024 IOTech Ltd
 //
 
 package dtos
 
-// Port and its properties are defined in the edgex-go-private sys-mgmt-agent APIv2 specification
+// Port and its properties are defined in the edgex-go-private sys-mgmt API specification
 type Port struct {
 	// Host IP address that the container's port is mapped to
 	IP string `json:"ip,omitempty"`
@@ -19,7 +19,7 @@ type Port struct {
 	Type string `json:"type"`
 }
 
-// MicroService and its properties are defined in the edgex-go-private sys-mgmt-agent APIv2 specification
+// MicroService and its properties are defined in the edgex-go-private sys-mgmt API specification
 type MicroService struct {
 	ID        string            `json:"id"`
 	Names     []string          `json:"names"`

@@ -11,8 +11,7 @@ type Metrics struct {
 }
 
 // MetricsResponse defines the providing memory and cpu utilization stats of the service.
-// This object and its properties correspond to the MetricsResponse object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/core-data/2.1.0#/MetricsResponse
+// This object and its properties correspond to the MetricsResponse object in the API specification
 type MetricsResponse struct {
 	Versionable `json:",inline"`
 	Metrics     Metrics `json:"metrics"`
@@ -29,8 +28,7 @@ func NewMetricsResponse(metrics Metrics, serviceName string) MetricsResponse {
 }
 
 // BaseWithMetricsResponse defines the base content for response DTOs (data transfer objects).
-// This object and its properties correspond to the BaseWithMetricsResponse object in the APIv2 specification:
-// https://app.swaggerhub.com/apis-docs/EdgeXFoundry1/system-agent/2.1.0#/BaseWithMetricsResponse
+// This object and its properties correspond to the BaseWithMetricsResponse object in the API specification
 type BaseWithMetricsResponse struct {
 	BaseResponse `json:",inline"`
 	ServiceName  string      `json:"serviceName"`
