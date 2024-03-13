@@ -67,7 +67,7 @@ const (
 	EtherNetIPMinorRevision     = "MinorRevision"
 	EtherNetIPAddress           = "Address"
 
-	EtherCAT             = "ethercat"
+	EtherCAT             = "EtherCAT"
 	EtherCATNetworkIndex = "NetworkIndex"
 	EtherCATSyncMode     = "SyncMode"
 )
