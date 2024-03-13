@@ -213,6 +213,17 @@ func TestToXrtProperties(t *testing.T) {
 				common.EtherNetIPMinorRevision: 2,
 			},
 		},
+		{
+			protocol: common.EtherCAT,
+			properties: map[string]interface{}{
+				common.EtherCATNetworkIndex: "1",
+				common.EtherCATSyncMode:     "3",
+			},
+			expected: map[string]interface{}{
+				common.EtherCATNetworkIndex: 1,
+				common.EtherCATSyncMode:     3,
+			},
+		},
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.protocol, func(t *testing.T) {
@@ -314,6 +325,17 @@ func TestToEdgeXProperties(t *testing.T) {
 				common.ModbusBaudRate: "0",
 				common.ModbusDataBits: "5",
 				common.ModbusStopBits: "1",
+			},
+		},
+		{
+			protocol: common.EtherCAT,
+			properties: map[string]interface{}{
+				common.EtherCATNetworkIndex: float64(1),
+				common.EtherCATSyncMode:     float64(3),
+			},
+			expected: map[string]string{
+				common.EtherCATNetworkIndex: "1",
+				common.EtherCATSyncMode:     "3",
 			},
 		},
 	}
