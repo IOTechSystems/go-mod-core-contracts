@@ -66,6 +66,10 @@ const (
 	EtherNetIPMajorRevision     = "MajorRevision"
 	EtherNetIPMinorRevision     = "MinorRevision"
 	EtherNetIPAddress           = "Address"
+
+	EtherCAT             = "ethercat"
+	EtherCATNetworkIndex = "NetworkIndex"
+	EtherCATSyncMode     = "SyncMode"
 )
 
 // constants relate to the remote edge node

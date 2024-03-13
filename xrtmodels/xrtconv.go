@@ -127,6 +127,8 @@ func propertyConversionList(protocol string) ([]string, []string, []string) {
 			common.EtherNetIPMajorRevision, common.EtherNetIPMinorRevision}
 	case dbc.Canbus:
 		intProperties = []string{dbc.ID, dbc.DataSize, dbc.Port}
+	case common.EtherCAT:
+		intProperties = []string{common.EtherCATNetworkIndex, common.EtherCATSyncMode}
 	}
 	return intProperties, floatProperties, boolProperties
 }
