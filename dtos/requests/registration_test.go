@@ -1,6 +1,7 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
+// SPDX-License-Identifier: Apache-2.0
 
 package requests
 
@@ -26,7 +27,7 @@ func TestAddRegistrationRequest_Validate(t *testing.T) {
 			Port:      5959,
 			HealthCheck: dtos.HealthCheck{
 				Interval: "10s",
-				Path:     "/api/v2/ping",
+				Path:     "/api/v3/ping",
 				Type:     "http",
 			},
 		},
@@ -35,6 +36,10 @@ func TestAddRegistrationRequest_Validate(t *testing.T) {
 	emptyServiceId.Registration.ServiceId = ""
 	emptyPort := valid
 	emptyPort.Registration.Port = 0
+	emptyHost := valid
+	emptyHost.Registration.Host = ""
+	emptyHealthCheckPath := valid
+	emptyHealthCheckPath.Registration.HealthCheck.Path = ""
 	emptyHealthCheckType := valid
 	emptyHealthCheckType.Registration.HealthCheck.Type = ""
 	invalidInterval := valid
@@ -48,6 +53,8 @@ func TestAddRegistrationRequest_Validate(t *testing.T) {
 		{"valid AddRegistrationRequest", valid, false},
 		{"invalid AddRegistrationRequest, empty service id", emptyServiceId, true},
 		{"invalid AddRegistrationRequest, empty port", emptyPort, true},
+		{"invalid AddRegistrationRequest, empty host", emptyHost, true},
+		{"invalid AddRegistrationRequest, empty HealthCheck path", emptyHealthCheckPath, true},
 		{"invalid AddRegistrationRequest, empty HealthCheck type", emptyHealthCheckType, true},
 		{"invalid AddRegistrationRequest, invalid HealthCheck interval", invalidInterval, true},
 	}

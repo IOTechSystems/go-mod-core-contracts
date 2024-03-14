@@ -1,6 +1,7 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
+// SPDX-License-Identifier: Apache-2.0
 
 package dtos
 
@@ -18,7 +19,7 @@ const (
 	port            = 5959
 	host            = "edgex-mock-service"
 	interval        = "10s"
-	path            = "/api/v2/ping"
+	path            = "/api/v3/ping"
 	healthCheckType = "http"
 )
 

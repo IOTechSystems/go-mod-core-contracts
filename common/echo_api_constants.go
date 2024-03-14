@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -94,4 +94,7 @@ const (
 	ApiScheduleActionRecordRouteByStatusEchoRoute           = ApiScheduleActionRecordRoute + "/" + Status + "/:" + Status
 	ApiScheduleActionRecordRouteByJobNameEchoRoute          = ApiScheduleActionRecordRoute + "/" + Job + "/" + Name + "/:" + Name
 	ApiScheduleActionRecordRouteByJobNameAndStatusEchoRoute = ApiScheduleActionRecordRoute + "/" + Job + "/" + Name + "/:" + Name + Status + "/:" + Status
+
+	ApiKVSByKeyEchoRoute                = ApiKVSRoute + "/" + Key + "/:" + Key
+	ApiRegistrationByServiceIdEchoRoute = ApiRegisterRoute + "/" + ServiceId + "/:" + ServiceId
 )

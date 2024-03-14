@@ -1,17 +1,17 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
+// SPDX-License-Identifier: Apache-2.0
 
 package models
 
 type Registration struct {
 	DBTimestamp
-	ServiceId     string
-	Status        string
-	Host          string
-	Port          int
-	HealthCheck   HealthCheck
-	LastConnected int64
+	ServiceId   string
+	Status      string
+	Host        string
+	Port        int
+	HealthCheck HealthCheck
 }
 
 type HealthCheck struct {

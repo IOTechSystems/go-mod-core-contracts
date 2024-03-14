@@ -1,6 +1,7 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
+// SPDX-License-Identifier: Apache-2.0
 
 package interfaces
 
@@ -12,7 +13,7 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
-// KVSClient defines the interface for interactions with the kvs endpoint on the Edge Central core-keeper service.
+// KVSClient defines the interface for interactions with the kvs endpoint on the EdgeX core-keeper service.
 type KVSClient interface {
 	// UpdateValuesByKey updates values of the specified key and the child keys defined in the request payload.
 	// If no key exists at the given path, the key(s) will be created.

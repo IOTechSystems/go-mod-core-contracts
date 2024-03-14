@@ -1,6 +1,7 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
+// SPDX-License-Identifier: Apache-2.0
 
 package interfaces
 
@@ -12,7 +13,7 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 )
 
-// RegistryClient defines the interface for interactions with the registry endpoint on the Edge Central core-keeper service.
+// RegistryClient defines the interface for interactions with the registry endpoint on the EdgeX core-keeper service.
 type RegistryClient interface {
 	Register(context.Context, requests.AddRegistrationRequest) errors.EdgeX
 	UpdateRegister(context.Context, requests.AddRegistrationRequest) errors.EdgeX
