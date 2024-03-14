@@ -28,6 +28,7 @@ func TestToXrtDevice(t *testing.T) {
 		ServiceName:    serviceName,
 		AdminState:     models.Unlocked,
 		OperatingState: models.Up,
+		AutoEvents:     []models.AutoEvent{{Interval: "1h", OnChange: false, SourceName: "source1"}, {Interval: "1m", OnChange: true, SourceName: "source2"}},
 	}
 	xrtDevice, err := ToXrtDevice(device)
 	require.NoError(t, err)
@@ -39,6 +40,7 @@ func TestToXrtDevice(t *testing.T) {
 	assert.Equal(t, serviceName, xrtDevice.ServiceName)
 	assert.Equal(t, models.Unlocked, xrtDevice.AdminState)
 	assert.Equal(t, models.Up, xrtDevice.OperatingState)
+	assert.Equal(t, device.AutoEvents, xrtDevice.Properties[common.IOTechPrefix+common.AutoEvents])
 }
 
 func TestToXrtProperties(t *testing.T) {
