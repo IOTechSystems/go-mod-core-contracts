@@ -1,4 +1,4 @@
-// Copyright (C) 2022 IOTech Ltd
+// Copyright (C) 2022-2024 IOTech Ltd
 
 package xrtmodels
 
@@ -6,9 +6,44 @@ import (
 	"testing"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v2/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v2/models"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func testDeviceInfo() DeviceInfo {
+	return DeviceInfo{
+		Device: dtos.Device{
+			Name:           "test-name",
+			Description:    "test description",
+			AdminState:     "UNLOCKED",
+			OperatingState: "UP",
+			Labels:         []string{"test label"},
+			Location:       []string{"test location"},
+			Tags:           map[string]any{"test": "tag"},
+			ServiceName:    "device-modbus",
+			ProfileName:    "test-profile",
+			AutoEvents:     nil,
+			ProtocolName:   "modbus",
+			Protocols:      nil,
+			Properties: map[string]any{
+				common.IOTechPrefix + common.AutoEvents: []map[string]any{
+					{"interval": "1h", "onChange": false, "sourceName": "source1"},
+					{"interval": "1m", "onChange": true, "sourceName": "source2"},
+				},
+			},
+		},
+		Protocols: map[string]map[string]interface{}{
+			"modbus": {
+				"Address": "127.0.0.1",
+				"Port":    1502,
+				"UnitID":  1,
+			},
+		},
+	}
+}
 
 func TestProcessEtherNetIP(t *testing.T) {
 	tests := []struct {
@@ -99,4 +134,40 @@ func TestProcessEtherNetIP(t *testing.T) {
 			assert.EqualValues(t, testCase.expected, testCase.protocol)
 		})
 	}
+}
+
+func TestToEdgeXV2Device(t *testing.T) {
+	deviceInfo := testDeviceInfo()
+	res, err := ToEdgeXV2Device(deviceInfo, deviceInfo.ServiceName)
+	require.NoError(t, err)
+	assert.EqualValues(t, deviceInfo.Name, res.Name)
+	assert.EqualValues(t, deviceInfo.Description, res.Description)
+	assert.EqualValues(t, deviceInfo.AdminState, res.AdminState)
+	assert.EqualValues(t, deviceInfo.OperatingState, res.OperatingState)
+	assert.EqualValues(t, deviceInfo.Labels, res.Labels)
+	assert.EqualValues(t, deviceInfo.Location, res.Location)
+	assert.EqualValues(t, deviceInfo.ServiceName, res.ServiceName)
+	assert.EqualValues(t, deviceInfo.ProfileName, res.ProfileName)
+	assert.EqualValues(t, deviceInfo.Tags, res.Tags)
+	assert.EqualValues(t, deviceInfo.ProtocolName, res.ProtocolName)
+	assert.EqualValues(t, map[string]models.ProtocolProperties{"modbus": {"Address": "127.0.0.1", "Port": "1502", "UnitID": "1"}}, res.Protocols)
+	assert.EqualValues(t, []models.AutoEvent{{Interval: "1h", OnChange: false, SourceName: "source1"}, {Interval: "1m", OnChange: true, SourceName: "source2"}}, res.AutoEvents)
+}
+
+func TestToEdgeXV2DeviceDTO(t *testing.T) {
+	deviceInfo := testDeviceInfo()
+	res, err := ToEdgeXV2DeviceDTO(deviceInfo)
+	require.NoError(t, err)
+	assert.EqualValues(t, deviceInfo.Name, res.Name)
+	assert.EqualValues(t, deviceInfo.Description, res.Description)
+	assert.EqualValues(t, deviceInfo.AdminState, res.AdminState)
+	assert.EqualValues(t, deviceInfo.OperatingState, res.OperatingState)
+	assert.EqualValues(t, deviceInfo.Labels, res.Labels)
+	assert.EqualValues(t, deviceInfo.Location, res.Location)
+	assert.EqualValues(t, deviceInfo.ServiceName, res.ServiceName)
+	assert.EqualValues(t, deviceInfo.ProfileName, res.ProfileName)
+	assert.EqualValues(t, deviceInfo.Tags, res.Tags)
+	assert.EqualValues(t, deviceInfo.ProtocolName, res.ProtocolName)
+	assert.EqualValues(t, map[string]dtos.ProtocolProperties{"modbus": {"Address": "127.0.0.1", "Port": "1502", "UnitID": "1"}}, res.Protocols)
+	assert.EqualValues(t, []dtos.AutoEvent{{Interval: "1h", OnChange: false, SourceName: "source1"}, {Interval: "1m", OnChange: true, SourceName: "source2"}}, res.AutoEvents)
 }
