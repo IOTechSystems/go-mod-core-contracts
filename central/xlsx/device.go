@@ -102,6 +102,13 @@ func (deviceXlsx *deviceXlsx) ConvertToDTO() errors.EdgeX {
 			return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to unmarshal an xlsx row into Device DTO", err)
 		}
 
+		for k, v := range convertedDevice.Protocols {
+			err = toXrtProperties(k, v)
+			if err != nil {
+				return errors.NewCommonEdgeX(errors.Kind(err), "failed to convert EdgeX protocol properties to device connector protocol properties", err)
+			}
+		}
+
 		// validate the device DTO
 		err = common.Validate(convertedDevice)
 		if err != nil {
