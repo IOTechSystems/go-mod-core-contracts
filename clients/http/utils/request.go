@@ -206,11 +206,21 @@ func DeleteRequestWithParams(ctx context.Context, returnValuePointer interface{}
 		return errors.NewCommonEdgeXWrapper(err)
 	}
 
-	res, err := sendRequest(ctx, req, authInjector)
+	return processRequest(ctx, returnValuePointer, req, authInjector)
+}
+
+// processRequest is a helper function to process the request and get the return value
+func processRequest(ctx context.Context,
+	returnValuePointer any, req *http.Request, authInjector interfaces.AuthenticationInjector) errors.EdgeX {
+	resp, err := sendRequest(ctx, req, authInjector)
 	if err != nil {
 		return errors.NewCommonEdgeXWrapper(err)
 	}
-	if err := json.Unmarshal(res, returnValuePointer); err != nil {
+	// Check the response content length to avoid json unmarshal error
+	if len(resp) == 0 {
+		return nil
+	}
+	if err := json.Unmarshal(resp, returnValuePointer); err != nil {
 		return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to parse the response body", err)
 	}
 	return nil
