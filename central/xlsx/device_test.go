@@ -9,6 +9,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 
 	"github.com/stretchr/testify/require"
@@ -16,16 +17,22 @@ import (
 )
 
 var (
-	deviceHeaderStr   = []string{"Name", "Description", "ServiceName", "ProtocolName", "Labels", "AdminState", "Address", "BaudRate", "DataBits", "Parity", "StopBits", "UnitID", "ProfileName"}
+	deviceHeaderStr   = []string{"Name", "Description", "ServiceName", "ProtocolName", "Labels", "AdminState", common.ModbusAddress, common.ModbusBaudRate, common.ModbusDataBits, common.ModbusParity, common.ModbusStopBits, common.ModbusUnitID, "ProfileName"}
 	mockTagsHeader    = "MachineType"
 	validDeviceHeader = []any{
-		"Name", "Description", "ServiceName", "ProtocolName", "Labels", "AdminState", "Address", "BaudRate", "DataBits", "Parity", "StopBits", "UnitID", "ProfileName", mockTagsHeader,
+		"Name", "Description", "ServiceName", "ProtocolName", "Labels", "AdminState", common.ModbusAddress, common.ModbusBaudRate, common.ModbusDataBits, common.ModbusParity, common.ModbusStopBits, common.ModbusUnitID, "ProfileName", mockTagsHeader,
 	}
-	mockDeviceName1   = "Sensor30001"
-	mockDeviceAddress = "/dev/virtualport"
-	mockTags1         = "Motor"
-	validDeviceRow    = []any{
-		mockDeviceName1, "test-rtu-device 30001", "device-modbus", modbusRTUKey, "modbus-rtu-labels1,modbus-rtu-labels2", "LOCKED", mockDeviceAddress, "19200", "8", "O", "1", "247", "rtu-profile", mockTags1,
+	mockDeviceName1    = "Sensor30001"
+	mockDeviceAddress  = "/dev/virtualport"
+	mockDeviceBaudRate = 19200
+	mockDeviceDataBits = 8
+	mockDeviceParity   = "O"
+	mockDeviceStopBits = 1
+	mockDeviceUnitID   = 247
+
+	mockTags1      = "Motor"
+	validDeviceRow = []any{
+		mockDeviceName1, "test-rtu-device 30001", "device-modbus", modbusRTUKey, "modbus-rtu-labels1,modbus-rtu-labels2", "LOCKED", mockDeviceAddress, mockDeviceBaudRate, mockDeviceDataBits, mockDeviceParity, mockDeviceStopBits, mockDeviceUnitID, "rtu-profile", mockTags1,
 	}
 	emptyValidateErr = map[string]error{}
 )
@@ -115,6 +122,46 @@ func createMappingTableSheet(f *excelize.File) error {
 
 	err = sw.SetRow("A7",
 		[]any{
+			"BaudRate", "protocols.modbus-rtu.BaudRate", "",
+		})
+	if err != nil {
+		return err
+	}
+
+	err = sw.SetRow("A8",
+		[]any{
+			"DataBits", "protocols.modbus-rtu.DataBits", "",
+		})
+	if err != nil {
+		return err
+	}
+
+	err = sw.SetRow("A9",
+		[]any{
+			"Parity", "protocols.modbus-rtu.Parity", "",
+		})
+	if err != nil {
+		return err
+	}
+
+	err = sw.SetRow("A10",
+		[]any{
+			"StopBits", "protocols.modbus-rtu.StopBits", "",
+		})
+	if err != nil {
+		return err
+	}
+
+	err = sw.SetRow("A11",
+		[]any{
+			"UnitID", "protocols.modbus-rtu.UnitID", "",
+		})
+	if err != nil {
+		return err
+	}
+
+	err = sw.SetRow("A12",
+		[]any{
 			"MachineType", "tags.MachineType", "",
 		})
 	if err != nil {
@@ -172,7 +219,12 @@ func Test_convertToDTO(t *testing.T) {
 	devices := deviceX.GetDTOs()
 	require.Equal(t, 1, len(devices))
 	require.Equal(t, mockDeviceName1, devices[0].Name)
-	require.Equal(t, mockDeviceAddress, devices[0].Protocols[modbusRTUKey]["Address"])
+	require.Equal(t, mockDeviceAddress, devices[0].Protocols[modbusRTUKey][common.ModbusAddress])
+	require.Equal(t, mockDeviceBaudRate, devices[0].Protocols[modbusRTUKey][common.ModbusBaudRate])
+	require.Equal(t, mockDeviceDataBits, devices[0].Protocols[modbusRTUKey][common.ModbusDataBits])
+	require.Equal(t, mockDeviceParity, devices[0].Protocols[modbusRTUKey][common.ModbusParity])
+	require.Equal(t, mockDeviceStopBits, devices[0].Protocols[modbusRTUKey][common.ModbusStopBits])
+	require.Equal(t, mockDeviceUnitID, devices[0].Protocols[modbusRTUKey][common.ModbusUnitID])
 	require.Equal(t, mockTags1, devices[0].Tags[mockTagsHeader])
 }
 
