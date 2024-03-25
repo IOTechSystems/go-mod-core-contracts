@@ -1,10 +1,10 @@
-// Copyright (C) 2021-2023 IOTech Ltd
+// Copyright (C) 2021-2024 IOTech Ltd
 
 package xrtmodels
 
 import (
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
 const (
@@ -130,7 +130,7 @@ type ProfileResponse struct {
 
 type ProfileResult struct {
 	BaseResult `json:",inline"`
-	Profile    models.DeviceProfile `json:"profile"`
+	Profile    dtos.DeviceProfile `json:"profile"`
 }
 
 type MultiSchedulesResponse struct {
@@ -151,4 +151,12 @@ type MultiComponentsResponse struct {
 type MultiComponentsResult struct {
 	BaseResult `json:",inline"`
 	Components []Component `json:"components"`
+}
+
+// ComponentsDiscoveryResponse is used to reply the discovery:discover operation
+type ComponentsDiscoveryResponse struct {
+	Components []Component `json:"components"`
+	NodeID     string      `json:"nodeId"`
+	ServerID   string      `json:"serverId"`
+	Type       string      `json:"type"`
 }

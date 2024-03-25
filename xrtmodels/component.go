@@ -5,6 +5,18 @@
 
 package xrtmodels
 
+// constants of device connector settings
+const (
+	Name           = "Name"
+	EventTopic     = "EventTopic"
+	ReplyTopic     = "ReplyTopic"
+	RequestTopic   = "RequestTopic"
+	TelemetryTopic = "TelemetryTopic"
+
+	DeviceServiceCategory      = "XRT::DeviceService"
+	DeviceServiceRunningStatus = "Running"
+)
+
 type Component struct {
 	Category string         `json:"category"`
 	Config   map[string]any `json:"config"`

@@ -31,8 +31,9 @@ const (
 
 	DiscoveryTriggerOperation = "discovery:trigger"
 
-	ComponentUpdateOperation   = "component:update"
-	ComponentDiscoverOperation = "component:discover"
+	ComponentUpdateOperation    = "component:update"
+	ComponentDiscoverOperation  = "component:discover" // Discover state and configuration of all components in an instance
+	ComponentDiscoveryOperation = "discovery:discover" // Discover state and configuration of all components from all Xrt instances
 )
 
 type BaseRequest struct {
@@ -93,6 +94,12 @@ type GetResourcesRequest struct {
 	BaseRequest `json:",inline"`
 	DeviceName  string   `json:"device"`
 	Resource    []string `json:"resource"`
+}
+
+type GetResourceRequest struct {
+	BaseRequest `json:",inline"`
+	DeviceName  string `json:"device"`
+	Resource    string `json:"resource"`
 }
 
 type PutResourceRequest struct {
