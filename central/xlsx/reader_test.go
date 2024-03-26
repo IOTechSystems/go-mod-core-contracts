@@ -53,10 +53,16 @@ func Test_readStruct(t *testing.T) {
 
 func Test_getStructFieldByHeader(t *testing.T) {
 	rowElement := reflect.New(reflect.TypeOf(dtos.DeviceProfile{})).Elem()
-	headerCol := []string{"Name"}
+	colNameWithoutSpace := "Manufacturer"
+	colNameWithSpace := " " + colNameWithoutSpace
+	headerCol := []string{"Name", colNameWithSpace}
 	headerName, field := getStructFieldByHeader(&rowElement, 0, headerCol)
 	require.Equal(t, "Name", headerName)
 	require.Equal(t, reflect.String, field.Kind())
+
+	headerName2, field2 := getStructFieldByHeader(&rowElement, 1, headerCol)
+	require.Equal(t, colNameWithoutSpace, headerName2)
+	require.Equal(t, reflect.String, field2.Kind())
 }
 
 func Test_setStdStructFieldValue(t *testing.T) {

@@ -56,9 +56,9 @@ func getStructFieldByHeader(structEle *reflect.Value, colIndex int, headerCol []
 	headerLastIndex := len(headerCol) - 1
 	// check if row length is larger than the header
 	if colIndex > headerLastIndex {
-		headerName = headerCol[headerLastIndex]
+		headerName = strings.TrimSpace(headerCol[headerLastIndex])
 	} else {
-		headerName = headerCol[colIndex]
+		headerName = strings.TrimSpace(headerCol[colIndex])
 	}
 	field := structEle.FieldByName(headerName)
 	return headerName, field
