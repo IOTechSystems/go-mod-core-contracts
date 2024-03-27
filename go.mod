@@ -7,7 +7,6 @@ require (
 	github.com/go-kit/log v0.2.1
 	github.com/go-playground/validator/v10 v10.18.0
 	github.com/google/uuid v1.6.0
-	github.com/pelletier/go-toml/v2 v2.2.0
 	github.com/stretchr/testify v1.9.0
 	github.com/xuri/excelize/v2 v2.8.1
 	go.einride.tech/can v0.7.0
