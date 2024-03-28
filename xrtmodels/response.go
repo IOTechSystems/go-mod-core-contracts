@@ -156,7 +156,7 @@ type MultiComponentsResult struct {
 // ComponentsDiscoveryResponse is used to reply the discovery:discover operation
 type ComponentsDiscoveryResponse struct {
 	Components []Component `json:"components"`
-	NodeID     string      `json:"nodeId"`
-	ServerID   string      `json:"serverId"`
+	NodeID     string      `json:"node_id"`
+	ServerID   string      `json:"server_id"`
 	Type       string      `json:"type"`
 }
