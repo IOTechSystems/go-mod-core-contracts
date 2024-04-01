@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/stretchr/testify/assert"
@@ -16,9 +17,9 @@ func TestToXrtDevice(t *testing.T) {
 	deviceName := "test-device"
 	profileName := "test-profile"
 	serviceName := "device-bacnet-ip"
-	device := models.Device{
+	device := dtos.Device{
 		Name: deviceName,
-		Protocols: map[string]models.ProtocolProperties{
+		Protocols: map[string]dtos.ProtocolProperties{
 			common.BacnetIP: {
 				common.BacnetDeviceInstance: 1234,
 			},

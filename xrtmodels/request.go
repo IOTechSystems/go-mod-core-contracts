@@ -1,10 +1,9 @@
-// Copyright (C) 2021-2023 IOTech Ltd
+// Copyright (C) 2021-2024 IOTech Ltd
 
 package xrtmodels
 
 import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 
 	"github.com/google/uuid"
 )
@@ -153,28 +152,28 @@ func NewAllProfilesRequest(clientName string) BaseRequest {
 }
 
 // NewProfileAddRequest creates request with device profile
-func NewProfileAddRequest(profile models.DeviceProfile, clientName string) AddProfileRequest {
+func NewProfileAddRequest(profile dtos.DeviceProfile, clientName string) AddProfileRequest {
 	req := AddProfileRequest{
 		BaseRequest: BaseRequest{
 			Client:    clientName,
 			RequestId: uuid.New().String(),
 			Op:        ProfileAddOperation,
 		},
-		Profile: dtos.FromDeviceProfileModelToDTO(profile),
+		Profile: profile,
 	}
 
 	return req
 }
 
 // NewProfileUpdateRequest creates request with v1 device profile
-func NewProfileUpdateRequest(profile models.DeviceProfile, clientName string) UpdateProfileRequest {
+func NewProfileUpdateRequest(profile dtos.DeviceProfile, clientName string) UpdateProfileRequest {
 	req := UpdateProfileRequest{
 		BaseRequest: BaseRequest{
 			Client:    clientName,
 			RequestId: uuid.New().String(),
 			Op:        ProfileUpdateOperation,
 		},
-		Profile: dtos.FromDeviceProfileModelToDTO(profile),
+		Profile: profile,
 	}
 
 	return req
