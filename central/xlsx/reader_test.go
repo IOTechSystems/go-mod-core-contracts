@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -7,6 +7,8 @@ package xlsx
 
 import (
 	"reflect"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
@@ -226,35 +228,82 @@ func Test_convertDeviceCommandFields(t *testing.T) {
 	}
 }
 
-func Test_convertResourcesFields_Invalid(t *testing.T) {
-	rowElement := reflect.New(reflect.TypeOf(dtos.DeviceResource{})).Elem()
-	headerCol := []string{"Name", "IsHidden", "ValueType"}
+func Test_convertResourcesFields(t *testing.T) {
+	headerCol := []string{"Name", "IsHidden", "ValueType", "nodeAttribute"}
 	invalidIsHiddenRow := []string{"testCommand", "invalid", "Int64"}
-	validDataRow := []string{"testCommand", "true", "Int64"}
-	deviceX, err := createDeviceXlsxInst()
+	validDataRow := []string{"testCommand", "true", "Int64", "value"}
+	deviceX, err := createDeviceProfileXlsxInst()
 	require.NoError(t, err)
 
-	validMappings := deviceX.(*deviceXlsx).fieldMappings
+	validMappings := deviceX.(*deviceProfileXlsx).fieldMappings
 	tests := []struct {
 		name          string
-		rowElement    *reflect.Value
 		dataRow       []string
 		headerCol     []string
 		fieldMappings map[string]mappingField
 		expectError   bool
 	}{
-		{"Invalid convertResourcesFields - no fieldMappings", &rowElement, validDataRow, headerCol, nil, true},
-		{"Invalid convertResourcesFields - invalid IsHidden cell", &rowElement, invalidIsHiddenRow, headerCol, validMappings, true},
-		{"Valid convertResourcesFields", &rowElement, validDataRow, headerCol, validMappings, false},
+		{"Invalid convertResourcesFields - no fieldMappings", validDataRow, headerCol, nil, true},
+		{"Invalid convertResourcesFields - invalid IsHidden cell", invalidIsHiddenRow, headerCol, validMappings, true},
+		{"Valid convertResourcesFields", validDataRow, headerCol, validMappings, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := convertResourcesFields(tt.rowElement, tt.dataRow, tt.headerCol, tt.fieldMappings)
+			structPtr := dtos.DeviceResource{}
+			v := reflect.ValueOf(&structPtr)
+			elementType := v.Elem().Type()
+			element := reflect.New(elementType).Elem()
+
+			err := convertResourcesFields(&element, tt.dataRow, tt.headerCol, tt.fieldMappings)
+			v.Elem().Set(element)
 			if tt.expectError {
 				require.Error(t, err, "Expected convertResourcesFields error not occurred")
 			} else {
 				require.NoError(t, err, "Unexpected convertResourcesFields error occurred")
+				require.Equal(t, validDataRow[0], structPtr.Name)
+				require.Equal(t, validDataRow[1], strconv.FormatBool(structPtr.IsHidden))
+				require.Equal(t, validDataRow[2], structPtr.Properties.ValueType)
+				require.Equal(t, validDataRow[3], structPtr.Attributes[headerCol[3]])
 			}
 		})
+	}
+}
+
+func Test_convertResourcesFields_Nested_Attributes(t *testing.T) {
+	nestedAttrName1 := "dataTypeId.identifier"
+	nestedAttrName2 := "dataTypeId.identifierType"
+
+	headerCol := []string{"Name", nestedAttrName1, nestedAttrName2}
+	dataRow := []string{"testCommand", "8", "NUMERIC"}
+	deviceProfileX, err := createDeviceProfileXlsxInst()
+	require.NoError(t, err)
+
+	fieldMappings := deviceProfileX.(*deviceProfileXlsx).fieldMappings
+
+	structPtr := dtos.DeviceResource{}
+	v := reflect.ValueOf(&structPtr)
+	elementType := v.Elem().Type()
+	element := reflect.New(elementType).Elem()
+
+	err = convertResourcesFields(&element, dataRow, headerCol, fieldMappings)
+	require.NoError(t, err)
+	v.Elem().Set(element)
+
+	require.Equal(t, dataRow[0], structPtr.Name)
+
+	// check the converted nested attributes int64 value
+	splitAttrNames := strings.Split(nestedAttrName1, mappingPathSeparator)
+	if innerAttr, ok := structPtr.Attributes[splitAttrNames[0]].(map[string]any); ok {
+		if attrVal, innerOk := innerAttr[splitAttrNames[1]].(int64); innerOk {
+			require.Equal(t, dataRow[1], strconv.FormatInt(attrVal, 10))
+		}
+	}
+
+	// check the converted nested attributes string value
+	splitAttrNames = strings.Split(nestedAttrName2, mappingPathSeparator)
+	if innerAttr, ok := structPtr.Attributes[splitAttrNames[0]].(map[string]any); ok {
+		if attrVal, innerOk := innerAttr[splitAttrNames[1]]; innerOk {
+			require.Equal(t, dataRow[2], attrVal)
+		}
 	}
 }

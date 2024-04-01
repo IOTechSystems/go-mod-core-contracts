@@ -343,11 +343,21 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 			} else {
 				// set the cell to Attributes map if header not belongs to Properties field
 				if fieldValue != "" {
+					// check if the header defined in the mapping table first, and if the path contains "attributes"
+					// if not, skip this column and move to the next
+					if fieldMapping, ok := fieldMappings[headerName]; ok {
+						if !strings.Contains(strings.ToLower(fieldMapping.path), strings.ToLower(attributes)) {
+							continue
+						}
+					}
+
+					var attrMap map[string]any
 					attrMapField := rowElement.FieldByName(attributes)
 					if attrMapField.Len() == 0 {
 						// initialize the Attributes map
-						attrMap := make(map[string]any)
-						attrMapField.Set(reflect.MakeMap(reflect.TypeOf(attrMap)))
+						attrMap = make(map[string]any)
+					} else {
+						attrMap = attrMapField.Interface().(map[string]any)
 					}
 
 					var attrValue any
@@ -360,7 +370,32 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 					} else {
 						attrValue = fieldValue
 					}
-					attrMapField.SetMapIndex(reflect.ValueOf(headerName), reflect.ValueOf(attrValue))
+
+					// to handle the nested attribute name, split the attribute name using the "." separator into array
+					attrNames := strings.Split(headerName, mappingPathSeparator)
+					attrNameLength := len(attrNames)
+					currentAttrMap := attrMap
+
+					for i, attrName := range attrNames {
+						if i == attrNameLength-1 {
+							// the last part of attribute name
+							currentAttrMap[attrName] = attrValue
+						} else {
+							if _, ok := currentAttrMap[attrName]; !ok {
+								currentAttrMap[attrName] = make(map[string]any)
+							}
+							if innerMap, ok := currentAttrMap[attrName].(map[string]any); ok {
+								// set the current attribute map to the inner attribute map
+								currentAttrMap = innerMap
+							} else {
+								return errors.NewCommonEdgeX(errors.KindContractInvalid,
+									fmt.Sprintf("error occurred while converting the nested attribute of '%s' column", headerName), nil)
+							}
+						}
+					}
+
+					// set the attrMap back to the attrMapField
+					attrMapField.Set(reflect.ValueOf(attrMap))
 				}
 			}
 		}
