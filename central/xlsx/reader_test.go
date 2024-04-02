@@ -6,6 +6,7 @@
 package xlsx
 
 import (
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 	"reflect"
 	"strconv"
 	"strings"
@@ -132,9 +133,8 @@ func Test_setProtocolPropMap_WithMappingTableSheet(t *testing.T) {
 }
 
 func Test_convertDeviceFields(t *testing.T) {
-	rowElement := reflect.New(reflect.TypeOf(dtos.Device{})).Elem()
-	headerCol := []string{"Name", "LastConnected"}
-	validDataRow := []string{"TestDevice", "0"}
+	headerCol := []string{"Name", common.ModbusAddress, common.ModbusBaudRate, "ProtocolName", mockTagsHeader}
+	validDataRow := []string{"TestDevice", mockDeviceAddress, strconv.FormatInt(int64(mockDeviceBaudRate), 10), "", mockTags1}
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
 
@@ -142,22 +142,31 @@ func Test_convertDeviceFields(t *testing.T) {
 
 	tests := []struct {
 		name          string
-		rowElement    *reflect.Value
 		dataRow       []string
 		headerCol     []string
 		fieldMappings map[string]mappingField
 		expectError   bool
 	}{
-		{"Invalid convertDeviceFields - no fieldMappings", &rowElement, validDataRow, headerCol, nil, true},
-		{"Valid convertDeviceFields", &rowElement, validDataRow, headerCol, validMappings, false},
+		{"Invalid convertDeviceFields - no fieldMappings", validDataRow, headerCol, nil, true},
+		{"Valid convertDeviceFields", validDataRow, headerCol, validMappings, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := convertDeviceFields(tt.rowElement, tt.dataRow, tt.headerCol, tt.fieldMappings)
+			structPtr := dtos.Device{}
+			v := reflect.ValueOf(&structPtr)
+			elementType := v.Elem().Type()
+			element := reflect.New(elementType).Elem()
+
+			err := convertDeviceFields(&element, tt.dataRow, tt.headerCol, tt.fieldMappings)
 			if tt.expectError {
 				require.Error(t, err, "Expected convertDeviceFields error not occurred")
 			} else {
 				require.NoError(t, err, "Unexpected convertDeviceFields error occurred")
+				v.Elem().Set(element)
+				require.Equal(t, modbusRTUKey, structPtr.Properties[common.ProtocolName])
+				require.Equal(t, mockDeviceAddress, structPtr.Protocols[modbusRTUKey][common.ModbusAddress])
+				require.Equal(t, int64(mockDeviceBaudRate), structPtr.Protocols[modbusRTUKey][common.ModbusBaudRate])
+				require.Equal(t, mockTags1, structPtr.Tags[mockTagsHeader])
 			}
 		})
 	}
