@@ -42,16 +42,16 @@ func ToEdgeXV2Device(device DeviceInfo, serviceName string) v2models.Device {
 }
 
 // ToEdgeXV3Device converts the XRT model to EdgeX v3 model
-func ToEdgeXV3Device(device DeviceInfo, serviceName string) models.Device {
+func ToEdgeXV3Device(device DeviceInfo, serviceName string) dtos.Device {
 	for protocol := range device.Protocols {
 		device.Properties[common.ProtocolName] = strings.ToLower(protocol)
 	}
-	return models.Device{
+	return dtos.Device{
 		Name:           device.Name,
 		Description:    "",
 		AdminState:     models.Unlocked,
 		OperatingState: models.Up,
-		Protocols:      dtos.ToProtocolModels(device.Protocols),
+		Protocols:      device.Protocols,
 		Labels:         nil,
 		Location:       nil,
 		ServiceName:    serviceName,
@@ -62,7 +62,7 @@ func ToEdgeXV3Device(device DeviceInfo, serviceName string) models.Device {
 }
 
 // ToXrtDevice converts the EdgeX model to XRT model
-func ToXrtDevice(device models.Device) (deviceInfo DeviceInfo, edgexErr errors.EdgeX) {
+func ToXrtDevice(device dtos.Device) (deviceInfo DeviceInfo, edgexErr errors.EdgeX) {
 	deviceData, err := json.Marshal(device)
 	if err != nil {
 		return deviceInfo, errors.NewCommonEdgeXWrapper(err)

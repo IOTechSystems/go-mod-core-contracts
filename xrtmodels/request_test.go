@@ -1,4 +1,4 @@
-// Copyright (C) 2021-2023 IOTech Ltd
+// Copyright (C) 2021-2024 IOTech Ltd
 
 package xrtmodels
 
@@ -6,14 +6,14 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewRequest(t *testing.T) {
-	profile := models.DeviceProfile{}
+	profile := dtos.DeviceProfile{}
 	device := DeviceInfo{}
 	clientName := "testClient"
 	addProfileRequest, err := json.Marshal(NewProfileAddRequest(profile, clientName))
