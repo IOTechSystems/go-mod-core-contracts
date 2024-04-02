@@ -7,7 +7,9 @@ package xlsx
 
 import (
 	"fmt"
+	"reflect"
 	"slices"
+	"strconv"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
 
@@ -75,4 +77,33 @@ func checkRequiredSheets(allSheetNames, requiredSheets []string) errors.EdgeX {
 		}
 	}
 	return nil
+}
+
+// setMapToStructField sets the map value to the given field of the struct pointer
+func setMapToStructField(rowElement *reflect.Value, fieldName string, mapValue map[string]any) errors.EdgeX {
+	propsField := rowElement.FieldByName(fieldName)
+	if propsField.Kind() == reflect.Invalid {
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to find %s field in struct", fieldName), nil)
+	}
+	if propsField.Kind() != reflect.Map {
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to set map to non-map '%s' field in struct", fieldName), nil)
+	}
+	propsField.Set(reflect.ValueOf(mapValue))
+	return nil
+}
+
+// parseStringToActualType parses the string value to the actual type (int64, float64 or boolean) if the value can be converted
+func parseStringToActualType(strValue string) any {
+	var convertedValue any
+
+	if intValue, err := strconv.ParseInt(strValue, 10, 64); err == nil {
+		convertedValue = intValue
+	} else if floatValue, err := strconv.ParseFloat(strValue, 64); err == nil {
+		convertedValue = floatValue
+	} else if boolValue, err := strconv.ParseBool(strValue); err == nil {
+		convertedValue = boolValue
+	} else {
+		convertedValue = strValue
+	}
+	return convertedValue
 }

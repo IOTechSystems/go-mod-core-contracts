@@ -172,6 +172,7 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 		return errors.NewCommonEdgeX(errors.KindServerError, "fieldMappings not defined while converting device fields", nil)
 	}
 	protocolProperties := dtos.ProtocolProperties{}
+	propertiesMap := make(map[string]any)
 	tagsMap := make(map[string]any)
 
 	for colIndex, cell := range xlsxRow {
@@ -196,15 +197,26 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 			if fieldValue != "" {
 				// get the Path defined in the MappingTable
 				if mapping, ok := fieldMappings[headerName]; ok && mapping.path != "" {
-					path := mapping.path
-					fieldPrefix := strings.SplitN(path, mappingPathSeparator, 2)[0]
+					splitPaths := strings.SplitN(mapping.path, mappingPathSeparator, 2)
+					fieldPrefix := strings.TrimSpace(splitPaths[0])
+
+					fieldName := headerName
+					if len(splitPaths) > 1 {
+						fieldName = strings.TrimSpace(splitPaths[1])
+					}
+
+					convertedValue := parseStringToActualType(fieldValue)
+
 					switch fieldPrefix {
 					case strings.ToLower(protocols):
 						// set the cell to Protocols map
-						protocolProperties[headerName] = fieldValue
+						protocolProperties[headerName] = convertedValue
+					case strings.ToLower(properties):
+						// set the cell to Protocols map
+						propertiesMap[fieldName] = convertedValue
 					case strings.ToLower(tags):
 						// set the cell to Tags map
-						tagsMap[headerName] = fieldValue
+						tagsMap[headerName] = convertedValue
 					default:
 						// unknown column header
 						continue
@@ -226,13 +238,19 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 		}
 		prtField.Set(reflect.ValueOf(prtPropMap))
 	}
+	// set Properties field to the Device DTO struct
+	if len(propertiesMap) > 0 {
+		err := setMapToStructField(rowElement, properties, propertiesMap)
+		if err != nil {
+			return errors.NewCommonEdgeXWrapper(err)
+		}
+	}
 	// set Tags field to the Device DTO struct
 	if len(tagsMap) > 0 {
-		tagsField := rowElement.FieldByName(tags)
-		if tagsField.Kind() == reflect.Invalid {
-			return errors.NewCommonEdgeX(errors.KindServerError, "failed to find Tags field in Device DTO", nil)
+		err := setMapToStructField(rowElement, tags, tagsMap)
+		if err != nil {
+			return errors.NewCommonEdgeXWrapper(err)
 		}
-		tagsField.Set(reflect.ValueOf(tagsMap))
 	}
 
 	return nil
@@ -360,16 +378,8 @@ func convertResourcesFields(rowElement *reflect.Value, xlsxRow []string, headerC
 						attrMap = attrMapField.Interface().(map[string]any)
 					}
 
-					var attrValue any
-					if intValue, err := strconv.ParseInt(fieldValue, 10, 16); err == nil {
-						attrValue = intValue
-					} else if floatValue, err := strconv.ParseFloat(fieldValue, 64); err == nil {
-						attrValue = floatValue
-					} else if boolValue, err := strconv.ParseBool(fieldValue); err == nil {
-						attrValue = boolValue
-					} else {
-						attrValue = fieldValue
-					}
+					// parse the attribute value to the actual data type other than string if needed
+					attrValue := parseStringToActualType(fieldValue)
 
 					// to handle the nested attribute name, split the attribute name using the "." separator into array
 					attrNames := strings.Split(headerName, mappingPathSeparator)

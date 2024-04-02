@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -98,7 +98,7 @@ func createMappingTableSheet(f *excelize.File) error {
 
 	err = sw.SetRow("A4",
 		[]any{
-			"ProtocolName", "protocolName", "modbus-rtu",
+			"ProtocolName", "properties.IOTech_ProtocolName ", "modbus-rtu",
 		})
 	if err != nil {
 		return err

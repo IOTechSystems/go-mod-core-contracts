@@ -1,12 +1,16 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package xlsx
 
 import (
+	"fmt"
+	"reflect"
 	"testing"
+
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 
 	"github.com/stretchr/testify/require"
 	"github.com/xuri/excelize/v2"
@@ -69,6 +73,62 @@ func Test_checkMappingObject_WithSheet(t *testing.T) {
 					require.Equal(t, newHeaderCol[1], tt.objectField)
 				}
 			}
+		})
+	}
+}
+
+func Test_setMapToStructField(t *testing.T) {
+	mockFieldName := "testField"
+	mockFieldValue := int64(123)
+	mockMap := map[string]any{mockFieldName: mockFieldValue}
+
+	tests := []struct {
+		name        string
+		fieldName   string
+		mapValue    map[string]any
+		expectError bool
+	}{
+		{"Invalid - wrong field name", "INVALID", make(map[string]any), true},
+		{"Invalid - non-map field", "Description", mockMap, true},
+		{"Valid - set map field", properties, mockMap, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			structPtr := dtos.Device{}
+			v := reflect.ValueOf(&structPtr)
+			elementType := v.Elem().Type()
+			element := reflect.New(elementType).Elem()
+
+			err := setMapToStructField(&element, tt.fieldName, tt.mapValue)
+			if tt.expectError {
+				require.Error(t, err, "Expected setMapToStructField error not occurred")
+			} else {
+				require.NoError(t, err, "Unexpected setMapToStructField error occurred")
+				v.Elem().Set(element)
+				require.Equal(t, int64(mockFieldValue), structPtr.Properties[mockFieldName])
+			}
+		})
+	}
+}
+
+func Test_parseStringToActualType(t *testing.T) {
+	mockFloatValue := 3.14
+	mockIntValue := 6999
+	mockBoolValue := true
+
+	tests := []struct {
+		name          string
+		originString  string
+		expectedValue any
+	}{
+		{"Parse string to float64", fmt.Sprintf("%f", mockFloatValue), mockFloatValue},
+		{"Parse string to int64", fmt.Sprintf("%d", mockIntValue), int64(mockIntValue)},
+		{"Parse boolean to int64", fmt.Sprintf("%t", mockBoolValue), mockBoolValue},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := parseStringToActualType(tt.originString)
+			require.Equal(t, result, tt.expectedValue)
 		})
 	}
 }
