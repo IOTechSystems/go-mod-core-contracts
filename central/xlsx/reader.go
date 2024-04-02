@@ -199,7 +199,12 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 				if mapping, ok := fieldMappings[headerName]; ok && mapping.path != "" {
 					splitPaths := strings.SplitN(mapping.path, mappingPathSeparator, 2)
 					fieldPrefix := strings.TrimSpace(splitPaths[0])
-					fieldName := strings.TrimSpace(splitPaths[1])
+
+					fieldName := headerName
+					if len(splitPaths) > 1 {
+						fieldName = strings.TrimSpace(splitPaths[1])
+					}
+
 					convertedValue := parseStringToActualType(fieldValue)
 
 					switch fieldPrefix {
