@@ -28,6 +28,7 @@ const (
 	ScheduleAddOperation    = "schedule:add"
 	ScheduleListOperation   = "schedule:list"
 	ScheduleDeleteOperation = "schedule:delete"
+	ScheduleOptionCyclic    = "Cyclic"
 
 	DiscoveryTriggerOperation = "discovery:trigger"
 
