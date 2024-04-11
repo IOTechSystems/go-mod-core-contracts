@@ -115,6 +115,36 @@ func (_m *DeviceClient) AllDevices(ctx context.Context, labels []string, offset 
 	return r0, r1
 }
 
+// AllDevicesWithChildren provides a mock function with given fields: ctx, parent, labels, offset, limit
+func (_m *DeviceClient) AllDevicesWithChildren(ctx context.Context, parent string, labels []string, offset int, limit int) (responses.MultiDevicesResponse, errors.EdgeX) {
+	ret := _m.Called(ctx, parent, labels, offset, limit)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AllDevicesWithChildren")
+	}
+
+	var r0 responses.MultiDevicesResponse
+	var r1 errors.EdgeX
+	if rf, ok := ret.Get(0).(func(context.Context, string, []string, int, int) (responses.MultiDevicesResponse, errors.EdgeX)); ok {
+		return rf(ctx, parent, labels, offset, limit)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, []string, int, int) responses.MultiDevicesResponse); ok {
+		r0 = rf(ctx, parent, labels, offset, limit)
+	} else {
+		r0 = ret.Get(0).(responses.MultiDevicesResponse)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, []string, int, int) errors.EdgeX); ok {
+		r1 = rf(ctx, parent, labels, offset, limit)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(errors.EdgeX)
+		}
+	}
+
+	return r0, r1
+}
+
 // DeleteDeviceByName provides a mock function with given fields: ctx, name
 func (_m *DeviceClient) DeleteDeviceByName(ctx context.Context, name string) (common.BaseResponse, errors.EdgeX) {
 	ret := _m.Called(ctx, name)
