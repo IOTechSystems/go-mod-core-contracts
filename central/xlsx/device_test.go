@@ -34,7 +34,9 @@ var (
 	validDeviceRow = []any{
 		mockDeviceName1, "test-rtu-device 30001", "device-modbus", modbusRTUKey, "modbus-rtu-labels1,modbus-rtu-labels2", "LOCKED", mockDeviceAddress, mockDeviceBaudRate, mockDeviceDataBits, mockDeviceParity, mockDeviceStopBits, mockDeviceUnitID, "rtu-profile", mockTags1,
 	}
-	emptyValidateErr = map[string]error{}
+	emptyValidateErr     = map[string]error{}
+	mockExtraPropObj     = "extraPropObj"
+	mockExtraPrtPropName = "foo"
 )
 
 func Test_newDeviceXlsx(t *testing.T) {
@@ -163,6 +165,14 @@ func createMappingTableSheet(f *excelize.File) error {
 	err = sw.SetRow("A12",
 		[]any{
 			"MachineType", "tags.MachineType", "",
+		})
+	if err != nil {
+		return err
+	}
+
+	err = sw.SetRow("A13",
+		[]any{
+			mockExtraPrtPropName, "protocols." + mockExtraPropObj + "." + mockExtraPrtPropName, "",
 		})
 	if err != nil {
 		return err
