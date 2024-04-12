@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -121,57 +121,13 @@ func convertDTOStdTypeFields(rowElement *reflect.Value, xlsxRow []string, header
 	return nil
 }
 
-// setProtocolPropMap sets the ProtocolProperties outer map key based on protocol and returns the Protocols map
-func setProtocolPropMap(prtProps map[string]any, fieldMappings map[string]mappingField) (map[string]dtos.ProtocolProperties, errors.EdgeX) {
-	var protocol string
-	prtPropMap := make(map[string]dtos.ProtocolProperties)
-
-	if mapping, ok := fieldMappings[protocolName]; ok {
-		if mapping.defaultValue == "" {
-			return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, "the default value of ProtocolName not defined in MappingTable sheet", nil)
-		}
-		protocol = mapping.defaultValue
-	} else {
-		return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, "ProtocolName not defined in MappingTable sheet", nil)
-	}
-
-	switch strings.ToLower(protocol) {
-	case strings.ToLower(bacnetIPKey):
-		prtPropMap[bacnetIPKey] = prtProps
-	case strings.ToLower(bacnetMSTPKey):
-		prtPropMap[bacnetMSTPKey] = prtProps
-	case strings.ToLower(bleKey):
-		prtPropMap[bleKey] = prtProps
-	case strings.ToLower(ethernetIPKey):
-		prtPropMap[ethernetIPKey] = prtProps
-	case strings.ToLower(modbusRTUKey):
-		prtPropMap[modbusRTUKey] = prtProps
-	case strings.ToLower(modbusTCPKey):
-		prtPropMap[modbusTCPKey] = prtProps
-	case strings.ToLower(mqttKey):
-		prtPropMap[mqttKey] = prtProps
-	case strings.ToLower(onvifKey):
-		prtPropMap[onvifKey] = prtProps
-	case strings.ToLower(opcuaKey):
-		prtPropMap[opcuaKey] = prtProps
-	case strings.ToLower(s7Key):
-		prtPropMap[s7Key] = prtProps
-	case strings.ToLower(usbCamera):
-		prtPropMap[usbKey] = prtProps
-	case strings.ToLower(websocket):
-		prtPropMap[wsKey] = prtProps
-	default:
-		return nil, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("unknown ProtocolProperties outer key for '%s' protocol", protocol), nil)
-	}
-	return prtPropMap, nil
-}
-
 // convertDeviceFields convert the xlsx row to the Device DTO
 func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol []string, fieldMappings map[string]mappingField) errors.EdgeX {
 	if fieldMappings == nil {
 		return errors.NewCommonEdgeX(errors.KindServerError, "fieldMappings not defined while converting device fields", nil)
 	}
-	protocolProperties := dtos.ProtocolProperties{}
+
+	prtPropMap := make(map[string]dtos.ProtocolProperties)
 	propertiesMap := make(map[string]any)
 	tagsMap := make(map[string]any)
 
@@ -209,8 +165,47 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 
 					switch fieldPrefix {
 					case strings.ToLower(protocols):
-						// set the cell to Protocols map
-						protocolProperties[headerName] = convertedValue
+						// get the Device protocols field
+						prtMapField := rowElement.FieldByName(protocols)
+						if prtMapField.Len() > 0 {
+							// convert the prtMapField reflect.Value to map[string]ProtocolProperties
+							prtPropMap, ok = prtMapField.Interface().(map[string]dtos.ProtocolProperties)
+							if !ok {
+								return errors.NewCommonEdgeX(errors.KindServerError, "failed to convert Device Protocols field to map[string]ProtocolProperties data type", nil)
+							}
+						}
+
+						// to handle the nested ProtocolProperties name
+						// split the ProtocolProperties name using the "." separator into array
+						prtPropNames := strings.Split(fieldName, mappingPathSeparator)
+						lastPropNameIdx := len(prtPropNames) - 1
+
+						var innerPrtProp dtos.ProtocolProperties
+						for i, propName := range prtPropNames {
+							if i == lastPropNameIdx {
+								// the last part of ProtocolProperties property name
+								innerPrtProp[propName] = convertedValue
+							} else {
+								if i == 0 {
+									if _, ok := prtPropMap[propName]; !ok {
+										prtPropMap[propName] = make(dtos.ProtocolProperties)
+									}
+									// assign prtPropMap[propName] to innerPrtProp
+									innerPrtProp = prtPropMap[propName]
+								} else {
+									if _, ok := innerPrtProp[propName]; !ok {
+										// initialize a new ProtocolProperties map for inner node
+										innerPrtProp[propName] = make(dtos.ProtocolProperties)
+									}
+									innerPrtProp, ok = innerPrtProp[propName].(dtos.ProtocolProperties)
+									if !ok {
+										return errors.NewCommonEdgeX(errors.KindServerError,
+											fmt.Sprintf("failed to convert property '%s' from '%s' path to ProtocolProperties type", propName, mapping.path), nil)
+									}
+								}
+							}
+						}
+						prtMapField.Set(reflect.ValueOf(prtPropMap))
 					case strings.ToLower(properties):
 						// set the cell to Protocols map
 						propertiesMap[fieldName] = convertedValue
@@ -226,18 +221,6 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 		}
 	}
 
-	// set Protocols field to the Device DTO struct
-	if len(protocolProperties) > 0 {
-		prtField := rowElement.FieldByName(protocols)
-		if prtField.Kind() == reflect.Invalid {
-			return errors.NewCommonEdgeX(errors.KindServerError, "failed to find Protocols field in Device DTO", nil)
-		}
-		prtPropMap, err := setProtocolPropMap(protocolProperties, fieldMappings)
-		if err != nil {
-			return err
-		}
-		prtField.Set(reflect.ValueOf(prtPropMap))
-	}
 	// set Properties field to the Device DTO struct
 	if len(propertiesMap) > 0 {
 		err := setMapToStructField(rowElement, properties, propertiesMap)

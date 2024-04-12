@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -39,24 +39,7 @@ const (
 
 // constants relates to the Device protocol property keys
 const (
-	bacnetIPKey   = "BACnet-IP"
-	bacnetMSTPKey = "BACnet-MSTP"
-	bleKey        = "BLE"
-	ethernetIPKey = "ethernet-ip"
-	modbusRTUKey  = "modbus-rtu"
-	modbusTCPKey  = "modbus-tcp"
-	mqttKey       = "MQTT"
-	onvifKey      = "onvif"
-	opcuaKey      = "OPC-UA"
-	s7Key         = "S7"
-	usbKey        = "usb"
-	wsKey         = "ws"
-)
-
-// constants relates to the Device Protocol Name
-const (
-	usbCamera = "usb-camera"
-	websocket = "websocket"
+	modbusRTUKey = "modbus-rtu"
 )
 
 const mappingPathSeparator = "."

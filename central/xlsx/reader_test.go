@@ -90,51 +90,11 @@ func Test_setStdStructFieldValue(t *testing.T) {
 	}
 }
 
-func Test_setProtocolPropMap_WithoutMappingTableSheet(t *testing.T) {
-	_, err := setProtocolPropMap(map[string]any{"DataBits": "7"}, nil)
-	require.Error(t, err, "Expected fieldMapping not defined error not occurred")
-}
-
-func Test_setProtocolPropMap_WithMappingTableSheet(t *testing.T) {
-	deviceX, err := createDeviceXlsxInst()
-	require.NoError(t, err)
-
-	validMappings := deviceX.(*deviceXlsx).fieldMappings
-	invalidMappings := make(map[string]mappingField)
-	invalidMappings["ProtocolName"] = mappingField{defaultValue: "invalidPrt"}
-	tests := []struct {
-		name          string
-		prtProps      map[string]any
-		fieldMappings map[string]mappingField
-		expectError   bool
-	}{
-		{"setProtocolPropMap with valid protocol", map[string]any{"DataBits": "7"}, validMappings, false},
-		{"setProtocolPropMap with invalid protocol", map[string]any{}, invalidMappings, true},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result, err := setProtocolPropMap(tt.prtProps, tt.fieldMappings)
-			if tt.expectError {
-				require.Error(t, err, "Expected setProtocolPropMap error not occurred")
-			} else {
-				require.NoError(t, err, "Unexpected setProtocolPropMap error occurred")
-				if protocol, ok := tt.fieldMappings["ProtocolName"]; ok {
-					if prtProps, ok := result[protocol.defaultValue]; ok {
-						require.Equal(t, dtos.ProtocolProperties(tt.prtProps), prtProps)
-					} else {
-						require.Fail(t, "Unexpected setProtocolPropMap parse result")
-					}
-				} else {
-					require.Fail(t, "ProtocolName not found in tt.fieldMapping")
-				}
-			}
-		})
-	}
-}
-
 func Test_convertDeviceFields(t *testing.T) {
-	headerCol := []string{"Name", common.ModbusAddress, common.ModbusBaudRate, "ProtocolName", mockTagsHeader}
-	validDataRow := []string{"TestDevice", mockDeviceAddress, strconv.FormatInt(int64(mockDeviceBaudRate), 10), "", mockTags1}
+	extraPrtPropValue := "bar"
+	headerCol := []string{"Name", common.ModbusAddress, common.ModbusBaudRate, "ProtocolName", mockTagsHeader, mockExtraPrtPropName}
+
+	validDataRow := []string{"TestDevice", mockDeviceAddress, strconv.FormatInt(int64(mockDeviceBaudRate), 10), "", mockTags1, extraPrtPropValue}
 	deviceX, err := createDeviceXlsxInst()
 	require.NoError(t, err)
 
@@ -166,6 +126,7 @@ func Test_convertDeviceFields(t *testing.T) {
 				require.Equal(t, modbusRTUKey, structPtr.Properties[common.ProtocolName])
 				require.Equal(t, mockDeviceAddress, structPtr.Protocols[modbusRTUKey][common.ModbusAddress])
 				require.Equal(t, int64(mockDeviceBaudRate), structPtr.Protocols[modbusRTUKey][common.ModbusBaudRate])
+				require.Equal(t, extraPrtPropValue, structPtr.Protocols[mockExtraPropObj][mockExtraPrtPropName])
 				require.Equal(t, mockTags1, structPtr.Tags[mockTagsHeader])
 			}
 		})
