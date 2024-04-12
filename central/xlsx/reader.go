@@ -169,7 +169,10 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 						prtMapField := rowElement.FieldByName(protocols)
 						if prtMapField.Len() > 0 {
 							// convert the prtMapField reflect.Value to map[string]ProtocolProperties
-							prtPropMap = prtMapField.Interface().(map[string]dtos.ProtocolProperties)
+							prtPropMap, ok = prtMapField.Interface().(map[string]dtos.ProtocolProperties)
+							if !ok {
+								return errors.NewCommonEdgeX(errors.KindServerError, "failed to convert Device Protocols field to map[string]ProtocolProperties data type", nil)
+							}
 						}
 
 						// to handle the nested ProtocolProperties name
@@ -194,7 +197,11 @@ func convertDeviceFields(rowElement *reflect.Value, xlsxRow []string, headerCol 
 										// initialize a new ProtocolProperties map for inner node
 										innerPrtProp[propName] = make(dtos.ProtocolProperties)
 									}
-									innerPrtProp = innerPrtProp[propName].(dtos.ProtocolProperties)
+									innerPrtProp, ok = innerPrtProp[propName].(dtos.ProtocolProperties)
+									if !ok {
+										return errors.NewCommonEdgeX(errors.KindServerError,
+											fmt.Sprintf("failed to convert property '%s' from '%s' path to ProtocolProperties type", propName, mapping.path), nil)
+									}
 								}
 							}
 						}
