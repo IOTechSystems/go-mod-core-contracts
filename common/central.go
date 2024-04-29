@@ -1,4 +1,4 @@
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 
 package common
 
@@ -16,7 +16,7 @@ import (
 )
 
 // ParseValueByDeviceResource parses value for the specified value type
-func ParseValueByDeviceResource(valueType string, value interface{}) (interface{}, errors.EdgeX) {
+func ParseValueByDeviceResource(valueType string, value any) (any, errors.EdgeX) {
 	var err error
 
 	// Support writing the null value for specific protocol like BACnet.
