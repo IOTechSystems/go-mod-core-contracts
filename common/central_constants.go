@@ -13,6 +13,10 @@ const (
 	BacnetDeviceInstance = "DeviceInstance"
 	BacnetAddress        = "Address"
 	BacnetPort           = "Port"
+	BacnetCOVPropName    = "BACnet-COVs"
+	BacnetCOV            = "COV"
+	BacnetCOVConfirmed   = "Confirmed"
+	BacnetCOVLifetime    = "Lifetime"
 
 	Gps                   = "GPS"
 	GpsGpsdPort           = "GpsdPort"
