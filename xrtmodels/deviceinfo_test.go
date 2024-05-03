@@ -1,4 +1,4 @@
-// Copyright (C) 2022 IOTech Ltd
+// Copyright (C) 2022-2024 IOTech Ltd
 
 package xrtmodels
 
@@ -9,6 +9,7 @@ import (
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
 func TestProcessEtherNetIP(t *testing.T) {
@@ -100,4 +101,30 @@ func TestProcessEtherNetIP(t *testing.T) {
 			assert.EqualValues(t, testCase.expected, testCase.protocol)
 		})
 	}
+}
+
+func TestToEdgeXV3Device(t *testing.T) {
+	device := DeviceInfo{
+		Device: dtos.Device{
+			Name:           "test-ble-device",
+			AdminState:     models.Unlocked,
+			OperatingState: models.Up,
+			ServiceName:    "device-ble",
+			ProfileName:    "test-ble-profile",
+			Protocols: map[string]dtos.ProtocolProperties{
+				"BLE": {
+					"MAC": "00:00:00:00:00:00",
+				},
+			},
+		},
+	}
+
+	result := ToEdgeXV3Device(device, device.ServiceName)
+
+	assert.Equal(t, device.Name, result.Name)
+	assert.Equal(t, device.AdminState, result.AdminState)
+	assert.Equal(t, device.OperatingState, result.OperatingState)
+	assert.Equal(t, device.ServiceName, result.ServiceName)
+	assert.Equal(t, device.Protocols, result.Protocols)
+	assert.Equal(t, map[string]any{common.ProtocolName: "ble"}, result.Properties)
 }
