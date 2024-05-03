@@ -43,6 +43,9 @@ func ToEdgeXV2Device(device DeviceInfo, serviceName string) v2models.Device {
 
 // ToEdgeXV3Device converts the XRT model to EdgeX v3 model
 func ToEdgeXV3Device(device DeviceInfo, serviceName string) dtos.Device {
+	if device.Properties == nil {
+		device.Properties = make(map[string]any)
+	}
 	for protocol := range device.Protocols {
 		device.Properties[common.ProtocolName] = strings.ToLower(protocol)
 	}
