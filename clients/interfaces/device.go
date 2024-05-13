@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020 IOTech Ltd
+// Copyright (C) 2020-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -18,6 +18,8 @@ import (
 type DeviceClient interface {
 	// Add adds new devices.
 	Add(ctx context.Context, reqs []requests.AddDeviceRequest) ([]common.BaseWithIdResponse, errors.EdgeX)
+	// AddWithQueryParams adds new devices with query parameters.
+	AddWithQueryParams(ctx context.Context, reqs []requests.AddDeviceRequest, queryParams map[string]string) ([]common.BaseWithIdResponse, errors.EdgeX)
 	// Update updates devices.
 	Update(ctx context.Context, reqs []requests.UpdateDeviceRequest) ([]common.BaseResponse, errors.EdgeX)
 	// UpdateWithQueryParams updates devices with query parameters.
