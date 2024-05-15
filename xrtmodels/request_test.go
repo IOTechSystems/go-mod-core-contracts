@@ -34,10 +34,12 @@ func TestNewRequest(t *testing.T) {
 	require.NoError(t, err)
 	getDeviceResourceRequest, err := json.Marshal(NewDeviceResourceGetRequest(device.Name, clientName, []string{}))
 	require.NoError(t, err)
-	setDeviceResourceRequest, err := json.Marshal(NewDeviceResourceSetRequest(device.Name, clientName, map[string]interface{}{}, map[string]interface{}{}))
+	setDeviceResourceRequest, err := json.Marshal(NewDeviceResourceSetRequest(device.Name, clientName, map[string]any{}, map[string]any{}))
 	require.NoError(t, err)
 	categoryName := "IOT::Core"
 	componentDiscoverReq, err := json.Marshal(NewComponentDiscoverRequest(clientName, categoryName))
+	require.NoError(t, err)
+	scanDeviceReq, err := json.Marshal(NewDeviceScanRequest(device, clientName, map[string]any{}))
 	require.NoError(t, err)
 
 	var tests = []struct {
@@ -56,6 +58,7 @@ func TestNewRequest(t *testing.T) {
 		{"new GetDeviceResourceRequest", getDeviceResourceRequest, DeviceResourceGetOperation},
 		{"new SetDeviceResourceRequest", setDeviceResourceRequest, DeviceResourceSetOperation},
 		{"new ComponentDiscoverRequest", componentDiscoverReq, ComponentDiscoverOperation},
+		{"new DeviceScanRequest", scanDeviceReq, DeviceScanOperation},
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {

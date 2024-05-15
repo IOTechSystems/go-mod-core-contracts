@@ -152,4 +152,5 @@ const (
 	ProfileNamePattern = IOTechPrefix + "ProfileNamePattern"
 	ProfileDescription = IOTechPrefix + "ProfileDescription"
 	ProfileLabels      = IOTechPrefix + "ProfileLabels"
+	ProfileScanOptions = IOTechPrefix + "ProfileScanOptions"
 )
