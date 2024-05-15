@@ -74,8 +74,9 @@ type DiscoveredDeviceInfo struct {
 
 type ScanDeviceRequest struct {
 	BaseRequest `json:",inline"`
-	DeviceName  string `json:"device"`
-	ProfileName string `json:"profile"`
+	DeviceName  string         `json:"device"`
+	ProfileName string         `json:"profile"`
+	Options     map[string]any `json:"options"`
 }
 
 type UpdateDeviceRequest struct {
@@ -230,7 +231,7 @@ func NewDiscoveredDeviceAddRequest(device DeviceInfo, clientName string) AddDisc
 }
 
 // NewDeviceScanRequest creates a request to scan the device and generate the profile
-func NewDeviceScanRequest(device DeviceInfo, clientName string) ScanDeviceRequest {
+func NewDeviceScanRequest(device DeviceInfo, clientName string, options map[string]any) ScanDeviceRequest {
 	deviceRequest := ScanDeviceRequest{
 		BaseRequest: BaseRequest{
 			Client:    clientName,
@@ -239,6 +240,7 @@ func NewDeviceScanRequest(device DeviceInfo, clientName string) ScanDeviceReques
 		},
 		DeviceName:  device.Name,
 		ProfileName: device.ProfileName,
+		Options:     options,
 	}
 	return deviceRequest
 }
