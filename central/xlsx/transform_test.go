@@ -165,11 +165,12 @@ func createXlsxTemplateFile() (*excelize.File, error) {
 		return nil, err
 	}
 
+	resourceHeader := append(validResourceHeader, "Minimum")
 	sw, err = f.NewStreamWriter(deviceResourceSheetName)
 	if err != nil {
 		return nil, err
 	}
-	err = sw.SetRow("A1", validResourceHeader)
+	err = sw.SetRow("A1", resourceHeader)
 	if err != nil {
 		return nil, err
 	}

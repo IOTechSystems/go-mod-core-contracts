@@ -7,6 +7,7 @@ package xlsx
 import (
 	"fmt"
 	"io"
+	"strconv"
 	"testing"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
@@ -73,6 +74,7 @@ func Test_dpWriter_convertDeviceResources(t *testing.T) {
 	defer f.Close()
 
 	mockAttrValue := "HOLDING_REGISTERS"
+	minValue := float64(0)
 	mockResource := dtos.DeviceResource{
 		Description: "this is the mockRes1 resource",
 		Name:        "mockRes1",
@@ -80,6 +82,7 @@ func Test_dpWriter_convertDeviceResources(t *testing.T) {
 		Properties: dtos.ResourceProperties{
 			ValueType: "Float32",
 			ReadWrite: common.ReadWrite_R,
+			Minimum:   &minValue,
 		},
 		Attributes: map[string]any{"primaryTable": mockAttrValue},
 	}
@@ -93,6 +96,30 @@ func Test_dpWriter_convertDeviceResources(t *testing.T) {
 	value, err := xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "A2")
 	require.NoError(t, err)
 	require.Equal(t, mockResource.Name, value)
+
+	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "B2")
+	require.NoError(t, err)
+	require.Equal(t, strconv.FormatBool(mockResource.IsHidden), value)
+
+	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "C2")
+	require.NoError(t, err)
+	require.Equal(t, mockResource.Description, value)
+
+	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "D2")
+	require.NoError(t, err)
+	require.Equal(t, mockResource.Properties.ValueType, value)
+
+	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "E2")
+	require.NoError(t, err)
+	require.Equal(t, mockResource.Properties.ReadWrite, value)
+
+	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "F2")
+	require.NoError(t, err)
+	require.Equal(t, mockAttrValue, value)
+
+	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "G2")
+	require.NoError(t, err)
+	require.Equal(t, strconv.FormatFloat(*mockResource.Properties.Minimum, 'g', -1, 64), value)
 }
 
 func Test_dpWriter_convertDeviceCommand(t *testing.T) {

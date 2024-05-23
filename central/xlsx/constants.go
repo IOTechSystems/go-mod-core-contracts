@@ -39,13 +39,22 @@ const (
 	description        = "Description"
 	isHidden           = "IsHidden"
 	readWrite          = "ReadWrite"
+	units              = "Units"
+	minimum            = "Minimum"
+	maximum            = "Maximum"
+	defaultValue       = "DefaultValue"
+	mask               = "Mask"
+	shift              = "Shift"
+	scale              = "Scale"
+	base               = "Base"
+	assertion          = "Assertion"
+	mediaType          = "MediaType"
 	resourceOperation  = "ResourceOperation"
 )
 
 // constants relates to the Device protocols
 const (
 	modbusRTU = "modbus-rtu"
-	modbusTCP = "modbus-tcp"
 )
 
 const mappingPathSeparator = "."
