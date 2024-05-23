@@ -150,6 +150,42 @@ func (dpWriter *dpXlsxWriter) convertDeviceResources() errors.EdgeX {
 						cell = res.Properties.ValueType
 					case strings.ToLower(readWrite):
 						cell = res.Properties.ReadWrite
+					case strings.ToLower(units):
+						cell = res.Properties.Units
+					case strings.ToLower(minimum):
+						if res.Properties.Minimum != nil {
+							cell = *res.Properties.Minimum
+						}
+					case strings.ToLower(maximum):
+						if res.Properties.Maximum != nil {
+							cell = *res.Properties.Maximum
+						}
+					case strings.ToLower(defaultValue):
+						cell = res.Properties.DefaultValue
+					case strings.ToLower(mask):
+						if res.Properties.Mask != nil {
+							cell = *res.Properties.Mask
+						}
+					case strings.ToLower(shift):
+						if res.Properties.Shift != nil {
+							cell = *res.Properties.Shift
+						}
+					case strings.ToLower(scale):
+						if res.Properties.Scale != nil {
+							cell = *res.Properties.Scale
+						}
+					case strings.ToLower(common.Offset):
+						if res.Properties.Offset != nil {
+							cell = *res.Properties.Offset
+						}
+					case strings.ToLower(base):
+						if res.Properties.Base != nil {
+							cell = *res.Properties.Base
+						}
+					case strings.ToLower(assertion):
+						cell = res.Properties.Assertion
+					case strings.ToLower(mediaType):
+						cell = res.Properties.MediaType
 					default:
 						continue
 					}
