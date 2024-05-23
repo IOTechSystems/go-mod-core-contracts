@@ -32,7 +32,7 @@ var (
 
 	mockTags1      = "Motor"
 	validDeviceRow = []any{
-		mockDeviceName1, "test-rtu-device 30001", "device-modbus", modbusRTUKey, "modbus-rtu-labels1,modbus-rtu-labels2", "LOCKED", mockDeviceAddress, mockDeviceBaudRate, mockDeviceDataBits, mockDeviceParity, mockDeviceStopBits, mockDeviceUnitID, "rtu-profile", mockTags1,
+		mockDeviceName1, "test-rtu-device 30001", "device-modbus", modbusRTU, "modbus-rtu-labels1,modbus-rtu-labels2", "LOCKED", mockDeviceAddress, mockDeviceBaudRate, mockDeviceDataBits, mockDeviceParity, mockDeviceStopBits, mockDeviceUnitID, "rtu-profile", mockTags1,
 	}
 	emptyValidateErr     = map[string]error{}
 	mockExtraPropObj     = "extraPropObj"
@@ -229,12 +229,12 @@ func Test_convertToDTO(t *testing.T) {
 	devices := deviceX.GetDTOs()
 	require.Equal(t, 1, len(devices))
 	require.Equal(t, mockDeviceName1, devices[0].Name)
-	require.Equal(t, mockDeviceAddress, devices[0].Protocols[modbusRTUKey][common.ModbusAddress])
-	require.Equal(t, mockDeviceBaudRate, devices[0].Protocols[modbusRTUKey][common.ModbusBaudRate])
-	require.Equal(t, mockDeviceDataBits, devices[0].Protocols[modbusRTUKey][common.ModbusDataBits])
-	require.Equal(t, mockDeviceParity, devices[0].Protocols[modbusRTUKey][common.ModbusParity])
-	require.Equal(t, mockDeviceStopBits, devices[0].Protocols[modbusRTUKey][common.ModbusStopBits])
-	require.Equal(t, mockDeviceUnitID, devices[0].Protocols[modbusRTUKey][common.ModbusUnitID])
+	require.Equal(t, mockDeviceAddress, devices[0].Protocols[modbusRTU][common.ModbusAddress])
+	require.Equal(t, mockDeviceBaudRate, devices[0].Protocols[modbusRTU][common.ModbusBaudRate])
+	require.Equal(t, mockDeviceDataBits, devices[0].Protocols[modbusRTU][common.ModbusDataBits])
+	require.Equal(t, mockDeviceParity, devices[0].Protocols[modbusRTU][common.ModbusParity])
+	require.Equal(t, mockDeviceStopBits, devices[0].Protocols[modbusRTU][common.ModbusStopBits])
+	require.Equal(t, mockDeviceUnitID, devices[0].Protocols[modbusRTU][common.ModbusUnitID])
 	require.Equal(t, mockTags1, devices[0].Tags[mockTagsHeader])
 }
 

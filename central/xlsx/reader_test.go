@@ -123,9 +123,9 @@ func Test_convertDeviceFields(t *testing.T) {
 			} else {
 				require.NoError(t, err, "Unexpected convertDeviceFields error occurred")
 				v.Elem().Set(element)
-				require.Equal(t, modbusRTUKey, structPtr.Properties[common.ProtocolName])
-				require.Equal(t, mockDeviceAddress, structPtr.Protocols[modbusRTUKey][common.ModbusAddress])
-				require.Equal(t, int64(mockDeviceBaudRate), structPtr.Protocols[modbusRTUKey][common.ModbusBaudRate])
+				require.Equal(t, modbusRTU, structPtr.Properties[common.ProtocolName])
+				require.Equal(t, mockDeviceAddress, structPtr.Protocols[modbusRTU][common.ModbusAddress])
+				require.Equal(t, int64(mockDeviceBaudRate), structPtr.Protocols[modbusRTU][common.ModbusBaudRate])
 				require.Equal(t, extraPrtPropValue, structPtr.Protocols[mockExtraPropObj][mockExtraPrtPropName])
 				require.Equal(t, mockTags1, structPtr.Tags[mockTagsHeader])
 			}

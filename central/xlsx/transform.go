@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -44,4 +44,25 @@ func ConvertDeviceProfileXlsx(file io.Reader) (Converter[*dtos.DeviceProfile], e
 	}
 
 	return deviceProfileX, nil
+}
+
+func ConvertToDeviceProfileXlsx(fileReader io.Reader, w io.Writer, profile dtos.DeviceProfile) errors.EdgeX {
+	xlsxWriter, edgexErr := newDPXlsxWriter(profile, fileReader)
+	if edgexErr != nil {
+		return edgexErr
+	}
+	f := xlsxWriter.xlsxFile
+	defer f.Close()
+
+	edgexErr = xlsxWriter.ConvertToXlsx()
+	if edgexErr != nil {
+		return edgexErr
+	}
+
+	err := f.Write(w)
+	if err != nil {
+		return errors.NewCommonEdgeX(errors.KindServerError, "failed to write xlsx file to io.Writer", err)
+	}
+
+	return nil
 }
