@@ -30,16 +30,22 @@ const (
 	tags         = "Tags"
 )
 
-// constants relates to the DeviceResource/DeviceCommand DTO field names
+// constants relates to the DeviceProfile/DeviceResource/DeviceCommand DTO field names
 const (
 	attributes         = "Attributes"
 	properties         = "Properties"
 	resourceOperations = "ResourceOperations"
+	apiVersion         = "ApiVersion"
+	description        = "Description"
+	isHidden           = "IsHidden"
+	readWrite          = "ReadWrite"
+	resourceOperation  = "ResourceOperation"
 )
 
-// constants relates to the Device protocol property keys
+// constants relates to the Device protocols
 const (
-	modbusRTUKey = "modbus-rtu"
+	modbusRTU = "modbus-rtu"
+	modbusTCP = "modbus-tcp"
 )
 
 const mappingPathSeparator = "."

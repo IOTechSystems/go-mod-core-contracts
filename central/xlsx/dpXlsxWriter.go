@@ -1,0 +1,258 @@
+//
+// Copyright (C) 2024 IOTech Ltd
+//
+
+package xlsx
+
+import (
+	"fmt"
+	"io"
+	"reflect"
+	"strconv"
+	"strings"
+
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+
+	"github.com/xuri/excelize/v2"
+)
+
+// deviceProfileXlsx stores the worksheets processed result and the converted DeviceProfile DTO
+type dpXlsxWriter struct {
+	xlsxFile      *excelize.File
+	deviceProfile dtos.DeviceProfile
+}
+
+func newDPXlsxWriter(profile dtos.DeviceProfile, xlsxReader io.Reader) (*dpXlsxWriter, errors.EdgeX) {
+	// file io.Reader should be closed from the caller in ConvertToDeviceProfileXlsx method
+	f, err := excelize.OpenReader(xlsxReader)
+	if err != nil {
+		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to open xlsx template file from io.Reader", err)
+	}
+
+	return &dpXlsxWriter{
+		xlsxFile:      f,
+		deviceProfile: profile,
+	}, nil
+}
+
+// ConvertToXlsx converts the DeviceProfile DTO into xlsx file
+func (dpWriter *dpXlsxWriter) ConvertToXlsx() errors.EdgeX {
+	// convert to the DeviceInfo sheet
+	edgexErr := dpWriter.convertDeviceInfo()
+	if edgexErr != nil {
+		return errors.NewCommonEdgeXWrapper(edgexErr)
+	}
+
+	// convert to  the DeviceResource sheet
+	if len(dpWriter.deviceProfile.DeviceResources) > 0 {
+		edgexErr = dpWriter.convertDeviceResources()
+		if edgexErr != nil {
+			return errors.NewCommonEdgeXWrapper(edgexErr)
+		}
+	}
+
+	// convert to  the DeviceCommand sheet
+	if len(dpWriter.deviceProfile.DeviceCommands) > 0 {
+		edgexErr = dpWriter.convertDeviceCommand()
+		if edgexErr != nil {
+			return errors.NewCommonEdgeXWrapper(edgexErr)
+		}
+	}
+
+	return nil
+}
+
+// convertDeviceInfo converts the DeviceProfile DTO into the DeviceInfo worksheet
+func (dpWriter *dpXlsxWriter) convertDeviceInfo() errors.EdgeX {
+	f := dpWriter.xlsxFile
+	cols, err := f.GetCols(deviceInfoSheetName)
+	if err != nil {
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all columns from %s worksheet", deviceInfoSheetName), err)
+	}
+
+	if len(cols) == 0 {
+		return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("no header column defined in %s worksheet", deviceInfoSheetName), nil)
+	}
+
+	profile := dpWriter.deviceProfile
+	for i, cell := range cols[0] {
+		var value string
+		switch strings.ToLower(cell) {
+		case strings.ToLower(apiVersion):
+			value = common.ApiVersion
+		case common.Name:
+			value = profile.Name
+		case common.Manufacturer:
+			value = profile.Manufacturer
+		case common.Model:
+			value = profile.Model
+		case strings.ToLower(description):
+			value = profile.Description
+		case common.Labels:
+			value = strings.Join(profile.Labels, ", ")
+		default:
+			// unknown header
+			continue
+		}
+		err = f.SetCellValue(deviceInfoSheetName, fmt.Sprintf("B%d", i+1), value)
+		if err != nil {
+			return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to set cell value in the '%s' sheet", deviceInfoSheetName), err)
+		}
+	}
+
+	return nil
+}
+
+// convertDeviceResources converts the []DeviceResource DTO into the DeviceResource worksheet
+func (dpWriter *dpXlsxWriter) convertDeviceResources() errors.EdgeX {
+	f := dpWriter.xlsxFile
+	rows, err := f.GetRows(deviceResourceSheetName)
+	if err != nil {
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all rows from %s worksheet", deviceResourceSheetName), err)
+	}
+
+	if len(rows) == 0 {
+		return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("no header row defined in %s worksheet", deviceResourceSheetName), nil)
+	}
+
+	headerRow := rows[0]
+	structPtr := &dtos.DeviceResource{}
+	v := reflect.ValueOf(structPtr)
+	resources := dpWriter.deviceProfile.DeviceResources
+	for resIndex, res := range resources {
+		for colIndex, headerCell := range headerRow {
+			if headerCell == "" {
+				continue
+			}
+
+			var cell any
+			field := v.Elem().FieldByName(headerCell)
+			if field.Kind() != reflect.Invalid {
+				// header matches the DeviceResource field name (one of the Name, Description or IsHidden field name)
+				switch strings.ToLower(headerCell) {
+				case common.Name:
+					cell = res.Name
+				case strings.ToLower(description):
+					cell = res.Description
+				case strings.ToLower(isHidden):
+					cell = strconv.FormatBool(res.IsHidden)
+				default:
+					continue
+				}
+			} else {
+				//  header matches the ResourceProperties field name (one of ValueType, ReadWrite)
+				resPropField := v.Elem().FieldByName(properties).FieldByName(headerCell)
+				if resPropField.Kind() != reflect.Invalid {
+					switch strings.ToLower(headerCell) {
+					case strings.ToLower(common.ValueType):
+						cell = res.Properties.ValueType
+					case strings.ToLower(readWrite):
+						cell = res.Properties.ReadWrite
+					default:
+						continue
+					}
+				} else {
+					if attr, ok := res.Attributes[headerCell]; ok {
+						// header belongs to the Attributes map field
+						cell = attr
+					} else if tag, ok := res.Tags[headerCell]; ok {
+						// header belongs to the Tags map field
+						cell = tag
+					}
+				}
+			}
+
+			if cell == "" {
+				continue
+			}
+
+			// get the current column name of the cell will be set
+			columnName, err := excelize.ColumnNumberToName(colIndex + 1)
+			if err != nil {
+				return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to convert column number %d to name all rows from %s worksheet", colIndex+1, deviceResourceSheetName), err)
+			}
+
+			err = f.SetCellValue(deviceResourceSheetName, fmt.Sprintf("%s%d", columnName, resIndex+2), cell)
+			if err != nil {
+				return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to set cell value in the '%s' sheet", deviceResourceSheetName), err)
+			}
+		}
+	}
+	return nil
+}
+
+// convertDeviceCommand converts the []DeviceCommand DTO into the DeviceCommand worksheet
+func (dpWriter *dpXlsxWriter) convertDeviceCommand() errors.EdgeX {
+	f := dpWriter.xlsxFile
+	cols, err := f.GetCols(deviceCommandSheetName)
+	if err != nil {
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all cols from %s worksheet", deviceCommandSheetName), err)
+	}
+
+	if len(cols) == 0 {
+		return errors.NewCommonEdgeX(errors.KindContractInvalid, fmt.Sprintf("no header column defined in %s worksheet", deviceCommandSheetName), nil)
+	}
+
+	headerCol := cols[0]
+	commands := dpWriter.deviceProfile.DeviceCommands
+OUTER:
+	for cmdIndex, cmd := range commands {
+		var cell any
+
+		for colIndex, headerCell := range headerCol {
+			if headerCell == "" {
+				continue
+			}
+			//  check if header matches the DeviceCommand field name (one of IsHidden, ReadWrite or ResourceOperation)
+			switch strings.ToLower(headerCell) {
+			case common.Name:
+				cell = cmd.Name
+			case strings.ToLower(isHidden):
+				cell = cmd.IsHidden
+			case strings.ToLower(readWrite):
+				cell = cmd.ReadWrite
+			case strings.ToLower(common.ResourceName):
+			case strings.ToLower(resourceOperation):
+				edgexErr := dpWriter.setResourceNameCells(colIndex, cmdIndex, cmd.ResourceOperations)
+				if err != nil {
+					return errors.NewCommonEdgeXWrapper(edgexErr)
+				}
+				// ResourceName should be the last row in header column
+				continue OUTER
+			default:
+				continue
+			}
+
+			// get the current column name of the cell will be set
+			columnName, err := excelize.ColumnNumberToName(cmdIndex + 2)
+			if err != nil {
+				return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to convert column number %d to name all rows from %s worksheet", cmdIndex+2, deviceCommandSheetName), err)
+			}
+			err = f.SetCellValue(deviceCommandSheetName, fmt.Sprintf("%s%d", columnName, colIndex+1), cell)
+			if err != nil {
+				return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to set cell value in the '%s' sheet", deviceCommandSheetName), err)
+			}
+		}
+	}
+	return nil
+}
+
+// setResourceNameCells converts the []ResourceOperation.DeviceResource values into multiple cells (e.g., B4,B5,B6 will be the xlsx cell number) in DeviceCommand worksheet
+func (dpWriter *dpXlsxWriter) setResourceNameCells(startRow int, colNumber int, resOps []dtos.ResourceOperation) errors.EdgeX {
+	// get the current column name of the ResourceName cell will be set
+	columnName, err := excelize.ColumnNumberToName(colNumber + 2)
+	if err != nil {
+		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to convert column number %d to name all rows from %s worksheet", colNumber+2, deviceCommandSheetName), err)
+	}
+
+	rowNum := startRow + 1
+	for i, op := range resOps {
+		err = dpWriter.xlsxFile.SetCellValue(deviceCommandSheetName, fmt.Sprintf("%s%d", columnName, rowNum+i), op.DeviceResource)
+		if err != nil {
+			return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to set cell value '%s' to ResourceName header in the '%s' sheet", op.DeviceResource, deviceCommandSheetName), err)
+		}
+	}
+	return nil
+}

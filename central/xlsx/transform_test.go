@@ -1,15 +1,27 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package xlsx
 
 import (
+	"bytes"
 	"testing"
+
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 
 	"github.com/stretchr/testify/require"
 	"github.com/xuri/excelize/v2"
+)
+
+var (
+	mockProfileName   = "test"
+	mockDeviceProfile = dtos.DeviceProfile{
+		DeviceProfileBasicInfo: dtos.DeviceProfileBasicInfo{
+			Name: mockProfileName,
+		},
+	}
 )
 
 func initialXlsxFile(sheetNames []string) (*excelize.File, error) {
@@ -102,4 +114,81 @@ func Test_ConvertDeviceProfileXlsx_WithDeviceInfoSheet(t *testing.T) {
 	require.NoError(t, err)
 	_, err = ConvertDeviceProfileXlsx(buffer)
 	require.NoError(t, err, "Unexpected ConvertDeviceProfileXlsx error occurred")
+}
+
+func Test_ConvertToDeviceProfileXlsx(t *testing.T) {
+	f, err := createXlsxTemplateFile()
+	require.NoError(t, err)
+	defer f.Close()
+
+	buffer, err := f.WriteToBuffer()
+	require.NoError(t, err)
+
+	var outputBuffer bytes.Buffer
+	edgexErr := ConvertToDeviceProfileXlsx(buffer, &outputBuffer, mockDeviceProfile)
+	require.NoError(t, edgexErr)
+}
+
+func Test_ConvertToDeviceProfileXlsx_InvalidTemplate(t *testing.T) {
+	f, err := initialXlsxFile([]string{mappingTableSheetName, deviceInfoSheetName, deviceResourceSheetName})
+	require.NoError(t, err)
+	defer f.Close()
+
+	buffer, err := f.WriteToBuffer()
+	require.NoError(t, err)
+
+	var outputBuffer bytes.Buffer
+	mockDeviceProfile := dtos.DeviceProfile{
+		DeviceProfileBasicInfo: dtos.DeviceProfileBasicInfo{
+			Name: "test",
+		},
+	}
+	edgexErr := ConvertToDeviceProfileXlsx(buffer, &outputBuffer, mockDeviceProfile)
+	require.Error(t, edgexErr)
+}
+
+func createXlsxTemplateFile() (*excelize.File, error) {
+	f, err := initialXlsxFile([]string{mappingTableSheetName, deviceInfoSheetName, deviceResourceSheetName, deviceCommandSheetName})
+	if err != nil {
+		return nil, err
+	}
+	sw, err := f.NewStreamWriter(deviceInfoSheetName)
+	if err != nil {
+		return nil, err
+	}
+	err = sw.SetRow("A1", []any{"Name"})
+	if err != nil {
+		return nil, err
+	}
+	err = sw.Flush()
+	if err != nil {
+		return nil, err
+	}
+
+	sw, err = f.NewStreamWriter(deviceResourceSheetName)
+	if err != nil {
+		return nil, err
+	}
+	err = sw.SetRow("A1", validResourceHeader)
+	if err != nil {
+		return nil, err
+	}
+	err = sw.Flush()
+	if err != nil {
+		return nil, err
+	}
+
+	sw, err = f.NewStreamWriter(deviceCommandSheetName)
+	if err != nil {
+		return nil, err
+	}
+	err = sw.SetRow("A1", []any{"Name"})
+	if err != nil {
+		return nil, err
+	}
+	err = sw.Flush()
+	if err != nil {
+		return nil, err
+	}
+	return f, nil
 }
