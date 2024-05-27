@@ -190,9 +190,25 @@ func (dpWriter *dpXlsxWriter) convertDeviceResources() errors.EdgeX {
 						continue
 					}
 				} else {
-					if attr, ok := res.Attributes[headerCell]; ok {
-						// header belongs to the Attributes map field
-						cell = attr
+					attrNames := strings.Split(headerCell, mappingPathSeparator)
+					attrNameLength := len(attrNames)
+					if attrNameLength >= 1 {
+						if topLevelAttr, ok := res.Attributes[attrNames[0]]; ok {
+							if attrNameLength == 1 {
+								// header is only 1-level attribute name, e.g., primaryTable
+								cell = topLevelAttr
+							} else {
+								//handle the multi-level Attributes map, e.g., dataTypeId.identifier attribute in opc-ua
+								for i := 1; i < attrNameLength; i++ {
+									if topAttrMap, ok := topLevelAttr.(map[string]any); ok {
+										topLevelAttr = topAttrMap[attrNames[i]]
+									} else {
+										return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to convert device resource attribute into column '%s' from %s worksheet", headerCell, deviceResourceSheetName), err)
+									}
+								}
+								cell = topLevelAttr
+							}
+						}
 					} else if tag, ok := res.Tags[headerCell]; ok {
 						// header belongs to the Tags map field
 						cell = tag

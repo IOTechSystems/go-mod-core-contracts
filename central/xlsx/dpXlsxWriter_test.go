@@ -75,6 +75,7 @@ func Test_dpWriter_convertDeviceResources(t *testing.T) {
 
 	mockAttrValue := "HOLDING_REGISTERS"
 	minValue := float64(0)
+	mockNestedIdAttrValue := 8
 	mockResource := dtos.DeviceResource{
 		Description: "this is the mockRes1 resource",
 		Name:        "mockRes1",
@@ -84,7 +85,7 @@ func Test_dpWriter_convertDeviceResources(t *testing.T) {
 			ReadWrite: common.ReadWrite_R,
 			Minimum:   &minValue,
 		},
-		Attributes: map[string]any{"primaryTable": mockAttrValue},
+		Attributes: map[string]any{"primaryTable": mockAttrValue, "dataTypeId": map[string]any{"identifier": mockNestedIdAttrValue}},
 	}
 	mockDeviceProfile.DeviceResources = []dtos.DeviceResource{mockResource}
 	xlsxWriter, err := newDPXlsxWriter(mockDeviceProfile, buffer)
@@ -120,6 +121,10 @@ func Test_dpWriter_convertDeviceResources(t *testing.T) {
 	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "G2")
 	require.NoError(t, err)
 	require.Equal(t, strconv.FormatFloat(*mockResource.Properties.Minimum, 'g', -1, 64), value)
+
+	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "H2")
+	require.NoError(t, err)
+	require.Equal(t, strconv.FormatInt(int64(mockNestedIdAttrValue), 10), value)
 }
 
 func Test_dpWriter_convertDeviceCommand(t *testing.T) {

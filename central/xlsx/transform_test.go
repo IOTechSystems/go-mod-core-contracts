@@ -165,7 +165,7 @@ func createXlsxTemplateFile() (*excelize.File, error) {
 		return nil, err
 	}
 
-	resourceHeader := append(validResourceHeader, "Minimum")
+	resourceHeader := append(validResourceHeader, "Minimum", "dataTypeId.identifier")
 	sw, err = f.NewStreamWriter(deviceResourceSheetName)
 	if err != nil {
 		return nil, err
