@@ -5,6 +5,7 @@
 package xlsx
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"strconv"
@@ -34,10 +35,11 @@ func Test_newDPXlsxWriter(t *testing.T) {
 	require.NoError(t, err)
 	defer f.Close()
 
-	xlsxWriter, err := newDPXlsxWriter(mockDeviceProfile, buffer)
+	xlsxWriter, err := newXlsxWriter(mockDeviceProfile, buffer)
+	defer xlsxWriter.(*dpXlsxWriter).xlsFile.Close()
 
 	require.NoError(t, err)
-	require.Equal(t, mockProfileName, xlsxWriter.deviceProfile.Name)
+	require.Equal(t, mockProfileName, xlsxWriter.(*dpXlsxWriter).deviceProfile.Name)
 }
 
 func Test_ConvertToXlsx(t *testing.T) {
@@ -45,10 +47,37 @@ func Test_ConvertToXlsx(t *testing.T) {
 	require.NoError(t, err)
 	defer f.Close()
 
-	xlsxWriter, err := newDPXlsxWriter(mockDeviceProfile, buffer)
+	xlsxWriter, err := newXlsxWriter(mockDeviceProfile, buffer)
+	defer xlsxWriter.(*dpXlsxWriter).xlsFile.Close()
 	require.NoError(t, err)
 
 	err = xlsxWriter.ConvertToXlsx()
+	require.NoError(t, err)
+}
+
+func Test_DPToXlsxWrite(t *testing.T) {
+	f, buffer, err := initialXlsxFileReader()
+	require.NoError(t, err)
+	defer f.Close()
+
+	xlsxWriter, err := newXlsxWriter(mockDeviceProfile, buffer)
+	defer xlsxWriter.(*dpXlsxWriter).xlsFile.Close()
+	require.NoError(t, err)
+
+	var outputBuffer bytes.Buffer
+	err = xlsxWriter.Write(&outputBuffer)
+	require.NoError(t, err)
+}
+
+func Test_DPToXlsxCloseFile(t *testing.T) {
+	f, buffer, err := initialXlsxFileReader()
+	require.NoError(t, err)
+	defer f.Close()
+
+	xlsxWriter, err := newXlsxWriter(mockDeviceProfile, buffer)
+	require.NoError(t, err)
+
+	err = xlsxWriter.closeXlsxFile()
 	require.NoError(t, err)
 }
 
@@ -57,13 +86,14 @@ func Test_dpWriter_convertDeviceInfo(t *testing.T) {
 	require.NoError(t, err)
 	defer f.Close()
 
-	xlsxWriter, err := newDPXlsxWriter(mockDeviceProfile, buffer)
+	xlsxWriter, err := newXlsxWriter(mockDeviceProfile, buffer)
+	defer xlsxWriter.(*dpXlsxWriter).xlsFile.Close()
 	require.NoError(t, err)
 
-	err = xlsxWriter.convertDeviceInfo()
+	err = xlsxWriter.(*dpXlsxWriter).convertDeviceInfo()
 	require.NoError(t, err)
 
-	value, err := xlsxWriter.xlsxFile.GetCellValue(deviceInfoSheetName, "B1")
+	value, err := xlsxWriter.(*dpXlsxWriter).xlsFile.GetCellValue(deviceInfoSheetName, "B1")
 	require.NoError(t, err)
 	require.Equal(t, mockProfileName, value)
 }
@@ -88,41 +118,44 @@ func Test_dpWriter_convertDeviceResources(t *testing.T) {
 		Attributes: map[string]any{"primaryTable": mockAttrValue, "dataTypeId": map[string]any{"identifier": mockNestedIdAttrValue}},
 	}
 	mockDeviceProfile.DeviceResources = []dtos.DeviceResource{mockResource}
-	xlsxWriter, err := newDPXlsxWriter(mockDeviceProfile, buffer)
+	xlsxWriter, err := newXlsxWriter(mockDeviceProfile, buffer)
 	require.NoError(t, err)
 
-	err = xlsxWriter.convertDeviceResources()
+	err = xlsxWriter.(*dpXlsxWriter).convertDeviceResources()
 	require.NoError(t, err)
 
-	value, err := xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "A2")
+	fileReader := xlsxWriter.(*dpXlsxWriter).xlsFile
+	defer xlsxWriter.(*dpXlsxWriter).xlsFile.Close()
+
+	value, err := fileReader.GetCellValue(deviceResourceSheetName, "A2")
 	require.NoError(t, err)
 	require.Equal(t, mockResource.Name, value)
 
-	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "B2")
+	value, err = fileReader.GetCellValue(deviceResourceSheetName, "B2")
 	require.NoError(t, err)
 	require.Equal(t, strconv.FormatBool(mockResource.IsHidden), value)
 
-	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "C2")
+	value, err = fileReader.GetCellValue(deviceResourceSheetName, "C2")
 	require.NoError(t, err)
 	require.Equal(t, mockResource.Description, value)
 
-	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "D2")
+	value, err = fileReader.GetCellValue(deviceResourceSheetName, "D2")
 	require.NoError(t, err)
 	require.Equal(t, mockResource.Properties.ValueType, value)
 
-	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "E2")
+	value, err = fileReader.GetCellValue(deviceResourceSheetName, "E2")
 	require.NoError(t, err)
 	require.Equal(t, mockResource.Properties.ReadWrite, value)
 
-	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "F2")
+	value, err = fileReader.GetCellValue(deviceResourceSheetName, "F2")
 	require.NoError(t, err)
 	require.Equal(t, mockAttrValue, value)
 
-	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "G2")
+	value, err = fileReader.GetCellValue(deviceResourceSheetName, "G2")
 	require.NoError(t, err)
 	require.Equal(t, strconv.FormatFloat(*mockResource.Properties.Minimum, 'g', -1, 64), value)
 
-	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceResourceSheetName, "H2")
+	value, err = fileReader.GetCellValue(deviceResourceSheetName, "H2")
 	require.NoError(t, err)
 	require.Equal(t, strconv.FormatInt(int64(mockNestedIdAttrValue), 10), value)
 }
@@ -136,22 +169,24 @@ func Test_dpWriter_convertDeviceCommand(t *testing.T) {
 		Name:     "mockCmd1",
 		IsHidden: false,
 	}
-	mockDeviceProfile.DeviceCommands = []dtos.DeviceCommand{mockDeviceCommand}
-	xlsxWriter, err := newDPXlsxWriter(mockDeviceProfile, buffer)
+	testProfile := mockDeviceProfile
+	testProfile.DeviceCommands = []dtos.DeviceCommand{mockDeviceCommand}
+	xlsxWriter, err := newXlsxWriter(testProfile, buffer)
+	require.NoError(t, err)
+	defer xlsxWriter.(*dpXlsxWriter).xlsFile.Close()
+
+	err = xlsxWriter.(*dpXlsxWriter).convertDeviceCommand()
 	require.NoError(t, err)
 
-	err = xlsxWriter.convertDeviceCommand()
-	require.NoError(t, err)
-
-	value, err := xlsxWriter.xlsxFile.GetCellValue(deviceCommandSheetName, "B1")
+	value, err := xlsxWriter.(*dpXlsxWriter).xlsFile.GetCellValue(deviceCommandSheetName, "B1")
 	require.NoError(t, err)
 	require.Equal(t, mockDeviceCommand.Name, value)
 }
 
 func Test_dpWriter_setResourceNameCells(t *testing.T) {
-	f, buffer, err := initialXlsxFileReader()
+	file, buffer, err := initialXlsxFileReader()
 	require.NoError(t, err)
-	defer f.Close()
+	defer file.Close()
 
 	mockResOp1 := dtos.ResourceOperation{
 		DeviceResource: "res1",
@@ -163,23 +198,27 @@ func Test_dpWriter_setResourceNameCells(t *testing.T) {
 		DeviceResource: "res3",
 	}
 	mockResOPs := []dtos.ResourceOperation{mockResOp1, mockResOp2, mockResOp3}
-	xlsxWriter, err := newDPXlsxWriter(mockDeviceProfile, buffer)
+
+	xlsxWriter, err := newXlsxWriter(mockDeviceProfile, buffer)
 	require.NoError(t, err)
 
 	startRow := 0
 	colNumber := 0
-	err = xlsxWriter.setResourceNameCells(startRow, colNumber, mockResOPs)
+	err = xlsxWriter.(*dpXlsxWriter).setResourceNameCells(startRow, colNumber, mockResOPs)
 	require.NoError(t, err)
 
-	value, err := xlsxWriter.xlsxFile.GetCellValue(deviceCommandSheetName, fmt.Sprintf("B%d", startRow+1))
+	fileReader := xlsxWriter.(*dpXlsxWriter).xlsFile
+	defer xlsxWriter.(*dpXlsxWriter).xlsFile.Close()
+
+	value, err := fileReader.GetCellValue(deviceCommandSheetName, fmt.Sprintf("B%d", startRow+1))
 	require.NoError(t, err)
 	require.Equal(t, mockResOp1.DeviceResource, value)
 
-	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceCommandSheetName, fmt.Sprintf("B%d", startRow+2))
+	value, err = fileReader.GetCellValue(deviceCommandSheetName, fmt.Sprintf("B%d", startRow+2))
 	require.NoError(t, err)
 	require.Equal(t, mockResOp2.DeviceResource, value)
 
-	value, err = xlsxWriter.xlsxFile.GetCellValue(deviceCommandSheetName, fmt.Sprintf("B%d", startRow+3))
+	value, err = fileReader.GetCellValue(deviceCommandSheetName, fmt.Sprintf("B%d", startRow+3))
 	require.NoError(t, err)
 	require.Equal(t, mockResOp3.DeviceResource, value)
 }

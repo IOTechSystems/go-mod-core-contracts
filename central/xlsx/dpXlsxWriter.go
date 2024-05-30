@@ -20,21 +20,40 @@ import (
 
 // deviceProfileXlsx stores the worksheets processed result and the converted DeviceProfile DTO
 type dpXlsxWriter struct {
-	xlsxFile      *excelize.File
+	baseXlsx
 	deviceProfile dtos.DeviceProfile
 }
 
-func newDPXlsxWriter(profile dtos.DeviceProfile, xlsxReader io.Reader) (*dpXlsxWriter, errors.EdgeX) {
+func newXlsxWriter[T AllowedDTOConverterTypes](s T, xlsxReader io.Reader) (DTOConverter[T], errors.EdgeX) {
 	// file io.Reader should be closed from the caller in ConvertToDeviceProfileXlsx method
 	f, err := excelize.OpenReader(xlsxReader)
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServerError, "failed to open xlsx template file from io.Reader", err)
 	}
 
-	return &dpXlsxWriter{
-		xlsxFile:      f,
-		deviceProfile: profile,
-	}, nil
+	switch any(s).(type) {
+	case []dtos.Device:
+		fieldMappings, edgexErr := convertMappingTable(f)
+		if edgexErr != nil {
+			return nil, errors.NewCommonEdgeXWrapper(edgexErr)
+		}
+		return &devicesXlsxWriter{
+			baseXlsx: baseXlsx{
+				xlsFile:       f,
+				fieldMappings: fieldMappings,
+			},
+			devices: any(s).([]dtos.Device),
+		}, nil
+	case dtos.DeviceProfile:
+		return &dpXlsxWriter{
+			baseXlsx: baseXlsx{
+				xlsFile: f,
+			},
+			deviceProfile: any(s).(dtos.DeviceProfile),
+		}, nil
+	default:
+		return nil, errors.NewCommonEdgeX(errors.KindContractInvalid, "unknown DTO type for xlsx writer", nil)
+	}
 }
 
 // ConvertToXlsx converts the DeviceProfile DTO into xlsx file
@@ -45,7 +64,7 @@ func (dpWriter *dpXlsxWriter) ConvertToXlsx() errors.EdgeX {
 		return errors.NewCommonEdgeXWrapper(edgexErr)
 	}
 
-	// convert to  the DeviceResource sheet
+	// convert to the DeviceResource sheet
 	if len(dpWriter.deviceProfile.DeviceResources) > 0 {
 		edgexErr = dpWriter.convertDeviceResources()
 		if edgexErr != nil {
@@ -53,7 +72,7 @@ func (dpWriter *dpXlsxWriter) ConvertToXlsx() errors.EdgeX {
 		}
 	}
 
-	// convert to  the DeviceCommand sheet
+	// convert to the DeviceCommand sheet
 	if len(dpWriter.deviceProfile.DeviceCommands) > 0 {
 		edgexErr = dpWriter.convertDeviceCommand()
 		if edgexErr != nil {
@@ -63,10 +82,26 @@ func (dpWriter *dpXlsxWriter) ConvertToXlsx() errors.EdgeX {
 
 	return nil
 }
+func (dpWriter *dpXlsxWriter) Write(w io.Writer) errors.EdgeX {
+	// write the file to io.Writer
+	err := dpWriter.xlsFile.Write(w)
+	if err != nil {
+		return errors.NewCommonEdgeX(errors.KindServerError, "failed to write xlsx file to io.Writer", err)
+	}
+	return nil
+}
+
+func (dpWriter *dpXlsxWriter) closeXlsxFile() errors.EdgeX {
+	err := dpWriter.xlsFile.Close()
+	if err != nil {
+		return errors.NewCommonEdgeX(errors.KindServerError, "failed to close xlsx file", err)
+	}
+	return nil
+}
 
 // convertDeviceInfo converts the DeviceProfile DTO into the DeviceInfo worksheet
 func (dpWriter *dpXlsxWriter) convertDeviceInfo() errors.EdgeX {
-	f := dpWriter.xlsxFile
+	f := dpWriter.xlsFile
 	cols, err := f.GetCols(deviceInfoSheetName)
 	if err != nil {
 		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all columns from %s worksheet", deviceInfoSheetName), err)
@@ -107,7 +142,7 @@ func (dpWriter *dpXlsxWriter) convertDeviceInfo() errors.EdgeX {
 
 // convertDeviceResources converts the []DeviceResource DTO into the DeviceResource worksheet
 func (dpWriter *dpXlsxWriter) convertDeviceResources() errors.EdgeX {
-	f := dpWriter.xlsxFile
+	f := dpWriter.xlsFile
 	rows, err := f.GetRows(deviceResourceSheetName)
 	if err != nil {
 		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all rows from %s worksheet", deviceResourceSheetName), err)
@@ -237,7 +272,7 @@ func (dpWriter *dpXlsxWriter) convertDeviceResources() errors.EdgeX {
 
 // convertDeviceCommand converts the []DeviceCommand DTO into the DeviceCommand worksheet
 func (dpWriter *dpXlsxWriter) convertDeviceCommand() errors.EdgeX {
-	f := dpWriter.xlsxFile
+	f := dpWriter.xlsFile
 	cols, err := f.GetCols(deviceCommandSheetName)
 	if err != nil {
 		return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to retrieve all cols from %s worksheet", deviceCommandSheetName), err)
@@ -301,7 +336,7 @@ func (dpWriter *dpXlsxWriter) setResourceNameCells(startRow int, colNumber int, 
 
 	rowNum := startRow + 1
 	for i, op := range resOps {
-		err = dpWriter.xlsxFile.SetCellValue(deviceCommandSheetName, fmt.Sprintf("%s%d", columnName, rowNum+i), op.DeviceResource)
+		err = dpWriter.xlsFile.SetCellValue(deviceCommandSheetName, fmt.Sprintf("%s%d", columnName, rowNum+i), op.DeviceResource)
 		if err != nil {
 			return errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to set cell value '%s' to ResourceName header in the '%s' sheet", op.DeviceResource, deviceCommandSheetName), err)
 		}

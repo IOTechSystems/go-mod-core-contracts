@@ -20,6 +20,7 @@ const (
 	objectCol       = "object"
 	pathCol         = "path"
 	defaultValueCol = "default value"
+	refDeviceName   = "Reference Device Name"
 )
 
 // constants relates to the Device DTO field names
@@ -30,7 +31,7 @@ const (
 	tags         = "Tags"
 )
 
-// constants relates to the DeviceProfile/DeviceResource/DeviceCommand DTO field names
+// constants relates to the Device/DeviceProfile/DeviceResource/DeviceCommand DTO field names
 const (
 	attributes         = "Attributes"
 	properties         = "Properties"
@@ -50,6 +51,9 @@ const (
 	assertion          = "Assertion"
 	mediaType          = "MediaType"
 	resourceOperation  = "ResourceOperation"
+	adminState         = "AdminState"
+	operatingState     = "OperatingState"
+	onChange           = "OnChange"
 )
 
 // constants relates to the Device protocols

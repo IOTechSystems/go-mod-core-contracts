@@ -22,6 +22,11 @@ var (
 			Name: mockProfileName,
 		},
 	}
+
+	mockDevice = dtos.Device{
+		Name: "test-device",
+	}
+	mockDevices = []dtos.Device{mockDevice}
 )
 
 func initialXlsxFile(sheetNames []string) (*excelize.File, error) {
@@ -125,7 +130,7 @@ func Test_ConvertToDeviceProfileXlsx(t *testing.T) {
 	require.NoError(t, err)
 
 	var outputBuffer bytes.Buffer
-	edgexErr := ConvertToDeviceProfileXlsx(buffer, &outputBuffer, mockDeviceProfile)
+	edgexErr := ConvertToXlsx(buffer, &outputBuffer, mockDeviceProfile)
 	require.NoError(t, edgexErr)
 }
 
@@ -143,7 +148,33 @@ func Test_ConvertToDeviceProfileXlsx_InvalidTemplate(t *testing.T) {
 			Name: "test",
 		},
 	}
-	edgexErr := ConvertToDeviceProfileXlsx(buffer, &outputBuffer, mockDeviceProfile)
+	edgexErr := ConvertToXlsx(buffer, &outputBuffer, mockDeviceProfile)
+	require.Error(t, edgexErr)
+}
+
+func Test_ConvertToDevicesXlsx(t *testing.T) {
+	f, err := createDeviceXlsxTemplateFile()
+	require.NoError(t, err)
+	defer f.Close()
+
+	buffer, err := f.WriteToBuffer()
+	require.NoError(t, err)
+
+	var outputBuffer bytes.Buffer
+	edgexErr := ConvertToXlsx(buffer, &outputBuffer, mockDevices)
+	require.NoError(t, edgexErr)
+}
+
+func Test_ConvertToDevicesXlsx_InvalidTemplate(t *testing.T) {
+	f, err := initialXlsxFile([]string{mappingTableSheetName, devicesSheetName, autoEventsSheetName})
+	require.NoError(t, err)
+	defer f.Close()
+
+	buffer, err := f.WriteToBuffer()
+	require.NoError(t, err)
+
+	var outputBuffer bytes.Buffer
+	edgexErr := ConvertToXlsx(buffer, &outputBuffer, mockDevices)
 	require.Error(t, edgexErr)
 }
 
@@ -191,5 +222,46 @@ func createXlsxTemplateFile() (*excelize.File, error) {
 	if err != nil {
 		return nil, err
 	}
+	return f, nil
+}
+
+func createDeviceXlsxTemplateFile() (*excelize.File, error) {
+	f, err := initialXlsxFile([]string{mappingTableSheetName, devicesSheetName, autoEventsSheetName})
+	if err != nil {
+		return nil, err
+	}
+
+	err = createMappingTableSheet(f)
+	if err != nil {
+		return nil, err
+	}
+
+	sw, err := f.NewStreamWriter(devicesSheetName)
+	if err != nil {
+		return nil, err
+	}
+	err = sw.SetRow("A1", validDeviceHeader)
+	if err != nil {
+		return nil, err
+	}
+	err = sw.Flush()
+	if err != nil {
+		return nil, err
+	}
+
+	autoEventHeader := []any{"Interval", "OnChange", "SourceName", "Reference Device Name"}
+	sw, err = f.NewStreamWriter(autoEventsSheetName)
+	if err != nil {
+		return nil, err
+	}
+	err = sw.SetRow("A1", autoEventHeader)
+	if err != nil {
+		return nil, err
+	}
+	err = sw.Flush()
+	if err != nil {
+		return nil, err
+	}
+
 	return f, nil
 }

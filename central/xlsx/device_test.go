@@ -100,7 +100,7 @@ func createMappingTableSheet(f *excelize.File) error {
 
 	err = sw.SetRow("A4",
 		[]any{
-			"ProtocolName", "properties.IOTech_ProtocolName ", "modbus-rtu",
+			"ProtocolName", "properties.IOTech_ProtocolName", "modbus-rtu",
 		})
 	if err != nil {
 		return err

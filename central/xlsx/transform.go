@@ -46,23 +46,22 @@ func ConvertDeviceProfileXlsx(file io.Reader) (Converter[*dtos.DeviceProfile], e
 	return deviceProfileX, nil
 }
 
-func ConvertToDeviceProfileXlsx(fileReader io.Reader, w io.Writer, profile dtos.DeviceProfile) errors.EdgeX {
-	xlsxWriter, edgexErr := newDPXlsxWriter(profile, fileReader)
+// ConvertToXlsx converts the DTOs to the xlsx file and writes to io.Writer
+func ConvertToXlsx[T AllowedDTOConverterTypes](fileReader io.Reader, w io.Writer, convertData T) errors.EdgeX {
+	xlsxWriter, edgexErr := newXlsxWriter(convertData, fileReader)
 	if edgexErr != nil {
 		return edgexErr
 	}
-	f := xlsxWriter.xlsxFile
-	defer f.Close()
+	defer func() { _ = xlsxWriter.closeXlsxFile() }()
 
 	edgexErr = xlsxWriter.ConvertToXlsx()
 	if edgexErr != nil {
 		return edgexErr
 	}
 
-	err := f.Write(w)
-	if err != nil {
-		return errors.NewCommonEdgeX(errors.KindServerError, "failed to write xlsx file to io.Writer", err)
+	edgexErr = xlsxWriter.Write(w)
+	if edgexErr != nil {
+		return edgexErr
 	}
-
 	return nil
 }
