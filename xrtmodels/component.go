@@ -7,11 +7,12 @@ package xrtmodels
 
 // constants of device connector settings
 const (
-	Name           = "Name"
-	EventTopic     = "EventTopic"
-	ReplyTopic     = "ReplyTopic"
-	RequestTopic   = "RequestTopic"
-	TelemetryTopic = "TelemetryTopic"
+	Name                  = "Name"
+	EventTopic            = "EventTopic"
+	ReplyTopic            = "ReplyTopic"
+	RequestTopic          = "RequestTopic"
+	TelemetryTopic        = "TelemetryTopic"
+	MiddlewareTopicPrefix = "MiddlewareTopicPrefix"
 
 	DeviceServiceCategory      = "XRT::DeviceService"
 	DeviceServiceRunningStatus = "Running"
