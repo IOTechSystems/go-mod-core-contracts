@@ -7,11 +7,15 @@ package xrtmodels
 
 // constants of device connector settings
 const (
-	Name           = "Name"
-	EventTopic     = "EventTopic"
-	ReplyTopic     = "ReplyTopic"
-	RequestTopic   = "RequestTopic"
-	TelemetryTopic = "TelemetryTopic"
+	Name                               = "Name"
+	EventTopic                         = "EventTopic"
+	ReplyTopic                         = "ReplyTopic"
+	RequestTopic                       = "RequestTopic"
+	TelemetryTopic                     = "TelemetryTopic"
+	OPCUAServerRequestTimeout          = "OPCUAServerRequestTimeout"
+	OPCUAServerUseTelemetryValues      = "OPCUAServerUseTelemetryValues"
+	OPCUAServerStaleTelemetryValueTime = "OPCUAServerStaleTelemetryValueTime"
+	OPCUAServerTopicMiddlewarePrefix   = "OPCUAServerTopicMiddlewarePrefix"
 
 	DeviceServiceCategory      = "XRT::DeviceService"
 	DeviceServiceRunningStatus = "Running"
