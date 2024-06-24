@@ -108,11 +108,6 @@ const (
 	SupportRulesEngineServiceKey        = "support-rulesengine"
 )
 
-// Constants relate to data type
-const (
-	ValueTypeObjectArray = "ObjectArray"
-)
-
 // Constants related for Notification Category
 const (
 	DisconnectAlert      = "Disconnection"
