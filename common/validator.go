@@ -115,7 +115,7 @@ func getErrorMessage(e validator.FieldError) string {
 	case dtoNoReservedCharTag, emptyOrDtoNoReservedCharTag:
 		msg = fmt.Sprintf("%s field does not allow reserved characters which are /#+$", fieldName)
 	default:
-		msg = fmt.Sprintf("%s field validation failed on the %s tag", fieldName, tag)
+		msg = fmt.Sprintf("%s field validation failed on the %s tag with value '%s'", fieldName, tag, fieldValue)
 	}
 	return msg
 }
