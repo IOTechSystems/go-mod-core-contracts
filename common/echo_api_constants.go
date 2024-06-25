@@ -80,4 +80,14 @@ const (
 	ApiIntervalByNameEchoRoute         = ApiIntervalRoute + "/" + Name + "/:" + Name
 	ApiIntervalActionByNameEchoRoute   = ApiIntervalActionRoute + "/" + Name + "/:" + Name
 	ApiIntervalActionByTargetEchoRoute = ApiIntervalActionRoute + "/" + Target + "/:" + Target
+
+	ApiScheduleJobEchoRoute       = ApiBase + "/job"
+	ApiAllScheduleJobEchoRoute    = ApiScheduleJobRoute + "/" + All
+	ApiScheduleJobByNameEchoRoute = ApiScheduleJobRoute + "/" + Name + "/:" + Name
+
+	ApiCronTransmissionRecordEchoRoute                        = ApiBase + "/crontransmissionrecord"
+	ApiAllCronTransmissionRecordEchoRoute                     = ApiCronTransmissionRecordRoute + "/" + All
+	ApiCronTransmissionRecordRouteByStatusEchoRoute           = ApiCronTransmissionRecordRoute + "/" + Status + "/:" + Status
+	ApiCronTransmissionRecordRouteByJobNameEchoRoute          = ApiCronTransmissionRecordRoute + "/" + Job + "/" + Name + "/:" + Name
+	ApiCronTransmissionRecordRouteByJobNameAndStatusEchoRoute = ApiCronTransmissionRecordRoute + "/" + Job + "/" + Name + "/:" + Name + Status + "/:" + Status
 )

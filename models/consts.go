@@ -31,12 +31,16 @@ const (
 	EscalatedContentNotice     = "This notification is escalated by the transmission"
 )
 
-// Constants for TransmissionStatus
+// Constants for TransmissionStatus and CronTransmissionRecordStatus
 const (
 	Failed       = "FAILED"
 	Sent         = "SENT"
 	Acknowledged = "ACKNOWLEDGED"
 	RESENDING    = "RESENDING"
+
+	// Constants for CronTransmissionRecordStatus only
+	Succeeded = "SUCCEEDED"
+	Missed    = "MISSEd"
 )
 
 // Constants for both NotificationStatus and TransmissionStatus
