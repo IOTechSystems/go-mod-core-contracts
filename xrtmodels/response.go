@@ -145,12 +145,7 @@ type MultiSchedulesResult struct {
 
 type MultiComponentsResponse struct {
 	BaseResponse `json:",inline"`
-	Result       MultiComponentsResult `json:"result"`
-}
-
-type MultiComponentsResult struct {
-	BaseResult `json:",inline"`
-	Components []Component `json:"components"`
+	Result       ComponentsDiscoveryResponse `json:"result"`
 }
 
 // ComponentsDiscoveryResponse is used to reply the discovery:discover operation
