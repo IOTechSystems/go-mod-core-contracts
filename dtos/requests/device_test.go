@@ -129,7 +129,7 @@ func TestAddDeviceRequest_Validate(t *testing.T) {
 		{"invalid AddDeviceRequest, Request Id is not an uuid", invalidReqId, true},
 		{"invalid AddDeviceRequest, no DeviceName", noDeviceName, true},
 		{"invalid AddDeviceRequest, no ServiceName", noServiceName, true},
-		{"invalid AddDeviceRequest, no ProfileName", noProfileName, true},
+		{"valid AddDeviceRequest, no ProfileName", noProfileName, false},
 		{"valid AddDeviceRequest, no Protocols", noProtocols, false},
 		{"invalid AddDeviceRequest, no AutoEvent frequency", noAutoEventFrequency, true},
 		{"invalid AddDeviceRequest, no AutoEvent resource", noAutoEventResource, true},
@@ -321,8 +321,8 @@ func TestUpdateDeviceRequest_Validate(t *testing.T) {
 	// ProfileName
 	validNilProfileName := valid
 	validNilProfileName.Device.ProfileName = nil
-	invalidEmptyProfileName := valid
-	invalidEmptyProfileName.Device.ProfileName = &emptyString
+	emptyProfileName := valid
+	emptyProfileName.Device.ProfileName = &emptyString
 
 	invalidState := "invalid state"
 	invalidAdminState := valid
@@ -357,7 +357,7 @@ func TestUpdateDeviceRequest_Validate(t *testing.T) {
 		{"invalid, empty service name", invalidEmptyServiceName, true},
 
 		{"valid, nil profile name", validNilProfileName, false},
-		{"invalid, empty profile name", invalidEmptyProfileName, true},
+		{"valid, empty profile name", emptyProfileName, false},
 
 		{"invalid, invalid admin state", invalidAdminState, true},
 		{"invalid, invalid operating state", invalidOperatingState, true},
