@@ -101,6 +101,16 @@ const (
 	ApiTransmissionByStatusRoute           = ApiTransmissionRoute + "/" + Status + "/{" + Status + "}"
 	ApiTransmissionByNotificationIdRoute   = ApiTransmissionRoute + "/" + Notification + "/" + Id + "/{" + Id + "}"
 
+	ApiScheduleJobRoute       = ApiBase + "/job"
+	ApiAllScheduleJobRoute    = ApiScheduleJobRoute + "/" + All
+	ApiScheduleJobByNameRoute = ApiScheduleJobRoute + "/" + Name + "/{" + Name + "}"
+
+	ApiScheduleActionRecordRoute                   = ApiBase + "/scheduleactionrecord"
+	ApiAllScheduleActionRecordRoute                = ApiScheduleActionRecordRoute + "/" + All
+	ApiScheduleActionRecordRouteByStatusRoute      = ApiScheduleActionRecordRoute + "/" + Status + "/{" + Status + "}"
+	ApiScheduleActionRecordRouteByJobNameRoute     = ApiScheduleActionRecordRoute + "/" + Job + "/" + Name + "/{" + Name + "}"
+	ApiScheduleActionRecordByJobNameAndStatusRoute = ApiScheduleActionRecordRoute + "/" + Job + "/" + Name + "/{" + Name + "}/" + Status + "/{" + Status + "}"
+
 	ApiConfigRoute         = ApiBase + "/config"
 	ApiPingRoute           = ApiBase + "/ping"
 	ApiVersionRoute        = ApiBase + "/version"
@@ -176,6 +186,7 @@ const (
 	Sender        = "sender"
 	Severity      = "severity"
 	Interval      = "interval"
+	Job           = "job"
 
 	Offset       = "offset"         //query string to specify the number of items to skip before starting to collect the result set.
 	Limit        = "limit"          //query string to specify the numbers of items to return
@@ -252,6 +263,15 @@ const (
 	ReadWrite_W  = "W"
 	ReadWrite_RW = "RW"
 	ReadWrite_WR = "WR"
+)
+
+// Constant for ScheduleJob
+const (
+	DefDuration         = "Duration"
+	DefCron             = "Cron"
+	ActionMessageBus    = "MessageBus"
+	ActionREST          = "REST"
+	ActionDeviceControl = "DeviceControl"
 )
 
 // Constants for Edgex Environment variable
