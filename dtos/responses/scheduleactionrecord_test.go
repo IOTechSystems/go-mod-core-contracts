@@ -14,24 +14,24 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 )
 
-func TestNewCronTransmissionRecordResponse(t *testing.T) {
+func TestNewScheduleActionRecordResponse(t *testing.T) {
 	expectedRequestId := "123456"
 	expectedStatusCode := http.StatusOK
 	expectedMessage := "unit test message"
-	expectedTransmissionRecord := dtos.CronTransmissionRecord{JobName: "testJob"}
-	actual := NewCronTransmissionRecordResponse(expectedRequestId, expectedMessage, expectedStatusCode, expectedTransmissionRecord)
+	expectedScheduleActionRecord := dtos.ScheduleActionRecord{JobName: "testJob"}
+	actual := NewScheduleActionRecordResponse(expectedRequestId, expectedMessage, expectedStatusCode, expectedScheduleActionRecord)
 
 	assert.Equal(t, expectedRequestId, actual.RequestId)
 	assert.Equal(t, expectedStatusCode, actual.StatusCode)
 	assert.Equal(t, expectedMessage, actual.Message)
-	assert.Equal(t, expectedTransmissionRecord, actual.TransmissionRecord)
+	assert.Equal(t, expectedScheduleActionRecord, actual.ScheduleActionRecord)
 }
 
-func TestNewMultiCronTransmissionRecordResponse(t *testing.T) {
+func TestNewMultiScheduleActionRecordsResponse(t *testing.T) {
 	expectedRequestId := "123456"
 	expectedStatusCode := http.StatusOK
 	expectedMessage := "unit test message"
-	expectedCronTransmissionRecords := []dtos.CronTransmissionRecord{
+	expectedScheduleActionRecords := []dtos.ScheduleActionRecord{
 		{
 			JobName: "testJob1",
 		},
@@ -40,11 +40,11 @@ func TestNewMultiCronTransmissionRecordResponse(t *testing.T) {
 		},
 	}
 	expectedTotalCount := uint32(2)
-	actual := NewMultiCronTransmissionRecordResponse(expectedRequestId, expectedMessage, expectedStatusCode, uint32(len(expectedCronTransmissionRecords)), expectedCronTransmissionRecords)
+	actual := NewMultiScheduleActionRecordsResponse(expectedRequestId, expectedMessage, expectedStatusCode, uint32(len(expectedScheduleActionRecords)), expectedScheduleActionRecords)
 
 	assert.Equal(t, expectedRequestId, actual.RequestId)
 	assert.Equal(t, expectedStatusCode, actual.StatusCode)
 	assert.Equal(t, expectedMessage, actual.Message)
 	assert.Equal(t, expectedTotalCount, actual.TotalCount)
-	assert.Equal(t, expectedCronTransmissionRecords, actual.TransmissionRecords)
+	assert.Equal(t, expectedScheduleActionRecords, actual.ScheduleActionRecords)
 }

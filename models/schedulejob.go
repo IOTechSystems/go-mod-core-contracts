@@ -49,14 +49,14 @@ type ScheduleAction interface {
 }
 
 type BaseScheduleAction struct {
-	Type ScheduleActionType
+	Type        ScheduleActionType
+	ContentType string
+	Payload     []byte
 }
 
 type MessageBusAction struct {
 	BaseScheduleAction
-	Topic       string
-	ContentType string
-	Payload     []byte
+	Topic string
 }
 
 func (m MessageBusAction) GetBaseScheduleAction() BaseScheduleAction {
@@ -65,9 +65,8 @@ func (m MessageBusAction) GetBaseScheduleAction() BaseScheduleAction {
 
 type RESTAction struct {
 	BaseScheduleAction
-	Address     string
-	ContentType string
-	Payload     []byte
+	Address         string
+	InjectEdgeXAuth bool
 }
 
 func (r RESTAction) GetBaseScheduleAction() BaseScheduleAction {
@@ -78,7 +77,6 @@ type DeviceControlAction struct {
 	BaseScheduleAction
 	DeviceName string
 	SourceName string
-	SetValue   map[string]any
 }
 
 func (d DeviceControlAction) GetBaseScheduleAction() BaseScheduleAction {

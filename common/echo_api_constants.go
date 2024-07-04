@@ -85,9 +85,9 @@ const (
 	ApiAllScheduleJobEchoRoute    = ApiScheduleJobRoute + "/" + All
 	ApiScheduleJobByNameEchoRoute = ApiScheduleJobRoute + "/" + Name + "/:" + Name
 
-	ApiCronTransmissionRecordEchoRoute                        = ApiBase + "/crontransmissionrecord"
-	ApiAllCronTransmissionRecordEchoRoute                     = ApiCronTransmissionRecordRoute + "/" + All
-	ApiCronTransmissionRecordRouteByStatusEchoRoute           = ApiCronTransmissionRecordRoute + "/" + Status + "/:" + Status
-	ApiCronTransmissionRecordRouteByJobNameEchoRoute          = ApiCronTransmissionRecordRoute + "/" + Job + "/" + Name + "/:" + Name
-	ApiCronTransmissionRecordRouteByJobNameAndStatusEchoRoute = ApiCronTransmissionRecordRoute + "/" + Job + "/" + Name + "/:" + Name + Status + "/:" + Status
+	ApiScheduleActionRecordEchoRoute                        = ApiBase + "/scheduleactionrecord"
+	ApiAllScheduleActionRecordEchoRoute                     = ApiScheduleActionRecordRoute + "/" + All
+	ApiScheduleActionRecordRouteByStatusEchoRoute           = ApiScheduleActionRecordRoute + "/" + Status + "/:" + Status
+	ApiScheduleActionRecordRouteByJobNameEchoRoute          = ApiScheduleActionRecordRoute + "/" + Job + "/" + Name + "/:" + Name
+	ApiScheduleActionRecordRouteByJobNameAndStatusEchoRoute = ApiScheduleActionRecordRoute + "/" + Job + "/" + Name + "/:" + Name + Status + "/:" + Status
 )

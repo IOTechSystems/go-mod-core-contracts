@@ -105,11 +105,11 @@ const (
 	ApiAllScheduleJobRoute    = ApiScheduleJobRoute + "/" + All
 	ApiScheduleJobByNameRoute = ApiScheduleJobRoute + "/" + Name + "/{" + Name + "}"
 
-	ApiCronTransmissionRecordRoute                        = ApiBase + "/crontransmissionrecord"
-	ApiAllCronTransmissionRecordRoute                     = ApiCronTransmissionRecordRoute + "/" + All
-	ApiCronTransmissionRecordRouteByStatusRoute           = ApiCronTransmissionRecordRoute + "/" + Status + "/{" + Status + "}"
-	ApiCronTransmissionRecordRouteByJobNameRoute          = ApiCronTransmissionRecordRoute + "/" + Job + "/" + Name + "/{" + Name + "}"
-	ApiCronTransmissionRecordRouteByJobNameAndStatusRoute = ApiCronTransmissionRecordRoute + "/" + Job + "/" + Name + "/{" + Name + "}/" + Status + "/{" + Status + "}"
+	ApiScheduleActionRecordRoute                   = ApiBase + "/scheduleactionrecord"
+	ApiAllScheduleActionRecordRoute                = ApiScheduleActionRecordRoute + "/" + All
+	ApiScheduleActionRecordRouteByStatusRoute      = ApiScheduleActionRecordRoute + "/" + Status + "/{" + Status + "}"
+	ApiScheduleActionRecordRouteByJobNameRoute     = ApiScheduleActionRecordRoute + "/" + Job + "/" + Name + "/{" + Name + "}"
+	ApiScheduleActionRecordByJobNameAndStatusRoute = ApiScheduleActionRecordRoute + "/" + Job + "/" + Name + "/{" + Name + "}/" + Status + "/{" + Status + "}"
 
 	ApiConfigRoute         = ApiBase + "/config"
 	ApiPingRoute           = ApiBase + "/ping"

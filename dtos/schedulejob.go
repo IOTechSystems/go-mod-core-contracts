@@ -134,13 +134,13 @@ type MessageBusAction struct {
 }
 
 type RESTAction struct {
-	Address string `json:"address" validate:"required"`
+	Address         string `json:"address" validate:"required"`
+	InjectEdgeXAuth bool   `json:"injectEdgeXAuth,omitempty"`
 }
 
 type DeviceControlAction struct {
-	DeviceName string         `json:"deviceName" validate:"required"`
-	SourceName string         `json:"sourceName" validate:"required"`
-	SetValue   map[string]any `json:"setValue,omitempty"`
+	DeviceName string `json:"deviceName" validate:"required"`
+	SourceName string `json:"sourceName" validate:"required"`
 }
 
 func ToScheduleJobModel(dto ScheduleJob) models.ScheduleJob {
@@ -216,24 +216,32 @@ func ToScheduleActionModel(dto ScheduleAction) models.ScheduleAction {
 	switch dto.Type {
 	case common.ActionMessageBus:
 		model = models.MessageBusAction{
-			BaseScheduleAction: models.BaseScheduleAction{Type: common.ActionMessageBus},
-			Topic:              dto.Topic,
-			ContentType:        dto.ContentType,
-			Payload:            dto.Payload,
+			BaseScheduleAction: models.BaseScheduleAction{
+				Type:        common.ActionMessageBus,
+				ContentType: dto.ContentType,
+				Payload:     dto.Payload,
+			},
+			Topic: dto.Topic,
 		}
 	case common.ActionREST:
 		model = models.RESTAction{
-			BaseScheduleAction: models.BaseScheduleAction{Type: common.ActionREST},
-			Address:            dto.Address,
-			ContentType:        dto.ContentType,
-			Payload:            dto.Payload,
+			BaseScheduleAction: models.BaseScheduleAction{
+				Type:        common.ActionREST,
+				ContentType: dto.ContentType,
+				Payload:     dto.Payload,
+			},
+			Address:         dto.Address,
+			InjectEdgeXAuth: dto.InjectEdgeXAuth,
 		}
 	case common.ActionDeviceControl:
 		model = models.DeviceControlAction{
-			BaseScheduleAction: models.BaseScheduleAction{Type: common.ActionDeviceControl},
-			DeviceName:         dto.DeviceName,
-			SourceName:         dto.SourceName,
-			SetValue:           dto.SetValue,
+			BaseScheduleAction: models.BaseScheduleAction{
+				Type:        common.ActionDeviceControl,
+				ContentType: dto.ContentType,
+				Payload:     dto.Payload,
+			},
+			DeviceName: dto.DeviceName,
+			SourceName: dto.SourceName,
 		}
 	}
 
@@ -261,17 +269,19 @@ func FromScheduleActionModelToDTO(model models.ScheduleAction) ScheduleAction {
 			ContentType: restModel.ContentType,
 			Payload:     restModel.Payload,
 			RESTAction: RESTAction{
-				Address: restModel.Address,
+				Address:         restModel.Address,
+				InjectEdgeXAuth: restModel.InjectEdgeXAuth,
 			},
 		}
 	case common.ActionDeviceControl:
 		deviceControlModel := model.(models.DeviceControlAction)
 		dto = ScheduleAction{
-			Type: common.ActionDeviceControl,
+			Type:        common.ActionDeviceControl,
+			ContentType: deviceControlModel.ContentType,
+			Payload:     deviceControlModel.Payload,
 			DeviceControlAction: DeviceControlAction{
 				DeviceName: deviceControlModel.DeviceName,
 				SourceName: deviceControlModel.SourceName,
-				SetValue:   deviceControlModel.SetValue,
 			},
 		}
 	}
