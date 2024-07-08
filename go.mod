@@ -9,7 +9,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/stretchr/testify v1.9.0
 	github.com/xuri/excelize/v2 v2.8.1
-	go.einride.tech/can v0.11.0
+	go.einride.tech/can v0.12.0
 	golang.org/x/text v0.16.0
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/yaml.v3 v3.0.1
