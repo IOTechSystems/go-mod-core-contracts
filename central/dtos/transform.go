@@ -22,11 +22,18 @@ func TransformProfileFromV2ToV3(v2Profile v2dtos.DeviceProfile) (dtos.DeviceProf
 	}
 
 	profile := dtos.DeviceProfile{
-		DBTimestamp:            dtos.DBTimestamp(v2Profile.DBTimestamp),
-		DeviceProfileBasicInfo: dtos.DeviceProfileBasicInfo(v2Profile.DeviceProfileBasicInfo),
-		DeviceResources:        resources,
-		DeviceCommands:         transformCommandFromV2ToV3(v2Profile.DeviceCommands),
-		ApiVersion:             common.ApiVersion,
+		DeviceProfileBasicInfo: dtos.DeviceProfileBasicInfo{
+			DBTimestamp:  dtos.DBTimestamp(v2Profile.DBTimestamp),
+			Id:           v2Profile.DeviceProfileBasicInfo.Id,
+			Name:         v2Profile.DeviceProfileBasicInfo.Name,
+			Manufacturer: v2Profile.DeviceProfileBasicInfo.Manufacturer,
+			Description:  v2Profile.DeviceProfileBasicInfo.Description,
+			Model:        v2Profile.DeviceProfileBasicInfo.Model,
+			Labels:       v2Profile.DeviceProfileBasicInfo.Labels,
+		},
+		DeviceResources: resources,
+		DeviceCommands:  transformCommandFromV2ToV3(v2Profile.DeviceCommands),
+		ApiVersion:      common.ApiVersion,
 	}
 	return profile, nil
 }
