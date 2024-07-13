@@ -16,7 +16,6 @@ import (
 )
 
 type DeviceProfile struct {
-	DBTimestamp            `json:",inline" yaml:"dbTimestamp,omitempty"`
 	DeviceProfileBasicInfo `json:",inline" yaml:",inline"`
 	DeviceResources        []DeviceResource `json:"deviceResources" yaml:"deviceResources" validate:"dive"`
 	DeviceCommands         []DeviceCommand  `json:"deviceCommands" yaml:"deviceCommands" validate:"dive"`
@@ -40,7 +39,6 @@ func (dp *DeviceProfile) Validate() error {
 // UnmarshalYAML implements the Unmarshaler interface for the DeviceProfile type
 func (dp *DeviceProfile) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var alias struct {
-		DBTimestamp
 		DeviceProfileBasicInfo `yaml:",inline"`
 		DeviceResources        []DeviceResource `yaml:"deviceResources"`
 		DeviceCommands         []DeviceCommand  `yaml:"deviceCommands"`
@@ -92,8 +90,8 @@ func FromDeviceProfileModelToDTO(deviceProfile models.DeviceProfile) DeviceProfi
 		deviceProfile.ApiVersion = common.ApiVersion
 	}
 	return DeviceProfile{
-		DBTimestamp: DBTimestamp(deviceProfile.DBTimestamp),
 		DeviceProfileBasicInfo: DeviceProfileBasicInfo{
+			DBTimestamp:  DBTimestamp(deviceProfile.DBTimestamp),
 			Id:           deviceProfile.Id,
 			Name:         deviceProfile.Name,
 			Description:  deviceProfile.Description,
@@ -112,6 +110,7 @@ func FromDeviceProfileModelToDTO(deviceProfile models.DeviceProfile) DeviceProfi
 // FromDeviceProfileModelToBasicInfoDTO transforms the DeviceProfile Model to the DeviceProfileBasicInfo DTO
 func FromDeviceProfileModelToBasicInfoDTO(deviceProfile models.DeviceProfile) DeviceProfileBasicInfo {
 	return DeviceProfileBasicInfo{
+		DBTimestamp:  DBTimestamp(deviceProfile.DBTimestamp),
 		Id:           deviceProfile.Id,
 		Name:         deviceProfile.Name,
 		Description:  deviceProfile.Description,
