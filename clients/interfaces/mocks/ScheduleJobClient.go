@@ -143,6 +143,36 @@ func (_m *ScheduleJobClient) ScheduleJobByName(ctx context.Context, name string)
 	return r0, r1
 }
 
+// TriggerScheduleJobByName provides a mock function with given fields: ctx, name
+func (_m *ScheduleJobClient) TriggerScheduleJobByName(ctx context.Context, name string) (common.BaseResponse, errors.EdgeX) {
+	ret := _m.Called(ctx, name)
+
+	if len(ret) == 0 {
+		panic("no return value specified for TriggerScheduleJobByName")
+	}
+
+	var r0 common.BaseResponse
+	var r1 errors.EdgeX
+	if rf, ok := ret.Get(0).(func(context.Context, string) (common.BaseResponse, errors.EdgeX)); ok {
+		return rf(ctx, name)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) common.BaseResponse); ok {
+		r0 = rf(ctx, name)
+	} else {
+		r0 = ret.Get(0).(common.BaseResponse)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) errors.EdgeX); ok {
+		r1 = rf(ctx, name)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(errors.EdgeX)
+		}
+	}
+
+	return r0, r1
+}
+
 // Update provides a mock function with given fields: ctx, reqs
 func (_m *ScheduleJobClient) Update(ctx context.Context, reqs []requests.UpdateScheduleJobRequest) ([]common.BaseResponse, errors.EdgeX) {
 	ret := _m.Called(ctx, reqs)

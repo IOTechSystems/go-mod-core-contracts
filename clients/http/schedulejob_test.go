@@ -26,17 +26,17 @@ func addScheduleJobRequest() requests.AddScheduleJobRequest {
 		dtos.ScheduleJob{
 			Name: TestScheduleJobName,
 			Definition: dtos.ScheduleDef{
-				Type: common.DefDuration,
-				DurationScheduleDef: dtos.DurationScheduleDef{
-					Duration: TestDuration,
+				Type: common.DefInterval,
+				IntervalScheduleDef: dtos.IntervalScheduleDef{
+					Interval: TestInterval,
 				},
 			},
 			Actions: []dtos.ScheduleAction{
 				{
-					Type:        common.ActionMessageBus,
+					Type:        common.ActionEdgeXMessageBus,
 					ContentType: common.ContentTypeJSON,
 					Payload:     nil,
-					MessageBusAction: dtos.MessageBusAction{
+					EdgeXMessageBusAction: dtos.EdgeXMessageBusAction{
 						Topic: TestTopic,
 					},
 				},
@@ -115,6 +115,17 @@ func TestScheduleJobClient_DeleteScheduleJobByName(t *testing.T) {
 	defer ts.Close()
 	client := NewScheduleJobClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.DeleteScheduleJobByName(context.Background(), scheduleJobName)
+	require.NoError(t, err)
+	require.IsType(t, dtoCommon.BaseResponse{}, res)
+}
+
+func TestScheduleJobClient_TriggerScheduleJobByName(t *testing.T) {
+	scheduleJobName := TestScheduleJobName
+	path := path.Join(common.ApiTriggerScheduleJobRoute, common.Name, scheduleJobName)
+	ts := newTestServer(http.MethodPost, path, dtoCommon.BaseResponse{})
+	defer ts.Close()
+	client := NewScheduleJobClient(ts.URL, NewNullAuthenticationInjector(), false)
+	res, err := client.TriggerScheduleJobByName(context.Background(), scheduleJobName)
 	require.NoError(t, err)
 	require.IsType(t, dtoCommon.BaseResponse{}, res)
 }

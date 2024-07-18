@@ -55,9 +55,9 @@ func (s *ScheduleJob) Validate() error {
 }
 
 type ScheduleDef struct {
-	Type string `json:"type" validate:"oneof='Duration' 'Cron'"`
+	Type string `json:"type" validate:"oneof='INTERVAL' 'CRON'"`
 
-	DurationScheduleDef `json:",inline" validate:"-"`
+	IntervalScheduleDef `json:",inline" validate:"-"`
 	CronScheduleDef     `json:",inline" validate:"-"`
 }
 
@@ -69,10 +69,10 @@ func (s *ScheduleDef) Validate() error {
 	}
 
 	switch s.Type {
-	case common.DefDuration:
-		err = common.Validate(s.DurationScheduleDef)
+	case common.DefInterval:
+		err = common.Validate(s.IntervalScheduleDef)
 		if err != nil {
-			return errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid DurationScheduleDef.", err)
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid IntervalScheduleDef.", err)
 		}
 	case common.DefCron:
 		err = common.Validate(s.CronScheduleDef)
@@ -84,8 +84,8 @@ func (s *ScheduleDef) Validate() error {
 	return nil
 }
 
-type DurationScheduleDef struct {
-	Duration int64 `json:"duration" validate:"required"`
+type IntervalScheduleDef struct {
+	Interval string `json:"duration" validate:"required,edgex-dto-duration"`
 }
 
 type CronScheduleDef struct {
@@ -93,13 +93,13 @@ type CronScheduleDef struct {
 }
 
 type ScheduleAction struct {
-	Type        string `json:"type" validate:"oneof='MessageBus' 'REST' 'DeviceControl'"`
+	Type        string `json:"type" validate:"oneof='EDGEXMESSAGEBUS' 'REST' 'DEVICECONTROL'"`
 	ContentType string `json:"contentType,omitempty"`
 	Payload     []byte `json:"payload,omitempty"`
 
-	MessageBusAction    `json:",inline" validate:"-"`
-	RESTAction          `json:",inline" validate:"-"`
-	DeviceControlAction `json:",inline" validate:"-"`
+	EdgeXMessageBusAction `json:",inline" validate:"-"`
+	RESTAction            `json:",inline" validate:"-"`
+	DeviceControlAction   `json:",inline" validate:"-"`
 }
 
 func (s *ScheduleAction) Validate() error {
@@ -109,10 +109,10 @@ func (s *ScheduleAction) Validate() error {
 	}
 
 	switch s.Type {
-	case common.ActionMessageBus:
-		err = common.Validate(s.MessageBusAction)
+	case common.ActionEdgeXMessageBus:
+		err = common.Validate(s.EdgeXMessageBusAction)
 		if err != nil {
-			return errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid MessageBusAction.", err)
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid EdgeXMessageBusAction.", err)
 		}
 	case common.ActionREST:
 		err = common.Validate(s.RESTAction)
@@ -129,7 +129,7 @@ func (s *ScheduleAction) Validate() error {
 	return nil
 }
 
-type MessageBusAction struct {
+type EdgeXMessageBusAction struct {
 	Topic string `json:"topic" validate:"required"`
 }
 
@@ -174,10 +174,10 @@ func ToScheduleDefModel(dto ScheduleDef) models.ScheduleDef {
 	var model models.ScheduleDef
 
 	switch dto.Type {
-	case common.DefDuration:
-		model = models.DurationScheduleDef{
-			BaseScheduleDef: models.BaseScheduleDef{Type: common.DefDuration},
-			Duration:        dto.Duration,
+	case common.DefInterval:
+		model = models.IntervalScheduleDef{
+			BaseScheduleDef: models.BaseScheduleDef{Type: common.DefInterval},
+			Interval:        dto.Interval,
 		}
 	case common.DefCron:
 		model = models.CronScheduleDef{
@@ -193,11 +193,11 @@ func FromScheduleDefModelToDTO(model models.ScheduleDef) ScheduleDef {
 	var dto ScheduleDef
 
 	switch model.GetBaseScheduleDef().Type {
-	case common.DefDuration:
-		durationModel := model.(models.DurationScheduleDef)
+	case common.DefInterval:
+		durationModel := model.(models.IntervalScheduleDef)
 		dto = ScheduleDef{
-			Type:                common.DefDuration,
-			DurationScheduleDef: DurationScheduleDef{Duration: durationModel.Duration},
+			Type:                common.DefInterval,
+			IntervalScheduleDef: IntervalScheduleDef{Interval: durationModel.Interval},
 		}
 	case common.DefCron:
 		cronModel := model.(models.CronScheduleDef)
@@ -214,10 +214,10 @@ func ToScheduleActionModel(dto ScheduleAction) models.ScheduleAction {
 	var model models.ScheduleAction
 
 	switch dto.Type {
-	case common.ActionMessageBus:
-		model = models.MessageBusAction{
+	case common.ActionEdgeXMessageBus:
+		model = models.EdgeXMessageBusAction{
 			BaseScheduleAction: models.BaseScheduleAction{
-				Type:        common.ActionMessageBus,
+				Type:        common.ActionEdgeXMessageBus,
 				ContentType: dto.ContentType,
 				Payload:     dto.Payload,
 			},
@@ -252,13 +252,13 @@ func FromScheduleActionModelToDTO(model models.ScheduleAction) ScheduleAction {
 	var dto ScheduleAction
 
 	switch model.GetBaseScheduleAction().Type {
-	case common.ActionMessageBus:
-		messageBusModel := model.(models.MessageBusAction)
+	case common.ActionEdgeXMessageBus:
+		messageBusModel := model.(models.EdgeXMessageBusAction)
 		dto = ScheduleAction{
-			Type:        common.ActionMessageBus,
+			Type:        common.ActionEdgeXMessageBus,
 			ContentType: messageBusModel.ContentType,
 			Payload:     messageBusModel.Payload,
-			MessageBusAction: MessageBusAction{
+			EdgeXMessageBusAction: EdgeXMessageBusAction{
 				Topic: messageBusModel.Topic,
 			},
 		}
