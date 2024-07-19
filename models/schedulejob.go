@@ -24,13 +24,13 @@ type BaseScheduleDef struct {
 	Type ScheduleDefType
 }
 
-type DurationScheduleDef struct {
+type IntervalScheduleDef struct {
 	BaseScheduleDef
-	// Duration is the time interval between two consecutive executions
-	Duration int64
+	// Interval specifies the time interval between two consecutive executions
+	Interval string
 }
 
-func (d DurationScheduleDef) GetBaseScheduleDef() BaseScheduleDef {
+func (d IntervalScheduleDef) GetBaseScheduleDef() BaseScheduleDef {
 	return d.BaseScheduleDef
 }
 
@@ -54,12 +54,12 @@ type BaseScheduleAction struct {
 	Payload     []byte
 }
 
-type MessageBusAction struct {
+type EdgeXMessageBusAction struct {
 	BaseScheduleAction
 	Topic string
 }
 
-func (m MessageBusAction) GetBaseScheduleAction() BaseScheduleAction {
+func (m EdgeXMessageBusAction) GetBaseScheduleAction() BaseScheduleAction {
 	return m.BaseScheduleAction
 }
 
@@ -83,8 +83,8 @@ func (d DeviceControlAction) GetBaseScheduleAction() BaseScheduleAction {
 	return d.BaseScheduleAction
 }
 
-// ScheduleDefType is used to identify the schedule definition type, i.e., Duration or Cron
+// ScheduleDefType is used to identify the schedule definition type, i.e., INTERVAL or CRON
 type ScheduleDefType string
 
-// ScheduleActionType is used to identify the schedule action type, i.e., MessageBus, REST, or DeviceControl
+// ScheduleActionType is used to identify the schedule action type, i.e., EDGEXMESSAGEBUS, REST, or DEVICECONTROL
 type ScheduleActionType string

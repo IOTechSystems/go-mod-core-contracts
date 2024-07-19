@@ -54,7 +54,7 @@ func (client ScheduleJobClient) Update(ctx context.Context, reqs []requests.Upda
 	return res, nil
 }
 
-// AllScheduleJobs query the schedule jobs with offset, limit
+// AllScheduleJobs queries the schedule jobs with offset, limit
 func (client ScheduleJobClient) AllScheduleJobs(ctx context.Context, offset int, limit int) (
 	res responses.MultiScheduleJobsResponse, err errors.EdgeX) {
 	requestParams := url.Values{}
@@ -67,7 +67,7 @@ func (client ScheduleJobClient) AllScheduleJobs(ctx context.Context, offset int,
 	return res, nil
 }
 
-// ScheduleJobByName query the schedule job by name
+// ScheduleJobByName queries the schedule job by name
 func (client ScheduleJobClient) ScheduleJobByName(ctx context.Context, name string) (
 	res responses.ScheduleJobResponse, err errors.EdgeX) {
 	path := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
@@ -79,12 +79,24 @@ func (client ScheduleJobClient) ScheduleJobByName(ctx context.Context, name stri
 	return res, nil
 }
 
-// DeleteScheduleJobByName delete the schedule job by name
+// DeleteScheduleJobByName deletes the schedule job by name
 func (client ScheduleJobClient) DeleteScheduleJobByName(ctx context.Context, name string) (
 	res dtoCommon.BaseResponse, err errors.EdgeX) {
 	path := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
 		SetPath(common.ApiScheduleJobRoute).SetPath(common.Name).SetNameFieldPath(name).BuildPath()
 	err = utils.DeleteRequest(ctx, &res, client.baseUrl, path, client.authInjector)
+	if err != nil {
+		return res, errors.NewCommonEdgeXWrapper(err)
+	}
+	return res, nil
+}
+
+// TriggerScheduleJobByName triggers the schedule job by name
+func (client ScheduleJobClient) TriggerScheduleJobByName(ctx context.Context, name string) (
+	res dtoCommon.BaseResponse, err errors.EdgeX) {
+	path := common.NewPathBuilder().EnableNameFieldEscape(client.enableNameFieldEscape).
+		SetPath(common.ApiTriggerScheduleJobRoute).SetPath(common.Name).SetNameFieldPath(name).BuildPath()
+	err = utils.PostRequestWithRawData(ctx, &res, client.baseUrl, path, nil, nil, client.authInjector)
 	if err != nil {
 		return res, errors.NewCommonEdgeXWrapper(err)
 	}

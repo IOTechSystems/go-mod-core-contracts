@@ -21,17 +21,17 @@ var (
 	testScheduleJonName   = "jobName"
 	testScheduleJobLabels = []string{"label"}
 	testScheduleDef       = dtos.ScheduleDef{
-		Type: common.DefDuration,
-		DurationScheduleDef: dtos.DurationScheduleDef{
-			Duration: 1,
+		Type: common.DefInterval,
+		IntervalScheduleDef: dtos.IntervalScheduleDef{
+			Interval: "10m",
 		},
 	}
 	testScheduleActions = []dtos.ScheduleAction{
 		{
-			Type:        common.ActionMessageBus,
+			Type:        common.ActionEdgeXMessageBus,
 			ContentType: common.ContentTypeJSON,
 			Payload:     nil,
-			MessageBusAction: dtos.MessageBusAction{
+			EdgeXMessageBusAction: dtos.EdgeXMessageBusAction{
 				Topic: "testTopic",
 			},
 		},

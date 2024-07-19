@@ -102,12 +102,15 @@ const (
 	ApiTransmissionByStatusRoute           = ApiTransmissionRoute + "/" + Status + "/{" + Status + "}"
 	ApiTransmissionByNotificationIdRoute   = ApiTransmissionRoute + "/" + Notification + "/" + Id + "/{" + Id + "}"
 
-	ApiScheduleJobRoute       = ApiBase + "/job"
-	ApiAllScheduleJobRoute    = ApiScheduleJobRoute + "/" + All
-	ApiScheduleJobByNameRoute = ApiScheduleJobRoute + "/" + Name + "/{" + Name + "}"
+	ApiScheduleJobRoute              = ApiBase + "/job"
+	ApiAllScheduleJobRoute           = ApiScheduleJobRoute + "/" + All
+	ApiScheduleJobByNameRoute        = ApiScheduleJobRoute + "/" + Name + "/{" + Name + "}"
+	ApiTriggerScheduleJobRoute       = ApiScheduleJobRoute + "/" + Trigger
+	ApiTriggerScheduleJobByNameRoute = ApiScheduleJobRoute + "/" + Trigger + "/" + Name + "/{" + Name + "}"
 
 	ApiScheduleActionRecordRoute                   = ApiBase + "/scheduleactionrecord"
 	ApiAllScheduleActionRecordRoute                = ApiScheduleActionRecordRoute + "/" + All
+	ApiLatestScheduleActionRecordRoute             = ApiScheduleActionRecordRoute + "/" + Latest
 	ApiScheduleActionRecordRouteByStatusRoute      = ApiScheduleActionRecordRoute + "/" + Status + "/{" + Status + "}"
 	ApiScheduleActionRecordRouteByJobNameRoute     = ApiScheduleActionRecordRoute + "/" + Job + "/" + Name + "/{" + Name + "}"
 	ApiScheduleActionRecordByJobNameAndStatusRoute = ApiScheduleActionRecordRoute + "/" + Job + "/" + Name + "/{" + Name + "}/" + Status + "/{" + Status + "}"
@@ -189,6 +192,8 @@ const (
 	Severity      = "severity"
 	Interval      = "interval"
 	Job           = "job"
+	Trigger       = "trigger"
+	Latest        = "latest"
 
 	Offset       = "offset"         //query string to specify the number of items to skip before starting to collect the result set.
 	Limit        = "limit"          //query string to specify the numbers of items to return
@@ -269,11 +274,11 @@ const (
 
 // Constant for ScheduleJob
 const (
-	DefDuration         = "Duration"
-	DefCron             = "Cron"
-	ActionMessageBus    = "MessageBus"
-	ActionREST          = "REST"
-	ActionDeviceControl = "DeviceControl"
+	DefInterval           = "INTERVAL"
+	DefCron               = "CRON"
+	ActionEdgeXMessageBus = "EDGEXMESSAGEBUS"
+	ActionREST            = "REST"
+	ActionDeviceControl   = "DEVICECONTROL"
 )
 
 // Constants for Edgex Environment variable

@@ -29,4 +29,6 @@ type ScheduleJobClient interface {
 	ScheduleJobByName(ctx context.Context, name string) (responses.ScheduleJobResponse, errors.EdgeX)
 	// DeleteScheduleJobByName deletes a schedule job by name.
 	DeleteScheduleJobByName(ctx context.Context, name string) (common.BaseResponse, errors.EdgeX)
+	// TriggerScheduleJobByName triggers a schedule job by name.
+	TriggerScheduleJobByName(ctx context.Context, name string) (common.BaseResponse, errors.EdgeX)
 }

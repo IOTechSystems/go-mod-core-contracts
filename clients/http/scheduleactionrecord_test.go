@@ -27,6 +27,15 @@ func TestScheduleActionRecordClient_AllScheduleActionRecords(t *testing.T) {
 	require.IsType(t, responses.MultiScheduleActionRecordsResponse{}, res)
 }
 
+func TestScheduleActionRecordClient_LatestScheduleActionRecords(t *testing.T) {
+	ts := newTestServer(http.MethodGet, common.ApiLatestScheduleActionRecordRoute, responses.MultiScheduleActionRecordsResponse{})
+	defer ts.Close()
+	client := NewScheduleActionRecordClient(ts.URL, NewNullAuthenticationInjector(), false)
+	res, err := client.LatestScheduleActionRecords(context.Background(), 0, 10)
+	require.NoError(t, err)
+	require.IsType(t, responses.MultiScheduleActionRecordsResponse{}, res)
+}
+
 func TestScheduleActionRecordClient_ScheduleActionRecordsByStatus(t *testing.T) {
 	status := models.Succeeded
 	urlPath := path.Join(common.ApiScheduleActionRecordRoute, common.Status, status)
