@@ -246,3 +246,19 @@ func TestUpdateScheduleJobRequest_UnmarshalJSON(t *testing.T) {
 		})
 	}
 }
+
+func TestReplaceScheduleJobModelFieldsWithDTO(t *testing.T) {
+	job := models.ScheduleJob{
+		Id:   "7a1707f0-166f-4c4b-bc9d-1d54c74e0137",
+		Name: testScheduleJonName,
+	}
+	patch := updateScheduleJobData()
+
+	ReplaceScheduleJobModelFieldsWithDTO(&job, patch)
+
+	expectedActions := dtos.ToScheduleActionModels(patch.Actions)
+	expectedDef := dtos.ToScheduleDefModel(*patch.Definition)
+	assert.Equal(t, testScheduleJonName, job.Name)
+	assert.Equal(t, expectedActions, job.Actions)
+	assert.Equal(t, expectedDef, job.Definition)
+}

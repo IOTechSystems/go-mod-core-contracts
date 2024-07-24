@@ -205,6 +205,9 @@ const (
 	Latest        = "latest"
 	Key           = "key"
 	ServiceId     = "serviceId"
+	Job           = "job"
+	Trigger       = "trigger"
+	Latest        = "latest"
 
 	Offset        = "offset"         //query string to specify the number of items to skip before starting to collect the result set.
 	Limit         = "limit"          //query string to specify the numbers of items to return
@@ -320,6 +323,7 @@ const (
 	SupportNotificationsServiceKey      = "support-notifications"
 	SystemManagementServiceKey          = "sys-mgmt"
 	SupportSchedulerServiceKey          = "support-scheduler"
+	SupportCronSchedulerServiceKey      = "support-cron-scheduler"
 	SecuritySecretStoreSetupServiceKey  = "security-secretstore-setup"
 	SecurityProxyAuthServiceKey         = "security-proxy-auth"
 	SecurityProxySetupServiceKey        = "security-proxy-setup"

@@ -12,6 +12,7 @@ import (
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
 	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
 )
 
 // AddScheduleJobRequest defines the Request Content for POST ScheduleJob DTO.
@@ -86,6 +87,25 @@ func (u *UpdateScheduleJobRequest) UnmarshalJSON(b []byte) error {
 		return errors.NewCommonEdgeXWrapper(err)
 	}
 	return nil
+}
+
+// ReplaceScheduleJobModelFieldsWithDTO replace existing ScheduleJob's fields with DTO patch
+func ReplaceScheduleJobModelFieldsWithDTO(ds *models.ScheduleJob, patch dtos.UpdateScheduleJob) {
+	if patch.Actions != nil {
+		ds.Actions = dtos.ToScheduleActionModels(patch.Actions)
+	}
+	if patch.AdminState != nil {
+		ds.AdminState = models.AdminState(*patch.AdminState)
+	}
+	if patch.Labels != nil {
+		ds.Labels = patch.Labels
+	}
+	if patch.Definition != nil {
+		ds.Definition = dtos.ToScheduleDefModel(*patch.Definition)
+	}
+	if patch.Properties != nil {
+		ds.Properties = patch.Properties
+	}
 }
 
 // NewAddScheduleJobRequest creates, initializes and returns an AddScheduleJobRequest
