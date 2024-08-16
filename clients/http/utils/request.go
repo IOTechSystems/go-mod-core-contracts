@@ -233,6 +233,12 @@ func DeleteRequest(ctx context.Context, returnValuePointer interface{}, baseUrl 
 	if err != nil {
 		return errors.NewCommonEdgeXWrapper(err)
 	}
+
+	if len(res) == 0 {
+		// no response body is returned from the http request
+		return nil
+	}
+
 	if err := json.Unmarshal(res, returnValuePointer); err != nil {
 		return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to parse the response body", err)
 	}
