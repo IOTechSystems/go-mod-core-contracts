@@ -26,4 +26,8 @@ type DeviceServiceCommandClient interface {
 	Discovery(ctx context.Context, baseUrl string) (common.BaseResponse, errors.EdgeX)
 	// ProfileScan sends an HTTP POST request to the device service's profile scan API endpoint.
 	ProfileScan(ctx context.Context, baseUrl string, req requests.ProfileScanRequest) (common.BaseResponse, errors.EdgeX)
+	// StopDeviceDiscovery invokes device service's stop device discovery API
+	StopDeviceDiscovery(ctx context.Context, baseUrl string, requestId string, queryParams map[string]string) (common.BaseResponse, errors.EdgeX)
+	// StopProfileScan invokes device service's stop profile scan API
+	StopProfileScan(ctx context.Context, baseUrl string, deviceName string, queryParams map[string]string) (common.BaseResponse, errors.EdgeX)
 }
