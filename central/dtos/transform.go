@@ -63,70 +63,66 @@ func transformResourceFromV2ToV3(v2Resources []v2dtos.DeviceResource) ([]dtos.De
 
 // transformResPropsFromV2ToV3 converts the v2 ResourceProperties DTO to v3
 func transformResPropsFromV2ToV3(v2ResProp v2dtos.ResourceProperties) (dtos.ResourceProperties, errors.EdgeX) {
-	var err error
-	var minimum, maximum, scale, offset, base float64
-	var mask uint64
-	var shift int64
-
-	if v2ResProp.Minimum != "" {
-		minimum, err = strconv.ParseFloat(v2ResProp.Minimum, 64)
-		if err != nil {
-			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse minimum value '%s' to float64", v2ResProp.Minimum), err)
-		}
-	}
-	if v2ResProp.Maximum != "" {
-		maximum, err = strconv.ParseFloat(v2ResProp.Maximum, 64)
-		if err != nil {
-			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse maximum value '%s' to float64", v2ResProp.Maximum), err)
-		}
-	}
-	if v2ResProp.Mask != "" {
-		mask, err = strconv.ParseUint(v2ResProp.Mask, 10, 64)
-		if err != nil {
-			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse mask value '%s' to uint64", v2ResProp.Mask), err)
-		}
-	}
-	if v2ResProp.Shift != "" {
-		shift, err = strconv.ParseInt(v2ResProp.Shift, 10, 64)
-		if err != nil {
-			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse shift value '%s' to int64", v2ResProp.Shift), err)
-		}
-	}
-	if v2ResProp.Scale != "" {
-		scale, err = strconv.ParseFloat(v2ResProp.Scale, 64)
-		if err != nil {
-			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse scale value '%s' to float64", v2ResProp.Scale), err)
-		}
-	}
-	if v2ResProp.Offset != "" {
-		offset, err = strconv.ParseFloat(v2ResProp.Offset, 64)
-		if err != nil {
-			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse offset value '%s' to float64", v2ResProp.Offset), err)
-		}
-	}
-	if v2ResProp.Base != "" {
-		base, err = strconv.ParseFloat(v2ResProp.Base, 64)
-		if err != nil {
-			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse base value '%s' to float64", v2ResProp.Base), err)
-		}
-	}
-
-	return dtos.ResourceProperties{
+	v3ResProp := dtos.ResourceProperties{
 		ValueType:    v2ResProp.ValueType,
 		ReadWrite:    v2ResProp.ReadWrite,
 		Units:        v2ResProp.Units,
-		Minimum:      &minimum,
-		Maximum:      &maximum,
 		DefaultValue: v2ResProp.DefaultValue,
-		Mask:         &mask,
-		Shift:        &shift,
-		Scale:        &scale,
-		Offset:       &offset,
-		Base:         &base,
 		Assertion:    v2ResProp.Assertion,
 		MediaType:    v2ResProp.MediaType,
-		Optional:     nil,
-	}, nil
+	}
+
+	if v2ResProp.Minimum != "" {
+		minimum, err := strconv.ParseFloat(v2ResProp.Minimum, 64)
+		if err != nil {
+			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse minimum value '%s' to float64", v2ResProp.Minimum), err)
+		}
+		v3ResProp.Minimum = &minimum
+	}
+	if v2ResProp.Maximum != "" {
+		maximum, err := strconv.ParseFloat(v2ResProp.Maximum, 64)
+		if err != nil {
+			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse maximum value '%s' to float64", v2ResProp.Maximum), err)
+		}
+		v3ResProp.Maximum = &maximum
+	}
+	if v2ResProp.Mask != "" {
+		mask, err := strconv.ParseUint(v2ResProp.Mask, 10, 64)
+		if err != nil {
+			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse mask value '%s' to uint64", v2ResProp.Mask), err)
+		}
+		v3ResProp.Mask = &mask
+	}
+	if v2ResProp.Shift != "" {
+		shift, err := strconv.ParseInt(v2ResProp.Shift, 10, 64)
+		if err != nil {
+			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse shift value '%s' to int64", v2ResProp.Shift), err)
+		}
+		v3ResProp.Shift = &shift
+	}
+	if v2ResProp.Scale != "" {
+		scale, err := strconv.ParseFloat(v2ResProp.Scale, 64)
+		if err != nil {
+			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse scale value '%s' to float64", v2ResProp.Scale), err)
+		}
+		v3ResProp.Scale = &scale
+	}
+	if v2ResProp.Offset != "" {
+		offset, err := strconv.ParseFloat(v2ResProp.Offset, 64)
+		if err != nil {
+			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse offset value '%s' to float64", v2ResProp.Offset), err)
+		}
+		v3ResProp.Offset = &offset
+	}
+	if v2ResProp.Base != "" {
+		base, err := strconv.ParseFloat(v2ResProp.Base, 64)
+		if err != nil {
+			return dtos.ResourceProperties{}, errors.NewCommonEdgeX(errors.KindServerError, fmt.Sprintf("failed to parse base value '%s' to float64", v2ResProp.Base), err)
+		}
+		v3ResProp.Base = &base
+	}
+
+	return v3ResProp, nil
 }
 
 // transformCommandFromV2ToV3 converts the v2 []DeviceCommand DTO to v3
