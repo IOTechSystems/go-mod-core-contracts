@@ -92,10 +92,11 @@ func Test_transformResourceFromV2ToV3(t *testing.T) {
 func Test_transformResPropsFromV2ToV3(t *testing.T) {
 	result, err := transformResPropsFromV2ToV3(mockV2ResProp)
 	require.NoError(t, err)
-	require.Equal(t, mockResProp.ValueType, result.ValueType)
-	require.Equal(t, mockResProp.ReadWrite, result.ReadWrite)
-	require.Equal(t, *mockResProp.Minimum, *result.Minimum)
-	require.Equal(t, *mockResProp.Maximum, *result.Maximum)
+	require.Equal(t, mockV2ResProp.ValueType, result.ValueType)
+	require.Equal(t, mockV2ResProp.ReadWrite, result.ReadWrite)
+	require.Equal(t, mockV2ResProp.Minimum, fmt.Sprintf("%.6f", *result.Minimum))
+	require.Equal(t, mockV2ResProp.Maximum, fmt.Sprintf("%.6f", *result.Maximum))
+	require.Nil(t, result.Scale)
 }
 
 func Test_transformCommandFromV2ToV3(t *testing.T) {
