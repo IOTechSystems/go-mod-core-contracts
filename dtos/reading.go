@@ -252,6 +252,9 @@ func convertFloat64ArrayValue(values []float64) (string, error) {
 }
 
 func validateType(valueType string, kind reflect.Kind, value any) error {
+	if value == nil {
+		return nil // To support reading the null value
+	}
 	if reflect.TypeOf(value).Kind() == reflect.Slice {
 		if kind != reflect.TypeOf(value).Elem().Kind() {
 			return fmt.Errorf("slice of type of value `%s` not a match for specified ValueType '%s", kind.String(), valueType)
