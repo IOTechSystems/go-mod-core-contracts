@@ -129,5 +129,5 @@ func tagsToXmlString(tags map[string]interface{}) string {
 
 // AddObjectArrayReading adds a object array reading to the Event
 func (e *Event) AddObjectArrayReading(resourceName string, objectValue interface{}) {
-	e.Readings = append(e.Readings, NewObjectArrayReading(e.ProfileName, e.DeviceName, resourceName, objectValue))
+	e.Readings = append(e.Readings, NewObjectReadingWithArray(e.ProfileName, e.DeviceName, resourceName, objectValue))
 }

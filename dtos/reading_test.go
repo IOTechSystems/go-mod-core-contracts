@@ -627,7 +627,7 @@ func TestNewObjectArrayReading(t *testing.T) {
 		},
 	}
 
-	actual := NewObjectArrayReading(expectedProfileName, expectedDeviceName, expectedResourceName, expectedValue)
+	actual := NewObjectReadingWithArray(expectedProfileName, expectedDeviceName, expectedResourceName, expectedValue)
 
 	assert.NotEmpty(t, actual.Id)
 	assert.Equal(t, expectedProfileName, actual.ProfileName)
