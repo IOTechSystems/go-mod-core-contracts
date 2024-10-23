@@ -84,6 +84,11 @@ func (e *Event) AddObjectReading(resourceName string, objectValue interface{}) {
 	e.Readings = append(e.Readings, NewObjectReading(e.ProfileName, e.DeviceName, resourceName, objectValue))
 }
 
+// AddNullReading adds a simple reading with null value to the Event
+func (e *Event) AddNullReading(resourceName string, valueType string) {
+	e.Readings = append(e.Readings, NewNullReading(e.ProfileName, e.DeviceName, resourceName, valueType))
+}
+
 // ToXML provides a XML representation of the Event as a string
 func (e *Event) ToXML() (string, error) {
 	eventXml, err := xml.Marshal(e)
@@ -124,5 +129,5 @@ func tagsToXmlString(tags map[string]interface{}) string {
 
 // AddObjectArrayReading adds a object array reading to the Event
 func (e *Event) AddObjectArrayReading(resourceName string, objectValue interface{}) {
-	e.Readings = append(e.Readings, NewObjectArrayReading(e.ProfileName, e.DeviceName, resourceName, objectValue))
+	e.Readings = append(e.Readings, NewObjectReadingWithArray(e.ProfileName, e.DeviceName, resourceName, objectValue))
 }

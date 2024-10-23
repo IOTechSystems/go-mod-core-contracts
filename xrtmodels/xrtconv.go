@@ -120,7 +120,7 @@ func ToEdgeXV2EventDTO(xrtEvent MultiResourcesResult) (dtos.Event, errors.EdgeX)
 		case common.ValueTypeObject:
 			event.Readings[index] = dtos.NewObjectReading(xrtEvent.Profile, xrtEvent.Device, resourceName, value)
 		case common.ValueTypeObjectArray:
-			event.Readings[index] = dtos.NewObjectArrayReading(xrtEvent.Profile, xrtEvent.Device, resourceName, value)
+			event.Readings[index] = dtos.NewObjectReadingWithArray(xrtEvent.Profile, xrtEvent.Device, resourceName, value)
 		default:
 			event.Readings[index], err = dtos.NewSimpleReading(xrtEvent.Profile, xrtEvent.Device, resourceName, valueType, value)
 			if err != nil {

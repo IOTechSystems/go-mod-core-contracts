@@ -6,9 +6,11 @@
 package dtos
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
+	"github.com/fxamacker/cbor/v2"
 	"github.com/stretchr/testify/require"
 
 	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
@@ -109,8 +111,8 @@ func TestEvent_ToXML(t *testing.T) {
 		"<2>TestTag2</2>",
 		"</Tags><ResourceName>TestSourceName</ResourceName><ProfileName>TestDeviceProfileName</ProfileName><ValueType>Int8</ValueType><Units></Units><Tags>",
 		"<1>TestTag1</1>",
-		"<2>TestTag2</2>",
-		"</Tags><BinaryValue></BinaryValue><MediaType></MediaType></Readings>",
+		"<2>TestTag2</2></Tags>",
+		"<BinaryValue></BinaryValue><MediaType></MediaType>", "</Readings>",
 	}
 	actual, _ := expectedDTO.ToXML()
 	for _, item := range contains {
@@ -165,7 +167,7 @@ func TestEvent_AddSimpleReading(t *testing.T) {
 		assert.Equal(t, expectedDeviceName, actual.DeviceName)
 		assert.Equal(t, expectedReadingDetails[index].resourceName, actual.ResourceName)
 		assert.Equal(t, expectedReadingDetails[index].valueType, actual.ValueType)
-		assert.Equal(t, expectedReadingDetails[index].value, *actual.Value)
+		assert.Equal(t, expectedReadingDetails[index].value, actual.Value)
 		assert.NotZero(t, actual.Origin)
 	}
 }
@@ -219,4 +221,70 @@ func TestEvent_AddObjectReading(t *testing.T) {
 	assert.Equal(t, expectedValueType, actual.ValueType)
 	assert.Equal(t, expectedValue, actual.ObjectValue)
 	assert.NotZero(t, actual.Origin)
+}
+
+func TestEvent_MarshalNullReading(t *testing.T) {
+	testEvent := NewEvent(TestDeviceProfileName, TestDeviceName, TestSourceName)
+	testEvent.AddNullReading(common.ValueTypeInt8, common.ValueTypeInt8)
+	testEvent.AddNullReading(common.ValueTypeInt16, common.ValueTypeInt16)
+	testEvent.AddNullReading(common.ValueTypeInt32, common.ValueTypeInt32)
+	testEvent.AddNullReading(common.ValueTypeInt64, common.ValueTypeInt64)
+	testEvent.AddNullReading(common.ValueTypeUint8, common.ValueTypeUint8)
+	testEvent.AddNullReading(common.ValueTypeUint16, common.ValueTypeUint16)
+	testEvent.AddNullReading(common.ValueTypeUint32, common.ValueTypeUint32)
+	testEvent.AddNullReading(common.ValueTypeUint64, common.ValueTypeUint64)
+	testEvent.AddNullReading(common.ValueTypeInt8Array, common.ValueTypeInt8Array)
+	testEvent.AddNullReading(common.ValueTypeInt16Array, common.ValueTypeInt16Array)
+	testEvent.AddNullReading(common.ValueTypeInt32Array, common.ValueTypeInt32Array)
+	testEvent.AddNullReading(common.ValueTypeInt64Array, common.ValueTypeInt64Array)
+	testEvent.AddNullReading(common.ValueTypeUint8Array, common.ValueTypeUint8Array)
+	testEvent.AddNullReading(common.ValueTypeUint16Array, common.ValueTypeUint16Array)
+	testEvent.AddNullReading(common.ValueTypeUint32Array, common.ValueTypeUint32Array)
+	testEvent.AddNullReading(common.ValueTypeUint64Array, common.ValueTypeUint64Array)
+	testEvent.AddNullReading(common.ValueTypeFloat32, common.ValueTypeFloat32)
+	testEvent.AddNullReading(common.ValueTypeFloat64, common.ValueTypeFloat64)
+	testEvent.AddNullReading(common.ValueTypeFloat32Array, common.ValueTypeFloat32Array)
+	testEvent.AddNullReading(common.ValueTypeFloat64Array, common.ValueTypeFloat64Array)
+	testEvent.AddNullReading(common.ValueTypeObject, common.ValueTypeObject)
+	testEvent.AddNullReading(common.ValueTypeObjectArray, common.ValueTypeObjectArray)
+	testEvent.AddNullReading(common.ValueTypeBinary, common.ValueTypeBinary)
+
+	for _, actual := range testEvent.Readings {
+		assert.True(t, actual.isNull)
+	}
+
+	tests := []struct {
+		name      string
+		marshal   func(any) ([]byte, error)
+		unmarshal func([]byte, any) error
+	}{
+		{"marshal with JSON encode", json.Marshal, json.Unmarshal},
+		{"marshal with CBOR encode", cbor.Marshal, cbor.Unmarshal},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			encoded, err := tt.marshal(testEvent)
+			assert.NoError(t, err)
+
+			var result Event
+			err = tt.unmarshal(encoded, &result)
+			assert.NoError(t, err)
+
+			assert.Equal(t, testEvent.DeviceName, result.DeviceName)
+			assert.Equal(t, testEvent.ProfileName, result.ProfileName)
+			assert.Equal(t, testEvent.SourceName, result.SourceName)
+			assert.Equal(t, len(testEvent.Readings), len(result.Readings))
+
+			for i, r := range result.Readings {
+				assert.Equal(t, testEvent.Readings[i].DeviceName, r.DeviceName)
+				assert.Equal(t, testEvent.Readings[i].ProfileName, r.ProfileName)
+				assert.Equal(t, testEvent.Readings[i].ResourceName, r.ResourceName)
+				assert.Equal(t, testEvent.Readings[i].ValueType, r.ValueType)
+				assert.True(t, r.isNull, "isNull should be true after marshaling")
+				assert.Empty(t, r.Value, "reading value should be empty after marshaling")
+				assert.Empty(t, r.ObjectValue, "reading objectValue should be empty after marshaling")
+				assert.Empty(t, r.BinaryValue, "reading binaryValue should be empty after marshaling")
+			}
+		})
+	}
 }
