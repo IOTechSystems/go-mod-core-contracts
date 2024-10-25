@@ -8,9 +8,9 @@ package interfaces
 import (
 	"context"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
 )
 
 // SystemManagementClient defines the interface for interactions with the API endpoint on the IOTech sys-mgmt service.

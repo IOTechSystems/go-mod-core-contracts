@@ -1,6 +1,6 @@
 //
 // Copyright (C) 2020 Intel Corporation
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -13,7 +13,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
 )
 
 func TestNewMetricsResponse(t *testing.T) {

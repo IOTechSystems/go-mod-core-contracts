@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2022-2023 IOTech Ltd
+// Copyright (C) 2022-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -9,7 +9,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
 )
 
 // TLS file settings

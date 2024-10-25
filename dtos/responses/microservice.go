@@ -1,12 +1,12 @@
 //
-// Copyright (C) 2022 IOTech Ltd
+// Copyright (C) 2022-2024 IOTech Ltd
 //
 
 package responses
 
 import (
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/common"
 )
 
 // MultiMicroServicesResponse defines the Response Content for GET multiple MicroService DTOs.

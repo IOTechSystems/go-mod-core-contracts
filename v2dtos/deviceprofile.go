@@ -1,4 +1,4 @@
-// Copyright (C) 2020-2022 IOTech Ltd
+// Copyright (C) 2020-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"strings"
 
-	edgexErrors "github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/v2models"
+	edgexErrors "github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/v2models"
 )
 
 // DeviceProfile and its properties are defined in the APIv2 specification:

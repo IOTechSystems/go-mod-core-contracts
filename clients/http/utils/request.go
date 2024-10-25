@@ -198,30 +198,3 @@ func processRequest(ctx context.Context,
 	}
 	return nil
 }
-
-// DeleteRequestWithParams makes the delete request with URL query params and return the body
-func DeleteRequestWithParams(ctx context.Context, returnValuePointer interface{}, baseUrl string, requestPath string, requestParams url.Values, authInjector interfaces.AuthenticationInjector) errors.EdgeX {
-	req, err := createRequest(ctx, http.MethodDelete, baseUrl, requestPath, requestParams)
-	if err != nil {
-		return errors.NewCommonEdgeXWrapper(err)
-	}
-
-	return processRequest(ctx, returnValuePointer, req, authInjector)
-}
-
-// processRequest is a helper function to process the request and get the return value
-func processRequest(ctx context.Context,
-	returnValuePointer any, req *http.Request, authInjector interfaces.AuthenticationInjector) errors.EdgeX {
-	resp, err := sendRequest(ctx, req, authInjector)
-	if err != nil {
-		return errors.NewCommonEdgeXWrapper(err)
-	}
-	// Check the response content length to avoid json unmarshal error
-	if len(resp) == 0 {
-		return nil
-	}
-	if err := json.Unmarshal(resp, returnValuePointer); err != nil {
-		return errors.NewCommonEdgeX(errors.KindContractInvalid, "failed to parse the response body", err)
-	}
-	return nil
-}

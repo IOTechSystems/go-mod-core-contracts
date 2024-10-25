@@ -9,7 +9,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos"
 
 	"github.com/stretchr/testify/require"
 	"github.com/xuri/excelize/v2"

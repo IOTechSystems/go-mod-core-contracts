@@ -1,11 +1,11 @@
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 
 package xrtmodels
 
 import (
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
 	"github.com/stretchr/testify/assert"
 )
 

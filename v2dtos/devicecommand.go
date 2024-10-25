@@ -1,12 +1,12 @@
 //
-// Copyright (C) 2020-2023 IOTech Ltd
+// Copyright (C) 2020-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package v2dtos
 
 import (
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/v2models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/v2models"
 )
 
 // DeviceCommand and its properties are defined in the APIv2 specification:
