@@ -6,9 +6,9 @@
 package dtos
 
 import (
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/models"
 )
 
 type Address struct {
@@ -63,8 +63,9 @@ func (a *Address) Validate() error {
 }
 
 type RESTAddress struct {
-	Path       string `json:"path,omitempty"`
-	HTTPMethod string `json:"httpMethod,omitempty" validate:"required,oneof='GET' 'HEAD' 'POST' 'PUT' 'PATCH' 'DELETE' 'TRACE' 'CONNECT'"`
+	Path            string `json:"path,omitempty"`
+	HTTPMethod      string `json:"httpMethod,omitempty" validate:"required,oneof='GET' 'HEAD' 'POST' 'PUT' 'PATCH' 'DELETE' 'TRACE' 'CONNECT'"`
+	InjectEdgeXAuth bool   `json:"injectEdgeXAuth,omitempty"`
 }
 
 func NewRESTAddress(host string, port int, httpMethod string) Address {
@@ -159,8 +160,9 @@ func ToAddressModel(a Address) models.Address {
 			BaseAddress: models.BaseAddress{
 				Type: a.Type, Host: a.Host, Port: a.Port,
 			},
-			Path:       a.RESTAddress.Path,
-			HTTPMethod: a.RESTAddress.HTTPMethod,
+			Path:            a.RESTAddress.Path,
+			HTTPMethod:      a.RESTAddress.HTTPMethod,
+			InjectEdgeXAuth: a.RESTAddress.InjectEdgeXAuth,
 		}
 	case common.MQTT:
 		address = models.MQTTPubAddress{
@@ -209,8 +211,9 @@ func FromAddressModelToDTO(address models.Address) Address {
 	switch a := address.(type) {
 	case models.RESTAddress:
 		dto.RESTAddress = RESTAddress{
-			Path:       a.Path,
-			HTTPMethod: a.HTTPMethod,
+			Path:            a.Path,
+			HTTPMethod:      a.HTTPMethod,
+			InjectEdgeXAuth: a.InjectEdgeXAuth,
 		}
 	case models.MQTTPubAddress:
 		dto.MQTTPubAddress = MQTTPubAddress{

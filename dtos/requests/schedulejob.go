@@ -8,10 +8,11 @@ package requests
 import (
 	"encoding/json"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/models"
 )
 
 // AddScheduleJobRequest defines the Request Content for POST ScheduleJob DTO.
@@ -60,10 +61,26 @@ type UpdateScheduleJobRequest struct {
 }
 
 // Validate satisfies the Validator interface
-func (a *UpdateScheduleJobRequest) Validate() error {
-	err := common.Validate(a)
+func (u *UpdateScheduleJobRequest) Validate() error {
+	err := common.Validate(u)
 	if err != nil {
 		return err
+	}
+
+	if u.ScheduleJob.Definition != nil {
+		err = u.ScheduleJob.Definition.Validate()
+		if err != nil {
+			return errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid ScheduleDef.", err)
+		}
+	}
+
+	if u.ScheduleJob.Actions != nil {
+		for _, action := range u.ScheduleJob.Actions {
+			err = action.Validate()
+			if err != nil {
+				return errors.NewCommonEdgeX(errors.KindContractInvalid, "invalid ScheduleAction.", err)
+			}
+		}
 	}
 
 	return nil
@@ -86,6 +103,28 @@ func (u *UpdateScheduleJobRequest) UnmarshalJSON(b []byte) error {
 		return errors.NewCommonEdgeXWrapper(err)
 	}
 	return nil
+}
+
+// ReplaceScheduleJobModelFieldsWithDTO replace existing ScheduleJob's fields with DTO patch
+func ReplaceScheduleJobModelFieldsWithDTO(ds *models.ScheduleJob, patch dtos.UpdateScheduleJob) {
+	if patch.Actions != nil {
+		ds.Actions = dtos.ToScheduleActionModels(patch.Actions)
+	}
+	if patch.AdminState != nil {
+		ds.AdminState = models.AdminState(*patch.AdminState)
+	}
+	if patch.AutoTriggerMissedRecords != nil {
+		ds.AutoTriggerMissedRecords = *patch.AutoTriggerMissedRecords
+	}
+	if patch.Labels != nil {
+		ds.Labels = patch.Labels
+	}
+	if patch.Definition != nil {
+		ds.Definition = dtos.ToScheduleDefModel(*patch.Definition)
+	}
+	if patch.Properties != nil {
+		ds.Properties = patch.Properties
+	}
 }
 
 // NewAddScheduleJobRequest creates, initializes and returns an AddScheduleJobRequest

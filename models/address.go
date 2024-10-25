@@ -8,8 +8,8 @@ package models
 import (
 	"encoding/json"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
 )
 
 type Address interface {
@@ -95,8 +95,9 @@ type MessageBus struct {
 // RESTAddress is a REST specific struct
 type RESTAddress struct {
 	BaseAddress
-	Path       string
-	HTTPMethod string
+	Path            string
+	HTTPMethod      string
+	InjectEdgeXAuth bool
 }
 
 func (a RESTAddress) GetBaseAddress() BaseAddress { return a.BaseAddress }

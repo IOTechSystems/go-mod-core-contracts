@@ -1,4 +1,4 @@
-// Copyright (C) 2021-2022 IOTech Ltd
+// Copyright (C) 2021-2024 IOTech Ltd
 
 package v1models
 
@@ -10,10 +10,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/v2dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/v2models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/v2dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/v2models"
 )
 
 const (

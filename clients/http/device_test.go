@@ -13,10 +13,10 @@ import (
 	"path"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/responses"
 
 	"github.com/stretchr/testify/require"
 )
@@ -117,6 +117,15 @@ func TestQueryDevicesByServiceName(t *testing.T) {
 	defer ts.Close()
 	client := NewDeviceClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.DevicesByServiceName(context.Background(), serviceName, 1, 10)
+	require.NoError(t, err)
+	require.IsType(t, responses.MultiDevicesResponse{}, res)
+}
+
+func TestQueryDeviceTree(t *testing.T) {
+	ts := newTestServer(http.MethodGet, common.ApiAllDeviceRoute, responses.MultiDevicesResponse{})
+	defer ts.Close()
+	client := NewDeviceClient(ts.URL, NewNullAuthenticationInjector(), false)
+	res, err := client.AllDevicesWithChildren(context.Background(), "MyRoot", 3, []string{"label1", "label2"}, 1, 10)
 	require.NoError(t, err)
 	require.IsType(t, responses.MultiDevicesResponse{}, res)
 }

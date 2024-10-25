@@ -1,6 +1,7 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
+// SPDX-License-Identifier: Apache-2.0
 
 package requests
 
@@ -8,8 +9,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2021 IOTech Ltd
+// Copyright (C) 2021-2024 IOTech Ltd
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -11,8 +11,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -26,9 +26,6 @@ const (
 	testPublisher  = "testPublisher"
 	testTopic      = "testTopic"
 	testEmail      = "test@example.com"
-	testScheme     = "tcp"
-	testSecretPath = "mqtt"
-	testAuthMode   = "none"
 )
 
 var testRESTAddress = Address{
@@ -41,17 +38,23 @@ var testRESTAddress = Address{
 	},
 }
 
+var testRESTAddressWithAuthInject = Address{
+	Type: common.REST,
+	Host: testHost,
+	Port: testPort,
+	RESTAddress: RESTAddress{
+		Path:            testPath,
+		HTTPMethod:      testHTTPMethod,
+		InjectEdgeXAuth: true,
+	},
+}
+
 var testMQTTPubAddress = Address{
-	Type:   common.MQTT,
-	Scheme: testScheme,
-	Host:   testHost,
-	Port:   testPort,
+	Type: common.MQTT,
+	Host: testHost,
+	Port: testPort,
 	MQTTPubAddress: MQTTPubAddress{
 		Publisher: testPublisher,
-	},
-	Security: Security{
-		SecretPath: "mqtt",
-		AuthMode:   "none",
 	},
 	MessageBus: MessageBus{Topic: testTopic},
 }
@@ -69,10 +72,15 @@ func TestAddress_UnmarshalJSON(t *testing.T) {
 		testRESTAddress.Type, testRESTAddress.Host, testRESTAddress.Port,
 		testRESTAddress.Path, testRESTAddress.HTTPMethod,
 	)
+	restWithInjectJsonStr := fmt.Sprintf(
+		`{"type":"%s","host":"%s","port":%d,"path":"%s","httpMethod":"%s","injectEdgeXAuth":%v}`,
+		testRESTAddressWithAuthInject.Type, testRESTAddressWithAuthInject.Host, testRESTAddressWithAuthInject.Port,
+		testRESTAddressWithAuthInject.Path, testRESTAddressWithAuthInject.HTTPMethod, testRESTAddressWithAuthInject.InjectEdgeXAuth,
+	)
 	mqttJsonStr := fmt.Sprintf(
-		`{"type":"%s","host":"%s","port":%d,"publisher":"%s","topic":"%s", "scheme":"%s", "secretPath":"%s", "authMode":"%s"}`,
+		`{"type":"%s","host":"%s","port":%d,"Publisher":"%s","Topic":"%s"}`,
 		testMQTTPubAddress.Type, testMQTTPubAddress.Host, testMQTTPubAddress.Port,
-		testMQTTPubAddress.Publisher, testMQTTPubAddress.Topic, testMQTTPubAddress.Scheme, testMQTTPubAddress.SecretPath, testMQTTPubAddress.AuthMode,
+		testMQTTPubAddress.Publisher, testMQTTPubAddress.Topic,
 	)
 	emailJsonStr := fmt.Sprintf(`{"type":"%s","Recipients":["%s"]}`, testEmailAddress.Type, testEmail)
 
@@ -83,6 +91,7 @@ func TestAddress_UnmarshalJSON(t *testing.T) {
 		wantErr  bool
 	}{
 		{"unmarshal RESTAddress with success", testRESTAddress, []byte(restJsonStr), false},
+		{"unmarshal RESTAddressWithAuthInject with success", testRESTAddressWithAuthInject, []byte(restWithInjectJsonStr), false},
 		{"unmarshal MQTTPubAddress with success", testMQTTPubAddress, []byte(mqttJsonStr), false},
 		{"unmarshal EmailAddress with success", testEmailAddress, []byte(emailJsonStr), false},
 		{"unmarshal invalid Address, empty data", Address{}, []byte{}, true},
@@ -171,21 +180,29 @@ func TestAddress_marshalJSON(t *testing.T) {
 		`{"type":"%s","host":"%s","port":%d,"httpMethod":"%s"}`,
 		restAddress.Type, restAddress.Host, restAddress.Port, restAddress.HTTPMethod,
 	)
-	mqttAddress := Address{
-		Type:   common.MQTT,
-		Scheme: testScheme, Host: testHost, Port: testPort,
+	restAddressWithAuthInject := Address{
+		Type: common.REST,
+		Host: testHost, Port: testPort,
+		RESTAddress: RESTAddress{HTTPMethod: testHTTPMethod, InjectEdgeXAuth: true},
+	}
+	expectedRESTWithAuthInjectJsonStr := fmt.Sprintf(
+		`{"type":"%s","host":"%s","port":%d,"httpMethod":"%s","injectEdgeXAuth":%v}`,
+		restAddressWithAuthInject.Type, restAddressWithAuthInject.Host, restAddressWithAuthInject.Port,
+		restAddressWithAuthInject.HTTPMethod, restAddressWithAuthInject.InjectEdgeXAuth,
+	)
+	mattAddress := Address{
+		Type: common.MQTT,
+		Host: testHost, Port: testPort,
 		MQTTPubAddress: MQTTPubAddress{
 			Publisher: testPublisher,
 		},
-		MessageBus: MessageBus{Topic: testTopic},
-		Security: Security{
-			SecretPath: testSecretPath,
-			AuthMode:   testAuthMode,
+		MessageBus: MessageBus{
+			testTopic,
 		},
 	}
 	expectedMQTTJsonStr := fmt.Sprintf(
-		`{"type":"%s","scheme":"%s","host":"%s","port":%d,"publisher":"%s","topic":"%s","secretPath":"%s","authMode":"%s"}`,
-		mqttAddress.Type, mqttAddress.Scheme, mqttAddress.Host, mqttAddress.Port, mqttAddress.Publisher, mqttAddress.Topic, mqttAddress.SecretPath, mqttAddress.AuthMode,
+		`{"type":"%s","host":"%s","port":%d,"publisher":"%s","topic":"%s"}`,
+		mattAddress.Type, mattAddress.Host, mattAddress.Port, mattAddress.Publisher, mattAddress.Topic,
 	)
 	emailAddress := Address{
 		Type: common.EMAIL,
@@ -204,7 +221,8 @@ func TestAddress_marshalJSON(t *testing.T) {
 		expectedJSONStr string
 	}{
 		{"marshal REST address", restAddress, expectedRESTJsonStr},
-		{"marshal MQTT address", mqttAddress, expectedMQTTJsonStr},
+		{"marshal REST address with auth inject", restAddressWithAuthInject, expectedRESTWithAuthInjectJsonStr},
+		{"marshal MQTT address", mattAddress, expectedMQTTJsonStr},
 		{"marshal Email address", emailAddress, expectedEmailJsonStr},
 	}
 

@@ -13,13 +13,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/http/utils"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/clients/http/utils"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/clients/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
 )
 
 type DeviceClient struct {
@@ -82,6 +82,22 @@ func (dc DeviceClient) AllDevices(ctx context.Context, labels []string, offset i
 	if len(labels) > 0 {
 		requestParams.Set(common.Labels, strings.Join(labels, common.CommaSeparator))
 	}
+	requestParams.Set(common.Offset, strconv.Itoa(offset))
+	requestParams.Set(common.Limit, strconv.Itoa(limit))
+	err = utils.GetRequest(ctx, &res, dc.baseUrl, common.ApiAllDeviceRoute, requestParams, dc.authInjector)
+	if err != nil {
+		return res, errors.NewCommonEdgeXWrapper(err)
+	}
+	return res, nil
+}
+
+func (dc DeviceClient) AllDevicesWithChildren(ctx context.Context, parent string, maxLevels uint, labels []string, offset int, limit int) (res responses.MultiDevicesResponse, err errors.EdgeX) {
+	requestParams := url.Values{}
+	if len(labels) > 0 {
+		requestParams.Set(common.Labels, strings.Join(labels, common.CommaSeparator))
+	}
+	requestParams.Set(common.DescendantsOf, parent)
+	requestParams.Set(common.MaxLevels, strconv.FormatUint(uint64(maxLevels), 10))
 	requestParams.Set(common.Offset, strconv.Itoa(offset))
 	requestParams.Set(common.Limit, strconv.Itoa(limit))
 	err = utils.GetRequest(ctx, &res, dc.baseUrl, common.ApiAllDeviceRoute, requestParams, dc.authInjector)

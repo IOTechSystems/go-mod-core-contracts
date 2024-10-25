@@ -6,9 +6,9 @@
 package dtos
 
 import (
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/models"
 )
 
 type ScheduleActionRecord struct {
@@ -47,6 +47,14 @@ func ToScheduleActionRecordModel(dto ScheduleActionRecord) models.ScheduleAction
 	return model
 }
 
+func ToScheduleActionRecordModels(dtos []ScheduleActionRecord) []models.ScheduleActionRecord {
+	scheduleActionRecordModels := make([]models.ScheduleActionRecord, len(dtos))
+	for i, dto := range dtos {
+		scheduleActionRecordModels[i] = ToScheduleActionRecordModel(dto)
+	}
+	return scheduleActionRecordModels
+}
+
 func FromScheduleActionRecordModelToDTO(model models.ScheduleActionRecord) ScheduleActionRecord {
 	var dto ScheduleActionRecord
 	dto.Id = model.Id
@@ -57,4 +65,12 @@ func FromScheduleActionRecordModelToDTO(model models.ScheduleActionRecord) Sched
 	dto.Created = model.Created
 
 	return dto
+}
+
+func FromScheduleActionRecordModelsToDTOs(records []models.ScheduleActionRecord) []ScheduleActionRecord {
+	scheduleActionRecordDTOs := make([]ScheduleActionRecord, len(records))
+	for i, record := range records {
+		scheduleActionRecordDTOs[i] = FromScheduleActionRecordModelToDTO(record)
+	}
+	return scheduleActionRecordDTOs
 }

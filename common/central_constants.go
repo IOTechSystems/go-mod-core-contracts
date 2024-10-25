@@ -101,7 +101,6 @@ const (
 
 // Constants related to how services identify themselves in the Service Registry
 const (
-	CoreKeeperServiceKey                = "core-keeper"
 	SupportProvisionServiceKey          = "support-provision"
 	SupportSparkplugServiceKey          = "support-sparkplug"
 	SupportSparkplugHistorianServiceKey = "support-sparkplug-historian"

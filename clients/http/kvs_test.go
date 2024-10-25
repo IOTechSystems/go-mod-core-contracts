@@ -1,6 +1,7 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
+// SPDX-License-Identifier: Apache-2.0
 
 package http
 
@@ -9,9 +10,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/responses"
 
 	"github.com/stretchr/testify/require"
 )
@@ -23,7 +24,7 @@ func TestUpdateValuesByKey(t *testing.T) {
 	defer ts.Close()
 
 	client := NewKVSClient(ts.URL, NewNullAuthenticationInjector())
-	res, err := client.UpdateValuesByKey(context.Background(), TestKey, requests.UpdateKeysRequest{})
+	res, err := client.UpdateValuesByKey(context.Background(), TestKey, true, requests.UpdateKeysRequest{})
 
 	require.NoError(t, err)
 	require.IsType(t, responses.KeysResponse{}, res)

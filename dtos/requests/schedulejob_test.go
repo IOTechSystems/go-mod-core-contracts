@@ -7,18 +7,19 @@ package requests
 
 import (
 	"encoding/json"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/models"
 )
 
 var (
-	testScheduleJonName   = "jobName"
+	testScheduleJobName   = "jobName"
 	testScheduleJobLabels = []string{"label"}
 	testScheduleDef       = dtos.ScheduleDef{
 		Type: common.DefInterval,
@@ -41,14 +42,16 @@ var (
 			Payload:     nil,
 			RESTAction: dtos.RESTAction{
 				Address: "testAddress",
+				Method:  http.MethodGet,
 			},
 		},
 	}
+	testAutoTriggerMissedRecords = true
 )
 
 func addScheduleJobRequestData() AddScheduleJobRequest {
 	return NewAddScheduleJobRequest(dtos.ScheduleJob{
-		Name:       testScheduleJonName,
+		Name:       testScheduleJobName,
 		Definition: testScheduleDef,
 		Actions:    testScheduleActions,
 		AdminState: models.Unlocked,
@@ -58,16 +61,18 @@ func addScheduleJobRequestData() AddScheduleJobRequest {
 
 func updateScheduleJobData() dtos.UpdateScheduleJob {
 	id := ExampleUUID
-	name := testScheduleJonName
+	name := testScheduleJobName
 	definition := testScheduleDef
 	actions := testScheduleActions
 	labels := testScheduleJobLabels
+	autoTriggerMissedRecords := testAutoTriggerMissedRecords
 	return dtos.UpdateScheduleJob{
-		Id:         &id,
-		Name:       &name,
-		Definition: &definition,
-		Actions:    actions,
-		Labels:     labels,
+		Id:                       &id,
+		Name:                     &name,
+		Definition:               &definition,
+		Actions:                  actions,
+		AutoTriggerMissedRecords: &autoTriggerMissedRecords,
+		Labels:                   labels,
 	}
 }
 
@@ -177,6 +182,9 @@ func TestUpdateScheduleJobRequest_Validate(t *testing.T) {
 	unsupportedDefinitionType.ScheduleJob.Definition = &unsupportedDefinition
 	validWithoutDefinition := NewUpdateScheduleJobRequest(updateScheduleJobData())
 	validWithoutDefinition.ScheduleJob.Definition = nil
+	invalidStartAndEndTimestamp := NewUpdateScheduleJobRequest(updateScheduleJobData())
+	invalidStartAndEndTimestamp.ScheduleJob.Definition.StartTimestamp = 1727690062000
+	invalidStartAndEndTimestamp.ScheduleJob.Definition.EndTimestamp = 1727689822000
 	invalidEmptyDefinition := NewUpdateScheduleJobRequest(updateScheduleJobData())
 	emptyDefinition := dtos.ScheduleDef{}
 	invalidEmptyDefinition.ScheduleJob.Definition = &emptyDefinition
@@ -190,6 +198,18 @@ func TestUpdateScheduleJobRequest_Validate(t *testing.T) {
 	emptyActions.ScheduleJob.Actions = []dtos.ScheduleAction{}
 	emptyLabels := NewUpdateScheduleJobRequest(updateScheduleJobData())
 	emptyLabels.ScheduleJob.Labels = []string{}
+
+	invalidActions := NewUpdateScheduleJobRequest(updateScheduleJobData())
+	invalidActions.ScheduleJob.Actions = []dtos.ScheduleAction{
+		{
+			Type:        "invalid",
+			ContentType: common.ContentTypeJSON,
+			Payload:     nil,
+			EdgeXMessageBusAction: dtos.EdgeXMessageBusAction{
+				Topic: "testTopic",
+			},
+		},
+	}
 
 	tests := []struct {
 		name        string
@@ -206,11 +226,13 @@ func TestUpdateScheduleJobRequest_Validate(t *testing.T) {
 		{"invalid, empty name", invalidEmptyName, true},
 		{"invalid, unsupported definition type", unsupportedDefinitionType, true},
 		{"valid, without definition", validWithoutDefinition, false},
+		{"invalid, endTimestamp must be greater than startTimestamp", invalidStartAndEndTimestamp, true},
 		{"invalid, empty definition", invalidEmptyDefinition, true},
 		{"valid, no actions", noActions, false},
 		{"valid, no labels", noLabels, false},
 		{"valid, empty actions", emptyActions, false},
 		{"valid, empty labels", emptyLabels, false},
+		{"invalid, invalid action type", invalidActions, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -245,4 +267,21 @@ func TestUpdateScheduleJobRequest_UnmarshalJSON(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestReplaceScheduleJobModelFieldsWithDTO(t *testing.T) {
+	job := models.ScheduleJob{
+		Id:   "7a1707f0-166f-4c4b-bc9d-1d54c74e0137",
+		Name: testScheduleJobName,
+	}
+	patch := updateScheduleJobData()
+
+	ReplaceScheduleJobModelFieldsWithDTO(&job, patch)
+
+	expectedActions := dtos.ToScheduleActionModels(patch.Actions)
+	expectedDef := dtos.ToScheduleDefModel(*patch.Definition)
+	assert.Equal(t, testScheduleJobName, job.Name)
+	assert.Equal(t, expectedActions, job.Actions)
+	assert.Equal(t, testAutoTriggerMissedRecords, job.AutoTriggerMissedRecords)
+	assert.Equal(t, expectedDef, job.Definition)
 }

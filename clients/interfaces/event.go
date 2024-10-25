@@ -8,10 +8,10 @@ package interfaces
 import (
 	"context"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
 )
 
 // EventClient defines the interface for interactions with the Event endpoint on the EdgeX Foundry core-data service.
@@ -40,4 +40,6 @@ type EventClient interface {
 	EventsByTimeRange(ctx context.Context, start, end int64, offset, limit int) (responses.MultiEventsResponse, errors.EdgeX)
 	// DeleteByAge deletes events that are older than the given age. Age is supposed in milliseconds from created timestamp.
 	DeleteByAge(ctx context.Context, age int) (common.BaseResponse, errors.EdgeX)
+	// DeleteById deletes an event by its id
+	DeleteById(ctx context.Context, id string) (common.BaseResponse, errors.EdgeX)
 }

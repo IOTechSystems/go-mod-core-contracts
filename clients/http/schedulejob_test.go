@@ -13,12 +13,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/models"
 )
 
 func addScheduleJobRequest() requests.AddScheduleJobRequest {
@@ -92,15 +92,15 @@ func TestScheduleJobClient_AllScheduleJobs(t *testing.T) {
 	ts := newTestServer(http.MethodGet, common.ApiAllScheduleJobRoute, responses.MultiScheduleJobsResponse{})
 	defer ts.Close()
 	client := NewScheduleJobClient(ts.URL, NewNullAuthenticationInjector(), false)
-	res, err := client.AllScheduleJobs(context.Background(), 0, 10)
+	res, err := client.AllScheduleJobs(context.Background(), []string{TestLabel}, 0, 10)
 	require.NoError(t, err)
 	require.IsType(t, responses.MultiScheduleJobsResponse{}, res)
 }
 
 func TestScheduleJobClient_ScheduleJobByName(t *testing.T) {
 	scheduleJobName := TestScheduleJobName
-	path := path.Join(common.ApiScheduleJobRoute, common.Name, scheduleJobName)
-	ts := newTestServer(http.MethodGet, path, responses.ScheduleJobResponse{})
+	requestPath := path.Join(common.ApiScheduleJobRoute, common.Name, scheduleJobName)
+	ts := newTestServer(http.MethodGet, requestPath, responses.ScheduleJobResponse{})
 	defer ts.Close()
 	client := NewScheduleJobClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.ScheduleJobByName(context.Background(), scheduleJobName)
@@ -110,8 +110,8 @@ func TestScheduleJobClient_ScheduleJobByName(t *testing.T) {
 
 func TestScheduleJobClient_DeleteScheduleJobByName(t *testing.T) {
 	scheduleJobName := TestScheduleJobName
-	path := path.Join(common.ApiScheduleJobRoute, common.Name, scheduleJobName)
-	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
+	requestPath := path.Join(common.ApiScheduleJobRoute, common.Name, scheduleJobName)
+	ts := newTestServer(http.MethodDelete, requestPath, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewScheduleJobClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.DeleteScheduleJobByName(context.Background(), scheduleJobName)
@@ -121,8 +121,8 @@ func TestScheduleJobClient_DeleteScheduleJobByName(t *testing.T) {
 
 func TestScheduleJobClient_TriggerScheduleJobByName(t *testing.T) {
 	scheduleJobName := TestScheduleJobName
-	path := path.Join(common.ApiTriggerScheduleJobRoute, common.Name, scheduleJobName)
-	ts := newTestServer(http.MethodPost, path, dtoCommon.BaseResponse{})
+	requestPath := path.Join(common.ApiTriggerScheduleJobRoute, common.Name, scheduleJobName)
+	ts := newTestServer(http.MethodPost, requestPath, dtoCommon.BaseResponse{})
 	defer ts.Close()
 	client := NewScheduleJobClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.TriggerScheduleJobByName(context.Background(), scheduleJobName)

@@ -1,13 +1,14 @@
 //
-// Copyright (C) 2023 IOTech Ltd
+// Copyright (C) 2023-2024 IOTech Ltd
 //
+// SPDX-License-Identifier: Apache-2.0
 
 package responses
 
 import (
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -21,7 +22,7 @@ var (
 		Port:        5959,
 		HealthCheck: dtos.HealthCheck{
 			Interval: "10s",
-			Path:     "/api/v2/ping",
+			Path:     "/api/v3/ping",
 			Type:     "http",
 		},
 	}

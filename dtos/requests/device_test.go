@@ -10,10 +10,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -35,9 +35,13 @@ var testProtocols = map[string]dtos.ProtocolProperties{
 		"UnitID":  "1",
 	},
 }
+
 var testProperties = map[string]any{
 	"LastScan": float64(1702275547),
 }
+
+var testParent = "ParentDevice"
+
 var testAddDevice = AddDeviceRequest{
 	BaseRequest: dtoCommon.BaseRequest{
 		RequestId:   ExampleUUID,
@@ -57,6 +61,7 @@ var testAddDevice = AddDeviceRequest{
 		Properties: map[string]any{
 			common.ProtocolName: testProtocolName,
 		},
+		Parent: testParent,
 	},
 }
 
@@ -90,6 +95,7 @@ func mockUpdateDevice() dtos.UpdateDevice {
 	d.AutoEvents = testAutoEvents
 	d.Protocols = testProtocols
 	d.Properties = testProperties
+	d.Parent = &testParent
 	return d
 }
 
@@ -153,12 +159,15 @@ func TestAddDeviceRequest_Validate(t *testing.T) {
 	profileNameWithUnreservedChars.Device.ProfileName = nameWithUnreservedChars
 	serviceNameWithUnreservedChars := testAddDevice
 	serviceNameWithUnreservedChars.Device.ServiceName = nameWithUnreservedChars
+	parentNameWithUnreservedChars := testAddDevice
+	parentNameWithUnreservedChars.Device.Parent = nameWithUnreservedChars
 
 	// Following tests verify if name fields containing unreserved characters should pass edgex-dto-rfc3986-unreserved-chars check
 	testsForNameFields := []testForNameField{
 		{"Valid AddDeviceRequest with device name containing unreserved chars", deviceNameWithUnreservedChars, false},
 		{"Valid AddDeviceRequest with profile name containing unreserved chars", profileNameWithUnreservedChars, false},
 		{"Valid AddDeviceRequest with service name containing unreserved chars", serviceNameWithUnreservedChars, false},
+		{"Valid AddDeviceRequest with parent name containing unreserved chars", parentNameWithUnreservedChars, false},
 	}
 
 	// Following tests verify if name fields containing reserved characters should not be detected with an error
@@ -169,11 +178,14 @@ func TestAddDeviceRequest_Validate(t *testing.T) {
 		profileNameWithReservedChar.Device.ProfileName = n
 		serviceNameWithReservedChar := testAddDevice
 		serviceNameWithReservedChar.Device.ServiceName = n
+		parentNameWithReservedChar := testAddDevice
+		parentNameWithReservedChar.Device.Parent = n
 
 		testsForNameFields = append(testsForNameFields,
 			testForNameField{"Valid AddDeviceRequest with device name containing reserved char", deviceNameWithReservedChar, false},
-			testForNameField{"Valid AddDeviceRequest with device name containing reserved char", profileNameWithReservedChar, false},
-			testForNameField{"Valid AddDeviceRequest with device name containing reserved char", serviceNameWithReservedChar, false},
+			testForNameField{"Valid AddDeviceRequest with profile name containing reserved char", profileNameWithReservedChar, false},
+			testForNameField{"Valid AddDeviceRequest with service name containing reserved char", serviceNameWithReservedChar, false},
+			testForNameField{"Valid AddDeviceRequest with parent name containing reserved char", parentNameWithReservedChar, false},
 		)
 	}
 
@@ -245,6 +257,7 @@ func Test_AddDeviceReqToDeviceModels(t *testing.T) {
 			Properties: map[string]any{
 				common.ProtocolName: "modbus-ip",
 			},
+			Parent: testParent,
 		},
 	}
 	resultModels := AddDeviceReqToDeviceModels(requests)

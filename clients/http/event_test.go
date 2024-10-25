@@ -13,11 +13,11 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/responses"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -113,6 +113,18 @@ func TestDeleteEventsByAge(t *testing.T) {
 
 	client := NewEventClient(ts.URL, NewNullAuthenticationInjector(), false)
 	res, err := client.DeleteByAge(context.Background(), age)
+	require.NoError(t, err)
+	assert.IsType(t, dtoCommon.BaseResponse{}, res)
+}
+
+func TestDeleteEventById(t *testing.T) {
+	id := "1234-5678-90fa-keid"
+	path := path.Join(common.ApiEventRoute, common.Id, id)
+	ts := newTestServer(http.MethodDelete, path, dtoCommon.BaseResponse{})
+	defer ts.Close()
+
+	client := NewEventClient(ts.URL, NewNullAuthenticationInjector(), false)
+	res, err := client.DeleteById(context.Background(), id)
 	require.NoError(t, err)
 	assert.IsType(t, dtoCommon.BaseResponse{}, res)
 }

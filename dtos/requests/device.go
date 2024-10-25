@@ -8,11 +8,11 @@ package requests
 import (
 	"encoding/json"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/models"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/models"
 )
 
 // AddDeviceRequest defines the Request Content for POST Device DTO.
@@ -90,6 +90,9 @@ func (d *UpdateDeviceRequest) UnmarshalJSON(b []byte) error {
 func ReplaceDeviceModelFieldsWithDTO(device *models.Device, patch dtos.UpdateDevice) {
 	if patch.Description != nil {
 		device.Description = *patch.Description
+	}
+	if patch.Parent != nil {
+		device.Parent = *patch.Parent
 	}
 	if patch.AdminState != nil {
 		device.AdminState = models.AdminState(*patch.AdminState)

@@ -19,9 +19,9 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/clients/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
 
 	"github.com/google/uuid"
 )
@@ -63,7 +63,8 @@ func makeRequest(req *http.Request, authInjector interfaces.AuthenticationInject
 		}
 	}
 
-	client := &http.Client{}
+	client := &http.Client{Transport: authInjector.RoundTripper()}
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, errors.NewCommonEdgeX(errors.KindServiceUnavailable, "failed to send a http request", err)

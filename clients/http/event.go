@@ -12,13 +12,13 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/http/utils"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/clients/interfaces"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/common"
-	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/common"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/requests"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/dtos/responses"
-	"github.com/edgexfoundry/go-mod-core-contracts/v3/errors"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/clients/http/utils"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/clients/interfaces"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/common"
+	dtoCommon "github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/common"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/requests"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/dtos/responses"
+	"github.com/edgexfoundry/go-mod-core-contracts/v4/errors"
 )
 
 type eventClient struct {
@@ -125,6 +125,16 @@ func (ec *eventClient) EventsByTimeRange(ctx context.Context, start, end int64, 
 
 func (ec *eventClient) DeleteByAge(ctx context.Context, age int) (dtoCommon.BaseResponse, errors.EdgeX) {
 	path := path.Join(common.ApiEventRoute, common.Age, strconv.Itoa(age))
+	res := dtoCommon.BaseResponse{}
+	err := utils.DeleteRequest(ctx, &res, ec.baseUrl, path, ec.authInjector)
+	if err != nil {
+		return res, errors.NewCommonEdgeXWrapper(err)
+	}
+	return res, nil
+}
+
+func (ec *eventClient) DeleteById(ctx context.Context, id string) (dtoCommon.BaseResponse, errors.EdgeX) {
+	path := path.Join(common.ApiEventRoute, common.Id, id)
 	res := dtoCommon.BaseResponse{}
 	err := utils.DeleteRequest(ctx, &res, ec.baseUrl, path, ec.authInjector)
 	if err != nil {
