@@ -36,7 +36,7 @@ const (
 	dtoNoReservedCharTag        = "edgex-dto-no-reserved-chars"
 	emptyOrDtoNoReservedCharTag = "len=0|" + dtoNoReservedCharTag
 	dtoUsernameTag              = "edgex-dto-username"
-	dtoPasswordTag              = "edgex-dto-password"
+	dtoPasswordTag              = "edgex-dto-password" // nolint:gosec
 )
 
 const (
