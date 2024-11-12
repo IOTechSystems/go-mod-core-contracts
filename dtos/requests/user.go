@@ -85,3 +85,34 @@ func (u *UpdateUserRequest) UnmarshalJSON(b []byte) error {
 	}
 	return nil
 }
+
+// LoginRequest defines the Request Content for login
+type LoginRequest struct {
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
+// Validate satisfies the Validator interface
+func (a *LoginRequest) Validate() error {
+	err := common.Validate(a)
+	return err
+}
+
+// UnmarshalJSON implements the Unmarshaler interface for the LoginRequest type
+func (a *LoginRequest) UnmarshalJSON(b []byte) error {
+	var alias struct {
+		Username string
+		Password string
+	}
+	if err := json.Unmarshal(b, &alias); err != nil {
+		return errors.NewCommonEdgeX(errors.KindContractInvalid, "Failed to unmarshal request body as JSON", err)
+	}
+
+	*a = LoginRequest(alias)
+
+	// validate LoginRequest DTO
+	if err := a.Validate(); err != nil {
+		return err
+	}
+	return nil
+}

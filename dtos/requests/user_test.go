@@ -45,6 +45,10 @@ var (
 			Description: &testUserDescription,
 		},
 	}
+	testLoginRequest = LoginRequest{
+		Username: "bob",
+		Password: "MySecret@123",
+	}
 )
 
 func TestAddUserRequest_Validate(t *testing.T) {
@@ -184,6 +188,66 @@ func TestUpdateUser_UnmarshalJSON(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				require.Equal(t, expected, tt.updateUser, "Unmarshal did not result in expected UpdateUserRequest")
+			}
+		})
+	}
+}
+
+func TestLoginRequest_Validate(t *testing.T) {
+	valid := testLoginRequest
+	invalidNoName := valid
+	invalidNoName.Username = ""
+	invalidNoPass := valid
+	invalidNoPass.Password = ""
+
+	tests := []struct {
+		name        string
+		login       LoginRequest
+		expectError bool
+	}{
+		{"valid LoginRequest", valid, false},
+		{"invalid LoginRequest, username empty", invalidNoName, true},
+		{"invalid LoginRequest, password empty", invalidNoPass, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.login.Validate()
+			if tt.expectError {
+				require.Error(t, err, fmt.Sprintf("expect error but not : %s", tt.name))
+			} else {
+				require.NoError(t, err, fmt.Sprintf("unexpected error occurs : %s", tt.name))
+			}
+		})
+	}
+}
+
+func TestLoginRequest_UnmarshalJSON(t *testing.T) {
+	valid := testLoginRequest
+	resultTestBytes, _ := json.Marshal(valid)
+	type args struct {
+		data []byte
+	}
+
+	tests := []struct {
+		name         string
+		loginRequest LoginRequest
+		args         args
+		wantErr      bool
+	}{
+		{"unmarshal LoginRequest with success", valid, args{resultTestBytes}, false},
+		{"unmarshal invalid LoginRequest, empty data", LoginRequest{}, args{[]byte{}}, true},
+		{"unmarshal invalid LoginRequest, string data", LoginRequest{}, args{[]byte("Invalid LoginRequest")}, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var expected = tt.loginRequest
+			err := tt.loginRequest.UnmarshalJSON(tt.args.data)
+			if tt.wantErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, expected, tt.loginRequest, "Unmarshal did not result in expected LoginRequest")
 			}
 		})
 	}

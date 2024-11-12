@@ -9,6 +9,7 @@ type User struct {
 	DBTimestamp
 	Id          string
 	Name        string
+	DisplayName string
 	Password    string
 	Description string
 	Roles       []string
