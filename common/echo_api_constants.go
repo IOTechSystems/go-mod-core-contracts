@@ -79,9 +79,8 @@ const (
 	ApiProfileCallbackNameEchoRoute = ApiBase + "/callback/profile/name/:name"
 	ApiWatcherCallbackNameEchoRoute = ApiBase + "/callback/watcher/name/:name"
 
-	ApiIntervalByNameEchoRoute         = ApiIntervalRoute + "/" + Name + "/:" + Name
-	ApiIntervalActionByNameEchoRoute   = ApiIntervalActionRoute + "/" + Name + "/:" + Name
-	ApiIntervalActionByTargetEchoRoute = ApiIntervalActionRoute + "/" + Target + "/:" + Target
+	ApiKVSByKeyEchoRoute                = ApiKVSRoute + "/" + Key + "/:" + Key
+	ApiRegistrationByServiceIdEchoRoute = ApiRegisterRoute + "/" + ServiceId + "/:" + ServiceId
 
 	ApiScheduleJobEchoRoute              = ApiBase + "/job"
 	ApiAllScheduleJobEchoRoute           = ApiScheduleJobRoute + "/" + All
@@ -94,7 +93,4 @@ const (
 	ApiScheduleActionRecordRouteByStatusEchoRoute           = ApiScheduleActionRecordRoute + "/" + Status + "/:" + Status
 	ApiScheduleActionRecordRouteByJobNameEchoRoute          = ApiScheduleActionRecordRoute + "/" + Job + "/" + Name + "/:" + Name
 	ApiScheduleActionRecordRouteByJobNameAndStatusEchoRoute = ApiScheduleActionRecordRoute + "/" + Job + "/" + Name + "/:" + Name + "/" + Status + "/:" + Status
-
-	ApiKVSByKeyEchoRoute                = ApiKVSRoute + "/" + Key + "/:" + Key
-	ApiRegistrationByServiceIdEchoRoute = ApiRegisterRoute + "/" + ServiceId + "/:" + ServiceId
 )
