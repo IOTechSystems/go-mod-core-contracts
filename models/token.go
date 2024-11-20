@@ -10,7 +10,7 @@ type TokenDetails struct {
 	Id        string
 	ClientIP  string
 	UserAgent string
-	UserId    string
+	UserName  string
 	Revoked   bool
 	ExpTime   int64
 }
