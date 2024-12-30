@@ -11,7 +11,7 @@ require (
 	github.com/xuri/excelize/v2 v2.9.0
 	go.einride.tech/can v0.12.1
 	golang.org/x/text v0.20.0
-	google.golang.org/protobuf v1.35.1
+	google.golang.org/protobuf v1.36.1
 	gopkg.in/yaml.v3 v3.0.1
 )
 
